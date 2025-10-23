@@ -3,41 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Calculator</title>
+    <title>Solar System Financing Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #loading { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #f0f9ff, #ffffff);
+        }
+    </style>
 </head>
 <body>
-    <div id="solar-calculator-root"></div>
+    <div id="loading">
+        <div style="text-align: center; padding: 40px;">
+            <h2 style="font-size: 24px; margin-bottom: 10px; color: #155263;">Loading Solar Calculator...</h2>
+            <p style="color: #666;">Please wait...</p>
+        </div>
+    </div>
+    <div id="root" style="display: none;"></div>
 
-    <!-- Load libraries in correct order -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Load React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     
-    <!-- Recharts and its dependencies -->
-    <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.1.16/dist/Recharts.js"></script>
-    
-    <!-- Babel must be last -->
-    <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+    <!-- Load Recharts with all dependencies -->
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        // Check if Recharts is loaded
-        if (typeof Recharts === 'undefined') {
-            console.error('Recharts failed to load');
-            document.getElementById('solar-calculator-root').innerHTML = 
-                '<div style="padding: 40px; text-align: center; color: red;">Error: Chart library failed to load. Please refresh the page.</div>';
-        } else {
-            console.log('Recharts loaded successfully:', Recharts);
+    <script>
+        // Wait for all libraries to load with aggressive polling
+        (function() {
+            let checkCount = 0;
+            const maxChecks = 100; // 10 seconds
+            
+            function checkLibraries() {
+                checkCount++;
+                
+                if (window.React && window.ReactDOM && window.Recharts) {
+                    console.log('✓ All libraries loaded successfully');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('root').style.display = 'block';
+                    initCalculator();
+                } else if (checkCount >= maxChecks) {
+                    console.error('Failed to load:', {
+                        React: !!window.React,
+                        ReactDOM: !!window.ReactDOM,
+                        Recharts: !!window.Recharts
+                    });
+                    document.getElementById('loading').innerHTML = 
+                        '<div style="text-align: center; padding: 40px; color: #dc2626;">' +
+                        '<h2 style="font-size: 24px; margin-bottom: 10px;">Error Loading Calculator</h2>' +
+                        '<p>Unable to load required libraries. Please refresh the page.</p>' +
+                        '<button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #155263; color: white; border: none; border-radius: 8px; cursor: pointer;">Refresh Page</button>' +
+                        '</div>';
+                } else {
+                    setTimeout(checkLibraries, 100);
+                }
+            }
+            
+            // Start checking after a brief delay
+            setTimeout(checkLibraries, 200);
+        })();
+
+        function initCalculator() {
+            const { useState, useEffect, createElement: h } = React;
             const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
 
-            // Icon component
-            const Check = ({ className, style }) => (
-                <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            );
+            // Check icon component
+            function Check({ className, style }) {
+                return h('svg', {
+                    className: className,
+                    style: style,
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "24",
+                    height: "24",
+                    viewBox: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    strokeWidth: "2",
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round"
+                }, h('polyline', { points: "20 6 9 17 4 12" }));
+            }
 
             function SolarMortgageCalculator() {
                 const [formData, setFormData] = useState({
@@ -328,7 +378,7 @@
                     if (!results) return null;
                     
                     if (results.solarReady) {
-                        return <Check className="w-12 h-12" style={{ color: '#96e0b3' }} />;
+                        return h(Check, { className: "w-12 h-12", style: { color: '#96e0b3' } });
                     }
                     return null;
                 };
@@ -406,425 +456,517 @@
                     }
                 };
 
-                return (
-                    <div className="min-h-screen p-6" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ffffff)' }}>
-                        <div className="max-w-6xl mx-auto">
-                            <div className="bg-white rounded-lg shadow-xl p-8" style={{ borderTop: '4px solid #155263' }}>
-                                <div className="text-center mb-8">
-                                    <h1 className="text-3xl font-bold mb-2" style={{ color: '#155263' }}>Solar System Financing Calculator</h1>
-                                    <p className="text-gray-600">Find out what solar system you can afford through green lending</p>
-                                </div>
+                // Build the component using createElement to avoid JSX/Babel
+                return h('div', {
+                    className: "min-h-screen p-6",
+                    style: { background: 'linear-gradient(to bottom right, #f0f9ff, #ffffff)' }
+                },
+                    h('div', { className: "max-w-6xl mx-auto" },
+                        h('div', {
+                            className: "bg-white rounded-lg shadow-xl p-8",
+                            style: { borderTop: '4px solid #155263' }
+                        },
+                            // Header
+                            h('div', { className: "text-center mb-8" },
+                                h('h1', {
+                                    className: "text-3xl font-bold mb-2",
+                                    style: { color: '#155263' }
+                                }, 'Solar System Financing Calculator'),
+                                h('p', { className: "text-gray-600" }, 
+                                    'Find out what solar system you can afford through green lending')
+                            ),
 
-                                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Annual Household Income ($NZ)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="householdIncome"
-                                            value={formData.householdIncome}
-                                            onChange={handleChange}
-                                            className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' + 
-                                                (validationErrors.householdIncome ? 'border-red-500' : 'border-gray-300')}
-                                            placeholder="120,000"
-                                        />
-                                        {validationErrors.householdIncome && (
-                                            <p className="text-red-500 text-xs mt-1">{validationErrors.householdIncome}</p>
-                                        )}
-                                    </div>
+                            // Input Fields Grid
+                            h('div', { className: "grid md:grid-cols-2 gap-6 mb-8" },
+                                // Household Income
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Annual Household Income ($NZ)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "householdIncome",
+                                        value: formData.householdIncome,
+                                        onChange: handleChange,
+                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' + 
+                                            (validationErrors.householdIncome ? 'border-red-500' : 'border-gray-300'),
+                                        placeholder: "120,000"
+                                    }),
+                                    validationErrors.householdIncome && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.householdIncome)
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Current Property Value ($NZ)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="propertyValue"
-                                            value={formData.propertyValue}
-                                            onChange={handleChange}
-                                            className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                (validationErrors.propertyValue ? 'border-red-500' : 'border-gray-300')}
-                                            placeholder="800,000"
-                                        />
-                                        {validationErrors.propertyValue && (
-                                            <p className="text-red-500 text-xs mt-1">{validationErrors.propertyValue}</p>
-                                        )}
-                                    </div>
+                                // Property Value
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Current Property Value ($NZ)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "propertyValue",
+                                        value: formData.propertyValue,
+                                        onChange: handleChange,
+                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                            (validationErrors.propertyValue ? 'border-red-500' : 'border-gray-300'),
+                                        placeholder: "800,000"
+                                    }),
+                                    validationErrors.propertyValue && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.propertyValue)
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Current Lending/Mortgage ($NZ)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="currentLending"
-                                            value={formData.currentLending}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                            placeholder="500,000"
-                                        />
-                                    </div>
+                                // Current Lending
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Current Lending/Mortgage ($NZ)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "currentLending",
+                                        value: formData.currentLending,
+                                        onChange: handleChange,
+                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
+                                        placeholder: "500,000"
+                                    })
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Current Bank
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="currentBank"
-                                            value={formData.currentBank}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                            placeholder="ANZ, ASB, Westpac, etc."
-                                        />
-                                    </div>
+                                // Current Bank
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Current Bank'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "currentBank",
+                                        value: formData.currentBank,
+                                        onChange: handleChange,
+                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
+                                        placeholder: "ANZ, ASB, Westpac, etc."
+                                    })
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Household Expenses ($NZ)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="expenseAmount"
-                                            value={formData.expenseAmount}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                            placeholder="3,000"
-                                        />
-                                    </div>
+                                // Household Expenses
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Household Expenses ($NZ)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "expenseAmount",
+                                        value: formData.expenseAmount,
+                                        onChange: handleChange,
+                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
+                                        placeholder: "3,000"
+                                    })
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Expense Frequency
-                                        </label>
-                                        <select
-                                            name="expenseFrequency"
-                                            value={formData.expenseFrequency}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                        >
-                                            <option value="weekly">Weekly</option>
-                                            <option value="fortnightly">Fortnightly</option>
-                                            <option value="monthly">Monthly</option>
-                                        </select>
-                                    </div>
+                                // Expense Frequency
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Expense Frequency'),
+                                    h('select', {
+                                        name: "expenseFrequency",
+                                        value: formData.expenseFrequency,
+                                        onChange: handleChange,
+                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                    },
+                                        h('option', { value: "weekly" }, 'Weekly'),
+                                        h('option', { value: "fortnightly" }, 'Fortnightly'),
+                                        h('option', { value: "monthly" }, 'Monthly')
+                                    )
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Typical Summer Power Bill ($NZ/month)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="summerPowerBill"
-                                            value={formData.summerPowerBill}
-                                            onChange={handleChange}
-                                            className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                (validationErrors.summerPowerBill ? 'border-red-500' : 'border-gray-300')}
-                                            placeholder="300"
-                                        />
-                                        {validationErrors.summerPowerBill && (
-                                            <p className="text-red-500 text-xs mt-1">{validationErrors.summerPowerBill}</p>
-                                        )}
-                                    </div>
+                                // Summer Power Bill
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Typical Summer Power Bill ($NZ/month)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "summerPowerBill",
+                                        value: formData.summerPowerBill,
+                                        onChange: handleChange,
+                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                            (validationErrors.summerPowerBill ? 'border-red-500' : 'border-gray-300'),
+                                        placeholder: "300"
+                                    }),
+                                    validationErrors.summerPowerBill && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.summerPowerBill)
+                                ),
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Typical Winter Power Bill ($NZ/month)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="winterPowerBill"
-                                            value={formData.winterPowerBill}
-                                            onChange={handleChange}
-                                            className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                (validationErrors.winterPowerBill ? 'border-red-500' : 'border-gray-300')}
-                                            placeholder="400"
-                                        />
-                                        {validationErrors.winterPowerBill && (
-                                            <p className="text-red-500 text-xs mt-1">{validationErrors.winterPowerBill}</p>
-                                        )}
-                                    </div>
-                                </div>
+                                // Winter Power Bill
+                                h('div', null,
+                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                        'Typical Winter Power Bill ($NZ/month)'),
+                                    h('input', {
+                                        type: "text",
+                                        name: "winterPowerBill",
+                                        value: formData.winterPowerBill,
+                                        onChange: handleChange,
+                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                            (validationErrors.winterPowerBill ? 'border-red-500' : 'border-gray-300'),
+                                        placeholder: "400"
+                                    }),
+                                    validationErrors.winterPowerBill && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.winterPowerBill)
+                                )
+                            ),
 
-                                <div className="mb-8 p-4 rounded-lg border" style={{ backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }}>
-                                    <p className="text-sm" style={{ color: '#052b2f' }}>
-                                        <strong>Tip:</strong> For more accurate solar savings calculations, enter your typical summer and winter power bills. 
-                                        If left blank, we'll estimate based on your household expenses.
-                                    </p>
-                                </div>
+                            // Tip Box
+                            h('div', {
+                                className: "mb-8 p-4 rounded-lg border",
+                                style: { backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }
+                            },
+                                h('p', { className: "text-sm", style: { color: '#052b2f' } },
+                                    h('strong', null, 'Tip:'),
+                                    ' For more accurate solar savings calculations, enter your typical summer and winter power bills. If left blank, we\'ll estimate based on your household expenses.'
+                                )
+                            ),
 
-                                {results && (
-                                    <div className="space-y-8 mb-8">
-                                        <div className="p-6 rounded-lg border-2" style={{ background: 'linear-gradient(to right, #f0f9ff, #ffffff)', borderColor: '#60e1e0' }}>
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h2 className="text-2xl font-bold mb-2" style={{ color: '#155263' }}>Solar Ready Status</h2>
-                                                    <p className="text-gray-600 mb-3">
-                                                        {results.solarReadyMessage}
-                                                    </p>
-                                                    {!results.hasSufficientSurplus && (
-                                                        <p className="text-sm text-gray-600 italic">
-                                                            Note: Low or medium borrowing power may restrict your financing options. Banks require sufficient monthly surplus to remain after any top-up or refinance is completed.
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                {getSolarReadyIcon()}
-                                            </div>
-                                        </div>
+                            // Results Section (only show if results exist)
+                            results && h('div', { className: "space-y-8 mb-8" },
+                                // Solar Ready Status
+                                h('div', {
+                                    className: "p-6 rounded-lg border-2",
+                                    style: { background: 'linear-gradient(to right, #f0f9ff, #ffffff)', borderColor: '#60e1e0' }
+                                },
+                                    h('div', { className: "flex items-center justify-between" },
+                                        h('div', null,
+                                            h('h2', {
+                                                className: "text-2xl font-bold mb-2",
+                                                style: { color: '#155263' }
+                                            }, 'Solar Ready Status'),
+                                            h('p', { className: "text-gray-600 mb-3" }, results.solarReadyMessage),
+                                            !results.hasSufficientSurplus && h('p', { className: "text-sm text-gray-600 italic" },
+                                                'Note: Low or medium borrowing power may restrict your financing options. Banks require sufficient monthly surplus to remain after any top-up or refinance is completed.'
+                                            )
+                                        ),
+                                        getSolarReadyIcon()
+                                    )
+                                ),
 
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div className={'p-6 rounded-lg border-2 ' + results.borrowingPowerColor}>
-                                                <h3 className="text-lg font-semibold mb-3" style={{ color: '#155263' }}>Borrowing Power</h3>
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className={'text-3xl font-bold ' + results.borrowingPowerTextColor}>
-                                                            {results.borrowingPowerText}
-                                                        </p>
-                                                        <p className="text-sm text-gray-600 mt-2">
-                                                            {results.borrowingPower === 'low' && 'Less than $20,000 available'}
-                                                            {results.borrowingPower === 'medium' && '$20,000 - $50,000 available'}
-                                                            {results.borrowingPower === 'high' && 'Over $50,000 available'}
-                                                        </p>
-                                                    </div>
-                                                    <div className={'w-16 h-16 rounded-full ' + results.borrowingPowerDotColor}></div>
-                                                </div>
-                                            </div>
+                                // Borrowing Power & LVR Grid
+                                h('div', { className: "grid md:grid-cols-2 gap-6" },
+                                    // Borrowing Power
+                                    h('div', { className: 'p-6 rounded-lg border-2 ' + results.borrowingPowerColor },
+                                        h('h3', {
+                                            className: "text-lg font-semibold mb-3",
+                                            style: { color: '#155263' }
+                                        }, 'Borrowing Power'),
+                                        h('div', { className: "flex items-center justify-between" },
+                                            h('div', null,
+                                                h('p', { className: 'text-3xl font-bold ' + results.borrowingPowerTextColor },
+                                                    results.borrowingPowerText),
+                                                h('p', { className: "text-sm text-gray-600 mt-2" },
+                                                    results.borrowingPower === 'low' ? 'Less than $20,000 available' :
+                                                    results.borrowingPower === 'medium' ? '$20,000 - $50,000 available' :
+                                                    'Over $50,000 available'
+                                                )
+                                            ),
+                                            h('div', { className: 'w-16 h-16 rounded-full ' + results.borrowingPowerDotColor })
+                                        )
+                                    ),
 
-                                            <div className="bg-white p-6 rounded-lg shadow border-2" style={{ borderColor: '#155263' }}>
-                                                <h3 className="text-lg font-semibold mb-3" style={{ color: '#155263' }}>Current LVR</h3>
-                                                <p className="text-3xl font-bold" style={{ color: '#155263' }}>{results.lvr}%</p>
-                                                <p className="text-sm text-gray-600 mt-2">Based on 80% lending threshold</p>
-                                            </div>
-                                        </div>
+                                    // Current LVR
+                                    h('div', {
+                                        className: "bg-white p-6 rounded-lg shadow border-2",
+                                        style: { borderColor: '#155263' }
+                                    },
+                                        h('h3', {
+                                            className: "text-lg font-semibold mb-3",
+                                            style: { color: '#155263' }
+                                        }, 'Current LVR'),
+                                        h('p', {
+                                            className: "text-3xl font-bold",
+                                            style: { color: '#155263' }
+                                        }, results.lvr + '%'),
+                                        h('p', { className: "text-sm text-gray-600 mt-2" },
+                                            'Based on 80% lending threshold')
+                                    )
+                                ),
 
-                                        <div className="bg-white p-6 rounded-lg shadow border-2" style={{ borderColor: '#155263' }}>
-                                            <h3 className="font-semibold mb-4 text-lg" style={{ color: '#155263' }}>Monthly Serviceability (at 6.8% test rate)</h3>
-                                            <div className="grid md:grid-cols-2 gap-4">
-                                                <div className="space-y-2 text-sm">
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-600">Monthly Income:</span>
-                                                        <span className="font-medium">${parseFloat(results.monthlyIncome).toLocaleString()}</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-600">Monthly Expenses:</span>
-                                                        <span className="font-medium">${parseFloat(results.monthlyExpenses).toLocaleString()}</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-600">Current Mortgage Payment:</span>
-                                                        <span className="font-medium">${parseFloat(results.currentMonthlyPayment).toLocaleString()}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center justify-center">
-                                                    <div className="text-center">
-                                                        <p className="text-sm text-gray-600 mb-2">Monthly Surplus</p>
-                                                        <p className="text-3xl font-bold" style={{ color: parseFloat(results.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0' }}>
-                                                            ${parseFloat(results.monthlySurplus).toLocaleString()}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                // Monthly Serviceability
+                                h('div', {
+                                    className: "bg-white p-6 rounded-lg shadow border-2",
+                                    style: { borderColor: '#155263' }
+                                },
+                                    h('h3', {
+                                        className: "font-semibold mb-4 text-lg",
+                                        style: { color: '#155263' }
+                                    }, 'Monthly Serviceability (at 6.8% test rate)'),
+                                    h('div', { className: "grid md:grid-cols-2 gap-4" },
+                                        h('div', { className: "space-y-2 text-sm" },
+                                            h('div', { className: "flex justify-between" },
+                                                h('span', { className: "text-gray-600" }, 'Monthly Income:'),
+                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.monthlyIncome).toLocaleString())
+                                            ),
+                                            h('div', { className: "flex justify-between" },
+                                                h('span', { className: "text-gray-600" }, 'Monthly Expenses:'),
+                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.monthlyExpenses).toLocaleString())
+                                            ),
+                                            h('div', { className: "flex justify-between" },
+                                                h('span', { className: "text-gray-600" }, 'Current Mortgage Payment:'),
+                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.currentMonthlyPayment).toLocaleString())
+                                            )
+                                        ),
+                                        h('div', { className: "flex items-center justify-center" },
+                                            h('div', { className: "text-center" },
+                                                h('p', { className: "text-sm text-gray-600 mb-2" }, 'Monthly Surplus'),
+                                                h('p', {
+                                                    className: "text-3xl font-bold",
+                                                    style: { color: parseFloat(results.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0' }
+                                                }, '$' + parseFloat(results.monthlySurplus).toLocaleString())
+                                            )
+                                        )
+                                    )
+                                ),
 
-                                        <div className="bg-white p-6 rounded-lg shadow border-2" style={{ borderColor: '#155263' }}>
-                                            <h3 className="font-semibold mb-4 text-xl" style={{ color: '#155263' }}>Solar Investment Returns (25 Year Projection)</h3>
-                                            
-                                            <div className="grid md:grid-cols-3 gap-4 mb-6">
-                                                <div className="p-4 rounded-lg border" style={{ backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }}>
-                                                    <p className="text-sm text-gray-600 mb-1">
-                                                        {results.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost'}
-                                                    </p>
-                                                    <p className="text-2xl font-bold" style={{ color: '#155263' }}>${parseFloat(results.estimatedPowerCost).toLocaleString()}</p>
-                                                    {results.calculationMethod === 'expenses' && (
-                                                        <p className="text-xs text-gray-500 mt-1">Based on household expenses</p>
-                                                    )}
-                                                </div>
-                                                <div className="p-4 rounded-lg border" style={{ backgroundColor: '#fffef0', borderColor: '#ffc93c' }}>
-                                                    <p className="text-sm text-gray-600 mb-1">Annual Solar Savings (80% coverage)</p>
-                                                    <p className="text-2xl font-bold" style={{ color: '#155263' }}>${parseFloat(results.annualSolarSavings).toLocaleString()}</p>
-                                                </div>
-                                                <div className="p-4 rounded-lg border" style={{ backgroundColor: '#f0fff4', borderColor: '#96e0b3' }}>
-                                                    <p className="text-sm text-gray-600 mb-1">Payback Period</p>
-                                                    <p className="text-2xl font-bold" style={{ color: '#155263' }}>{results.paybackYears} years</p>
-                                                </div>
-                                            </div>
+                                // Solar Investment Returns with Chart
+                                h('div', {
+                                    className: "bg-white p-6 rounded-lg shadow border-2",
+                                    style: { borderColor: '#155263' }
+                                },
+                                    h('h3', {
+                                        className: "font-semibold mb-4 text-xl",
+                                        style: { color: '#155263' }
+                                    }, 'Solar Investment Returns (25 Year Projection)'),
+                                    
+                                    // Three info boxes
+                                    h('div', { className: "grid md:grid-cols-3 gap-4 mb-6" },
+                                        h('div', {
+                                            className: "p-4 rounded-lg border",
+                                            style: { backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }
+                                        },
+                                            h('p', { className: "text-sm text-gray-600 mb-1" },
+                                                results.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost'),
+                                            h('p', {
+                                                className: "text-2xl font-bold",
+                                                style: { color: '#155263' }
+                                            }, '$' + parseFloat(results.estimatedPowerCost).toLocaleString()),
+                                            results.calculationMethod === 'expenses' && h('p', { className: "text-xs text-gray-500 mt-1" },
+                                                'Based on household expenses')
+                                        ),
+                                        h('div', {
+                                            className: "p-4 rounded-lg border",
+                                            style: { backgroundColor: '#fffef0', borderColor: '#ffc93c' }
+                                        },
+                                            h('p', { className: "text-sm text-gray-600 mb-1" },
+                                                'Annual Solar Savings (80% coverage)'),
+                                            h('p', {
+                                                className: "text-2xl font-bold",
+                                                style: { color: '#155263' }
+                                            }, '$' + parseFloat(results.annualSolarSavings).toLocaleString())
+                                        ),
+                                        h('div', {
+                                            className: "p-4 rounded-lg border",
+                                            style: { backgroundColor: '#f0fff4', borderColor: '#96e0b3' }
+                                        },
+                                            h('p', { className: "text-sm text-gray-600 mb-1" }, 'Payback Period'),
+                                            h('p', {
+                                                className: "text-2xl font-bold",
+                                                style: { color: '#155263' }
+                                            }, results.paybackYears + ' years')
+                                        )
+                                    ),
 
-                                            <div className="p-4 rounded-lg border mb-6" style={{ backgroundColor: '#fffef0', borderColor: '#ffc93c' }}>
-                                                <p className="text-sm text-gray-600 mb-1">Estimated Solar System Cost</p>
-                                                <p className="text-3xl font-bold" style={{ color: '#155263' }}>${parseFloat(results.solarSystemCost).toLocaleString()}</p>
-                                                <p className="text-xs text-gray-500 mt-1">Sized based on your power usage and 8-year payback</p>
-                                            </div>
+                                    // Solar System Cost
+                                    h('div', {
+                                        className: "p-4 rounded-lg border mb-6",
+                                        style: { backgroundColor: '#fffef0', borderColor: '#ffc93c' }
+                                    },
+                                        h('p', { className: "text-sm text-gray-600 mb-1" },
+                                            'Estimated Solar System Cost'),
+                                        h('p', {
+                                            className: "text-3xl font-bold",
+                                            style: { color: '#155263' }
+                                        }, '$' + parseFloat(results.solarSystemCost).toLocaleString()),
+                                        h('p', { className: "text-xs text-gray-500 mt-1" },
+                                            'Sized based on your power usage and 8-year payback')
+                                    ),
 
-                                            <div className="p-4 rounded-lg mb-6" style={{ background: 'linear-gradient(to right, #f0f9ff, #fffef0)', border: '2px solid #60e1e0' }}>
-                                                <p className="text-sm text-gray-600 mb-1">Total 25-Year Net Savings</p>
-                                                <p className="text-3xl font-bold" style={{ color: '#155263' }}>
-                                                    ${parseFloat(results.total25YearSavings).toLocaleString()}
-                                                </p>
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    Based on 4% annual power price increase projection
-                                                </p>
-                                            </div>
+                                    // Total Savings
+                                    h('div', {
+                                        className: "p-4 rounded-lg mb-6",
+                                        style: {
+                                            background: 'linear-gradient(to right, #f0f9ff, #fffef0)',
+                                            border: '2px solid #60e1e0'
+                                        }
+                                    },
+                                        h('p', { className: "text-sm text-gray-600 mb-1" },
+                                            'Total 25-Year Net Savings'),
+                                        h('p', {
+                                            className: "text-3xl font-bold",
+                                            style: { color: '#155263' }
+                                        }, '$' + parseFloat(results.total25YearSavings).toLocaleString()),
+                                        h('p', { className: "text-xs text-gray-500 mt-1" },
+                                            'Based on 4% annual power price increase projection')
+                                    ),
 
-                                            <ResponsiveContainer width="100%" height={400}>
-                                                <AreaChart data={chartData}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                                    <XAxis 
-                                                        dataKey="year" 
-                                                        label={{ value: 'Years', position: 'insideBottom', offset: -5 }}
-                                                        stroke="#6b7280"
-                                                    />
-                                                    <YAxis 
-                                                        label={{ value: 'Cumulative Cost ($)', angle: -90, position: 'insideLeft' }}
-                                                        stroke="#6b7280"
-                                                    />
-                                                    <Tooltip 
-                                                        formatter={(value) => `$${value.toLocaleString()}`}
-                                                        labelFormatter={(label) => `Year ${label}`}
-                                                    />
-                                                    <Legend />
-                                                    <Area 
-                                                        type="monotone" 
-                                                        dataKey="withoutSolar" 
-                                                        stackId="1"
-                                                        stroke="#60e1e0" 
-                                                        fill="#60e1e0" 
-                                                        fillOpacity={0.6}
-                                                        name="Without Solar"
-                                                    />
-                                                    <Area 
-                                                        type="monotone" 
-                                                        dataKey="withSolar" 
-                                                        stackId="2"
-                                                        stroke="#ffc93c" 
-                                                        fill="#ffc93c" 
-                                                        fillOpacity={0.6}
-                                                        name="With Solar (inc. system cost)"
-                                                    />
-                                                </AreaChart>
-                                            </ResponsiveContainer>
+                                    // Chart
+                                    h(ResponsiveContainer, { width: "100%", height: 400 },
+                                        h(AreaChart, { data: chartData },
+                                            h(CartesianGrid, { strokeDasharray: "3 3", stroke: "#e5e7eb" }),
+                                            h(XAxis, {
+                                                dataKey: "year",
+                                                label: { value: 'Years', position: 'insideBottom', offset: -5 },
+                                                stroke: "#6b7280"
+                                            }),
+                                            h(YAxis, {
+                                                label: { value: 'Cumulative Cost ($)', angle: -90, position: 'insideLeft' },
+                                                stroke: "#6b7280"
+                                            }),
+                                            h(Tooltip, {
+                                                formatter: (value) => '$' + value.toLocaleString(),
+                                                labelFormatter: (label) => 'Year ' + label
+                                            }),
+                                            h(Legend),
+                                            h(Area, {
+                                                type: "monotone",
+                                                dataKey: "withoutSolar",
+                                                stackId: "1",
+                                                stroke: "#60e1e0",
+                                                fill: "#60e1e0",
+                                                fillOpacity: 0.6,
+                                                name: "Without Solar"
+                                            }),
+                                            h(Area, {
+                                                type: "monotone",
+                                                dataKey: "withSolar",
+                                                stackId: "2",
+                                                stroke: "#ffc93c",
+                                                fill: "#ffc93c",
+                                                fillOpacity: 0.6,
+                                                name: "With Solar (inc. system cost)"
+                                            })
+                                        )
+                                    ),
 
-                                            <div className="mt-4 p-4 rounded-lg border" style={{ backgroundColor: '#f9fafb', borderColor: '#d1d5db' }}>
-                                                <p className="text-sm" style={{ color: '#052b2f' }}>
-                                                    <strong>Key Assumptions:</strong> Solar system sized for 8-year payback (9x annual savings) | 
-                                                    Coverage: 80% of power usage | Projected power price increase: 4% annually | 
-                                                    System lifespan: 25 years
-                                                    {results.calculationMethod === 'bills' && ' | Calculation based on your actual power bills'}
-                                                    {results.calculationMethod === 'expenses' && ' | Power costs estimated from household expenses'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                    // Assumptions
+                                    h('div', {
+                                        className: "mt-4 p-4 rounded-lg border",
+                                        style: { backgroundColor: '#f9fafb', borderColor: '#d1d5db' }
+                                    },
+                                        h('p', { className: "text-sm", style: { color: '#052b2f' } },
+                                            h('strong', null, 'Key Assumptions:'),
+                                            ' Solar system sized for 8-year payback (9x annual savings) | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years',
+                                            results.calculationMethod === 'bills' ? ' | Calculation based on your actual power bills' : ' | Power costs estimated from household expenses'
+                                        )
+                                    )
+                                )
+                            ),
 
-                                <div className="border-t-2 pt-8" style={{ borderColor: '#155263' }}>
-                                    {formSubmitted ? (
-                                        <div className="text-center py-12">
-                                            <div className="mb-6">
-                                                <Check className="w-16 h-16 mx-auto" style={{ color: '#96e0b3' }} />
-                                            </div>
-                                            <h2 className="text-3xl font-bold mb-4" style={{ color: '#155263' }}>Thank You!</h2>
-                                            <p className="text-lg text-gray-700 mb-2">Your information has been received.</p>
-                                            <p className="text-gray-600">Someone will be in touch shortly to talk through your solar financing options.</p>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <h2 className="text-2xl font-bold mb-4" style={{ color: '#155263' }}>Speak with a Mortgage Advisor</h2>
-                                            <p className="text-gray-600 mb-6">Enter your details to explore green loan options with an expert</p>
-                                            
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        First Name *
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        name="firstName"
-                                                        value={formData.firstName}
-                                                        onChange={handleChange}
-                                                        className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                            (validationErrors.firstName ? 'border-red-500' : 'border-gray-300')}
-                                                    />
-                                                    {validationErrors.firstName && (
-                                                        <p className="text-red-500 text-xs mt-1">{validationErrors.firstName}</p>
-                                                    )}
-                                                </div>
+                            // Contact Form
+                            h('div', {
+                                className: "border-t-2 pt-8",
+                                style: { borderColor: '#155263' }
+                            },
+                                formSubmitted ? 
+                                    // Thank you message
+                                    h('div', { className: "text-center py-12" },
+                                        h('div', { className: "mb-6" },
+                                            h(Check, {
+                                                className: "w-16 h-16 mx-auto",
+                                                style: { color: '#96e0b3' }
+                                            })
+                                        ),
+                                        h('h2', {
+                                            className: "text-3xl font-bold mb-4",
+                                            style: { color: '#155263' }
+                                        }, 'Thank You!'),
+                                        h('p', { className: "text-lg text-gray-700 mb-2" },
+                                            'Your information has been received.'),
+                                        h('p', { className: "text-gray-600" },
+                                            'Someone will be in touch shortly to talk through your solar financing options.')
+                                    )
+                                :
+                                    // Contact form
+                                    h('div', null,
+                                        h('h2', {
+                                            className: "text-2xl font-bold mb-4",
+                                            style: { color: '#155263' }
+                                        }, 'Speak with a Mortgage Advisor'),
+                                        h('p', { className: "text-gray-600 mb-6" },
+                                            'Enter your details to explore green loan options with an expert'),
+                                        
+                                        h('div', { className: "grid md:grid-cols-2 gap-6" },
+                                            // First Name
+                                            h('div', null,
+                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                                    'First Name *'),
+                                                h('input', {
+                                                    type: "text",
+                                                    name: "firstName",
+                                                    value: formData.firstName,
+                                                    onChange: handleChange,
+                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                                        (validationErrors.firstName ? 'border-red-500' : 'border-gray-300')
+                                                }),
+                                                validationErrors.firstName && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.firstName)
+                                            ),
 
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Last Name *
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        name="lastName"
-                                                        value={formData.lastName}
-                                                        onChange={handleChange}
-                                                        className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                            (validationErrors.lastName ? 'border-red-500' : 'border-gray-300')}
-                                                    />
-                                                    {validationErrors.lastName && (
-                                                        <p className="text-red-500 text-xs mt-1">{validationErrors.lastName}</p>
-                                                    )}
-                                                </div>
+                                            // Last Name
+                                            h('div', null,
+                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                                    'Last Name *'),
+                                                h('input', {
+                                                    type: "text",
+                                                    name: "lastName",
+                                                    value: formData.lastName,
+                                                    onChange: handleChange,
+                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                                        (validationErrors.lastName ? 'border-red-500' : 'border-gray-300')
+                                                }),
+                                                validationErrors.lastName && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.lastName)
+                                            ),
 
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Email Address *
-                                                    </label>
-                                                    <input
-                                                        type="email"
-                                                        name="email"
-                                                        value={formData.email}
-                                                        onChange={handleChange}
-                                                        className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                            (validationErrors.email ? 'border-red-500' : 'border-gray-300')}
-                                                    />
-                                                    {validationErrors.email && (
-                                                        <p className="text-red-500 text-xs mt-1">{validationErrors.email}</p>
-                                                    )}
-                                                </div>
+                                            // Email
+                                            h('div', null,
+                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                                    'Email Address *'),
+                                                h('input', {
+                                                    type: "email",
+                                                    name: "email",
+                                                    value: formData.email,
+                                                    onChange: handleChange,
+                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                                        (validationErrors.email ? 'border-red-500' : 'border-gray-300')
+                                                }),
+                                                validationErrors.email && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.email)
+                                            ),
 
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Phone Number *
-                                                    </label>
-                                                    <input
-                                                        type="tel"
-                                                        name="phone"
-                                                        value={formData.phone}
-                                                        onChange={handleChange}
-                                                        className={'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                            (validationErrors.phone ? 'border-red-500' : 'border-gray-300')}
-                                                        placeholder="021 234 5678"
-                                                    />
-                                                    {validationErrors.phone && (
-                                                        <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
-                                                    )}
-                                                </div>
+                                            // Phone
+                                            h('div', null,
+                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
+                                                    'Phone Number *'),
+                                                h('input', {
+                                                    type: "tel",
+                                                    name: "phone",
+                                                    value: formData.phone,
+                                                    onChange: handleChange,
+                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
+                                                        (validationErrors.phone ? 'border-red-500' : 'border-gray-300'),
+                                                    placeholder: "021 234 5678"
+                                                }),
+                                                validationErrors.phone && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.phone)
+                                            ),
 
-                                                <div className="md:col-span-2">
-                                                    <button
-                                                        onClick={handleSubmit}
-                                                        className="w-full font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl text-white"
-                                                        style={{ backgroundColor: '#155263' }}
-                                                    >
-                                                        Contact a Mortgage Advisor
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
+                                            // Submit Button
+                                            h('div', { className: "md:col-span-2" },
+                                                h('button', {
+                                                    onClick: handleSubmit,
+                                                    className: "w-full font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl text-white",
+                                                    style: { backgroundColor: '#155263' }
+                                                }, 'Contact a Mortgage Advisor')
+                                            )
+                                        )
+                                    )
+                            )
+                        ),
 
-                            <div className="mt-6 text-center text-sm text-gray-600">
-                                <p>* Calculator provides estimates only. Actual lending subject to bank approval.</p>
-                            </div>
-                        </div>
-                    </div>
+                        // Disclaimer
+                        h('div', { className: "mt-6 text-center text-sm text-gray-600" },
+                            h('p', null, '* Calculator provides estimates only. Actual lending subject to bank approval.')
+                        )
+                    )
                 );
             }
 
-            ReactDOM.render(<SolarMortgageCalculator />, document.getElementById('solar-calculator-root'));
+            // Render the app
+            ReactDOM.render(
+                h(SolarMortgageCalculator),
+                document.getElementById('root')
+            );
+            
+            console.log('✓ Calculator rendered successfully!');
         }
     </script>
 </body>
