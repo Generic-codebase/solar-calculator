@@ -3,971 +3,1143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar System Financing Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { margin: 0; padding: 0; }
-        #loading { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh;
-            background: linear-gradient(to bottom right, #f0f9ff, #ffffff);
-        }
-    </style>
+    <title>Solar Calculator Embed</title>
 </head>
 <body>
-    <div id="loading">
-        <div style="text-align: center; padding: 40px;">
-            <h2 style="font-size: 24px; margin-bottom: 10px; color: #155263;">Loading Solar Calculator...</h2>
-            <p style="color: #666;">Please wait...</p>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .solar-calculator {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .calc-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        border-top: 4px solid #155263;
+    }
+
+    .calc-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .calc-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 0.5rem;
+    }
+
+    .calc-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #155263;
+        box-shadow: 0 0 0 3px rgba(21, 82, 99, 0.1);
+    }
+
+    .form-input.error {
+        border-color: #ef4444;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .tip-box {
+        background-color: #f0f9ff;
+        border: 1px solid #60e1e0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .tip-box p {
+        color: #052b2f;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .results-section {
+        display: none;
+        margin-bottom: 2rem;
+    }
+
+    .results-section.show {
+        display: block;
+    }
+
+    .result-card {
+        background: linear-gradient(to right, #f0f9ff, #ffffff);
+        border: 2px solid #60e1e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .result-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 0.5rem;
+    }
+
+    .result-text {
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+    }
+
+    .result-note {
+        color: #6b7280;
+        font-size: 0.875rem;
+        font-style: italic;
+    }
+
+    .status-icon {
+        width: 3rem;
+        height: 3rem;
+        color: #96e0b3;
+        flex-shrink: 0;
+    }
+
+    .power-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .power-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .power-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 2px solid;
+    }
+
+    .power-card.low {
+        background-color: #eff6ff;
+        border-color: #93c5fd;
+    }
+
+    .power-card.medium {
+        background-color: #f0fdf4;
+        border-color: #86efac;
+    }
+
+    .power-card.high {
+        background-color: #fffef0;
+        border-color: #ffc93c;
+    }
+
+    .power-header {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #155263;
+        margin-bottom: 1rem;
+    }
+
+    .power-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .power-text {
+        font-size: 1.875rem;
+        font-weight: bold;
+    }
+
+    .power-text.low {
+        color: #1e40af;
+    }
+
+    .power-text.medium {
+        color: #15803d;
+    }
+
+    .power-text.high {
+        color: #92400e;
+    }
+
+    .power-subtext {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .power-dot {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .power-dot.low {
+        background-color: #60a5fa;
+    }
+
+    .power-dot.medium {
+        background-color: #4ade80;
+    }
+
+    .power-dot.high {
+        background-color: #fbbf24;
+    }
+
+    .lvr-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 2px solid #155263;
+    }
+
+    .serviceability-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 2px solid #155263;
+        margin-bottom: 2rem;
+    }
+
+    .service-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .service-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .service-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+    }
+
+    .service-label {
+        color: #6b7280;
+    }
+
+    .service-value {
+        font-weight: 500;
+    }
+
+    .surplus-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .surplus-amount {
+        font-size: 1.875rem;
+        font-weight: bold;
+    }
+
+    .roi-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 2px solid #155263;
+        margin-bottom: 2rem;
+    }
+
+    .roi-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .roi-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .roi-box {
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid;
+    }
+
+    .roi-box.blue {
+        background-color: #f0f9ff;
+        border-color: #60e1e0;
+    }
+
+    .roi-box.yellow {
+        background-color: #fffef0;
+        border-color: #ffc93c;
+    }
+
+    .roi-box.green {
+        background-color: #f0fff4;
+        border-color: #96e0b3;
+    }
+
+    .roi-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .roi-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #155263;
+    }
+
+    .roi-note {
+        color: #6b7280;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .system-cost-box {
+        background-color: #fffef0;
+        border: 1px solid #ffc93c;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .savings-box {
+        background: linear-gradient(to right, #f0f9ff, #fffef0);
+        border: 2px solid #60e1e0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin-bottom: 1rem;
+    }
+
+    .assumptions-box {
+        background-color: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .assumptions-box p {
+        color: #052b2f;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .contact-section {
+        border-top: 2px solid #155263;
+        padding-top: 2rem;
+    }
+
+    .contact-section.hidden {
+        display: none;
+    }
+
+    .contact-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-subtitle {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background-color: #155263;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .submit-btn:hover {
+        background-color: #0d3a45;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .success-section {
+        border-top: 2px solid #155263;
+        padding-top: 2rem;
+        text-align: center;
+        padding: 3rem 1rem;
+        display: none;
+    }
+
+    .success-section.show {
+        display: block;
+    }
+
+    .success-icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1.5rem;
+        color: #96e0b3;
+    }
+
+    .success-title {
+        font-size: 1.875rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 1rem;
+    }
+
+    .success-text {
+        font-size: 1.125rem;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .success-subtext {
+        color: #6b7280;
+    }
+
+    .disclaimer {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 1.5rem;
+    }
+</style>
+
+<div class="solar-calculator">
+    <div class="calc-card">
+        <div class="calc-header">
+            <h1 class="calc-title">Solar System Financing Calculator</h1>
+            <p class="calc-subtitle">Find out what solar system you can afford through green lending</p>
         </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Annual Household Income ($NZ)</label>
+                <input type="text" id="householdIncome" class="form-input" placeholder="120,000">
+                <span class="error-message" id="error-householdIncome"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Property Value ($NZ)</label>
+                <input type="text" id="propertyValue" class="form-input" placeholder="800,000">
+                <span class="error-message" id="error-propertyValue"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Lending/Mortgage ($NZ)</label>
+                <input type="text" id="currentLending" class="form-input" placeholder="500,000">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Bank</label>
+                <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Household Expenses ($NZ)</label>
+                <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Expense Frequency</label>
+                <select id="expenseFrequency" class="form-input">
+                    <option value="weekly">Weekly</option>
+                    <option value="fortnightly">Fortnightly</option>
+                    <option value="monthly" selected>Monthly</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Typical Summer Power Bill ($NZ/month)</label>
+                <input type="text" id="summerPowerBill" class="form-input" placeholder="300">
+                <span class="error-message" id="error-summerPowerBill"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Typical Winter Power Bill ($NZ/month)</label>
+                <input type="text" id="winterPowerBill" class="form-input" placeholder="400">
+                <span class="error-message" id="error-winterPowerBill"></span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>Tip:</strong> For more accurate solar savings calculations, enter your typical summer and winter power bills. If left blank, we'll estimate based on your household expenses.</p>
+        </div>
+
+        <div id="results" class="results-section"></div>
+
+        <div id="contactForm" class="contact-section">
+            <h2 class="contact-title">Speak with a Mortgage Advisor</h2>
+            <p class="contact-subtitle">Enter your details to explore green loan options with an expert</p>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">First Name *</label>
+                    <input type="text" id="firstName" class="form-input">
+                    <span class="error-message" id="error-firstName"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Last Name *</label>
+                    <input type="text" id="lastName" class="form-input">
+                    <span class="error-message" id="error-lastName"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" id="email" class="form-input">
+                    <span class="error-message" id="error-email"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number *</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="021 234 5678">
+                    <span class="error-message" id="error-phone"></span>
+                </div>
+
+                <!-- Honeypot fields for bot detection -->
+                <div style="position: absolute; left: -5000px; opacity: 0; pointer-events: none;" aria-hidden="true">
+                    <label>
+                        <input type="checkbox" id="agreeToDisagree" name="agreeToDisagree" tabindex="-1" autocomplete="off">
+                        Agree to disagree
+                    </label>
+                    <input type="text" id="city" name="city" tabindex="-1" autocomplete="off" placeholder="City">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <button type="button" id="submitBtn" class="submit-btn">Contact a Mortgage Advisor</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="successMessage" class="success-section">
+            <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <h2 class="success-title">Thank You!</h2>
+            <p class="success-text">Your information has been received.</p>
+            <p class="success-subtext">Someone will be in touch shortly to talk through your solar financing options.</p>
+        </div>
+
+        <p class="disclaimer">* Calculator provides estimates only. Actual lending subject to bank approval.</p>
     </div>
-    <div id="root" style="display: none;"></div>
+</div>
 
-    <!-- Load React and ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    
-    <!-- Load Recharts with all dependencies -->
-    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    'use strict';
 
-    <script>
-        // Wait for all libraries to load with aggressive polling
-        (function() {
-            let checkCount = 0;
-            const maxChecks = 100; // 10 seconds
-            
-            function checkLibraries() {
-                checkCount++;
-                
-                if (window.React && window.ReactDOM && window.Recharts) {
-                    console.log('✓ All libraries loaded successfully');
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('root').style.display = 'block';
-                    initCalculator();
-                } else if (checkCount >= maxChecks) {
-                    console.error('Failed to load:', {
-                        React: !!window.React,
-                        ReactDOM: !!window.ReactDOM,
-                        Recharts: !!window.Recharts
-                    });
-                    document.getElementById('loading').innerHTML = 
-                        '<div style="text-align: center; padding: 40px; color: #dc2626;">' +
-                        '<h2 style="font-size: 24px; margin-bottom: 10px;">Error Loading Calculator</h2>' +
-                        '<p>Unable to load required libraries. Please refresh the page.</p>' +
-                        '<button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #155263; color: white; border: none; border-radius: 8px; cursor: pointer;">Refresh Page</button>' +
-                        '</div>';
-                } else {
-                    setTimeout(checkLibraries, 100);
+    var calculationTimer = null;
+    var validationTimers = {};
+    var resultsData = null;
+    var chartInstance = null;
+
+    var rawValues = {
+        householdIncome: '',
+        propertyValue: '',
+        currentLending: '',
+        expenseAmount: '',
+        summerPowerBill: '',
+        winterPowerBill: ''
+    };
+
+    function formatNumber(num) {
+        if (!num && num !== 0) return '0';
+        return parseFloat(num).toLocaleString('en-NZ');
+    }
+
+    function formatCurrency(value) {
+        if (!value) return '';
+        var digits = value.replace(/\D/g, '');
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function validateField(fieldId, rawValue) {
+        clearTimeout(validationTimers[fieldId]);
+
+        validationTimers[fieldId] = setTimeout(function() {
+            var errorEl = document.getElementById('error-' + fieldId);
+            var inputEl = document.getElementById(fieldId);
+            var numValue = parseFloat(rawValue);
+
+            var error = '';
+
+            switch(fieldId) {
+                case 'householdIncome':
+                    if (numValue > 5000000) {
+                        error = "Whoa there, Scrooge McDuck! Double-check this figure - that's a lot of zeros!";
+                    }
+                    break;
+                case 'summerPowerBill':
+                case 'winterPowerBill':
+                    if (numValue > 0 && numValue < 50) {
+                        error = "Really? Less than $50? Why do you even need solar with that power bill!";
+                    } else if (numValue > 2000) {
+                        error = "That's a serious power bill! Solar will definitely help, but double-check this number.";
+                    }
+                    break;
+                case 'propertyValue':
+                    if (numValue > 0 && numValue < 100000) {
+                        error = "Is this a very cozy studio or a typo? NZ property values are usually a bit higher!";
+                    } else if (numValue > 20000000) {
+                        error = "Mansion alert! That's quite the palace - mind double-checking?";
+                    }
+                    break;
+            }
+
+            if (error) {
+                errorEl.textContent = error;
+                errorEl.classList.add('show');
+                inputEl.classList.add('error');
+            } else {
+                errorEl.classList.remove('show');
+                inputEl.classList.remove('error');
+            }
+        }, 2000);
+    }
+
+    function setupInputs() {
+        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill'];
+
+        currencyFields.forEach(function(id) {
+            var input = document.getElementById(id);
+            if (!input) return;
+
+            input.addEventListener('input', function(e) {
+                var digits = e.target.value.replace(/\D/g, '');
+                rawValues[id] = digits;
+                e.target.value = formatCurrency(digits);
+                validateField(id, digits);
+                scheduleCalculation();
+            });
+        });
+
+        var expenseFreq = document.getElementById('expenseFrequency');
+        if (expenseFreq) {
+            expenseFreq.addEventListener('change', scheduleCalculation);
+        }
+    }
+
+    function scheduleCalculation() {
+        clearTimeout(calculationTimer);
+
+        if (rawValues.householdIncome && rawValues.propertyValue && rawValues.currentLending && rawValues.expenseAmount) {
+            calculationTimer = setTimeout(function() {
+                calculateResults();
+            }, 2000);
+        }
+    }
+
+    function calculateResults() {
+        var income = parseFloat(rawValues.householdIncome) || 0;
+        var propertyValue = parseFloat(rawValues.propertyValue) || 0;
+        var currentLending = parseFloat(rawValues.currentLending) || 0;
+        var expenseAmount = parseFloat(rawValues.expenseAmount) || 0;
+
+        if (!income || !propertyValue || !currentLending || !expenseAmount) {
+            return;
+        }
+
+        var expenseFreq = document.getElementById('expenseFrequency').value;
+        var monthlyExpenses = expenseAmount;
+        if (expenseFreq === 'weekly') {
+            monthlyExpenses = expenseAmount * 52 / 12;
+        } else if (expenseFreq === 'fortnightly') {
+            monthlyExpenses = expenseAmount * 26 / 12;
+        }
+
+        var monthlyIncome = income / 12;
+        var testRate = 0.068;
+        var monthlyRate = testRate / 12;
+        var numPayments = 30 * 12;
+
+        var currentMonthlyPayment = 0;
+        if (currentLending > 0) {
+            currentMonthlyPayment = currentLending * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                                    (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        var monthlySurplus = monthlyIncome - monthlyExpenses - currentMonthlyPayment;
+        var lvr = propertyValue > 0 ? (currentLending / propertyValue) * 100 : 0;
+        var maxLending = propertyValue * 0.80;
+        var availableEquity = maxLending - currentLending;
+        var hasSufficientSurplus = monthlySurplus > 500;
+
+        var solarReady = false;
+        var solarReadyMessage = '';
+
+        if (availableEquity >= 20000 && hasSufficientSurplus) {
+            solarReady = true;
+            solarReadyMessage = 'Great news! You have sufficient equity and monthly surplus to proceed with solar financing.';
+        } else if (availableEquity < 20000) {
+            solarReady = false;
+            solarReadyMessage = 'Additional equity needed to qualify for solar financing. You need at least $20,000 in available equity.';
+        } else if (!hasSufficientSurplus) {
+            solarReady = false;
+            solarReadyMessage = 'Your equity looks good, but your monthly surplus may restrict financing options. A healthy surplus is needed after refinancing to ensure serviceability.';
+        }
+
+        var borrowingPower = 'low';
+        var borrowingPowerText = 'Low';
+        var borrowingPowerDesc = 'Less than $20,000 available';
+
+        if (availableEquity >= 50000) {
+            borrowingPower = 'high';
+            borrowingPowerText = 'High';
+            borrowingPowerDesc = 'Over $50,000 available';
+        } else if (availableEquity >= 20000) {
+            borrowingPower = 'medium';
+            borrowingPowerText = 'Medium';
+            borrowingPowerDesc = '$20,000 - $50,000 available';
+        }
+
+        var summerBill = parseFloat(rawValues.summerPowerBill) || 0;
+        var winterBill = parseFloat(rawValues.winterPowerBill) || 0;
+
+        var annualPowerCost;
+        var calculationMethod = 'expenses';
+
+        if (summerBill > 0 && winterBill > 0) {
+            var avgMonthlyBill = (summerBill + winterBill) / 2;
+            annualPowerCost = avgMonthlyBill * 12;
+            calculationMethod = 'bills';
+        } else {
+            var monthlyPowerCost = monthlyExpenses * 0.05;
+            annualPowerCost = monthlyPowerCost * 12;
+        }
+
+        var solarCoveragePercent = 0.80;
+        var annualSolarSavings = annualPowerCost * solarCoveragePercent;
+        var solarSystemCost = annualSolarSavings * 9;
+        var annualPriceIncrease = 0.04;
+
+        var chartData = [];
+        var cumulativeSolarSavings = 0;
+        var cumulativePowerCostWithoutSolar = annualPowerCost;
+        var cumulativePowerCostWithSolar = annualPowerCost * (1 - solarCoveragePercent);
+
+        for (var year = 0; year <= 25; year++) {
+            var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
+            var yearlySolarSavings = yearlyPowerCost * solarCoveragePercent;
+
+            if (year > 0) {
+                cumulativeSolarSavings += yearlySolarSavings;
+                cumulativePowerCostWithoutSolar += yearlyPowerCost;
+                cumulativePowerCostWithSolar += yearlyPowerCost * (1 - solarCoveragePercent);
+            }
+
+            chartData.push({
+                year: year,
+                withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
+                withSolar: Math.round(cumulativePowerCostWithSolar + solarSystemCost)
+            });
+        }
+
+        resultsData = {
+            lvr: lvr.toFixed(2),
+            solarReady: solarReady,
+            solarReadyMessage: solarReadyMessage,
+            hasSufficientSurplus: hasSufficientSurplus,
+            borrowingPower: borrowingPower,
+            borrowingPowerText: borrowingPowerText,
+            borrowingPowerDesc: borrowingPowerDesc,
+            monthlyIncome: monthlyIncome.toFixed(2),
+            monthlyExpenses: monthlyExpenses.toFixed(2),
+            currentMonthlyPayment: currentMonthlyPayment.toFixed(2),
+            monthlySurplus: monthlySurplus.toFixed(2),
+            estimatedPowerCost: annualPowerCost.toFixed(2),
+            annualSolarSavings: annualSolarSavings.toFixed(2),
+            total25YearSavings: (cumulativeSolarSavings - solarSystemCost).toFixed(2),
+            solarSystemCost: solarSystemCost.toFixed(2),
+            calculationMethod: calculationMethod,
+            chartData: chartData
+        };
+
+        displayResults(resultsData);
+    }
+
+    function displayResults(data) {
+        var resultsDiv = document.getElementById('results');
+        if (!resultsDiv) return;
+
+        resultsDiv.classList.add('show');
+
+        var html = '';
+
+        // Solar Ready Status Card
+        html += '<div class="result-card">';
+        html += '  <div class="result-header">';
+        html += '    <div style="flex: 1;">';
+        html += '      <h2 class="result-title">Solar Ready Status</h2>';
+        html += '      <p class="result-text">' + data.solarReadyMessage + '</p>';
+        if (!data.hasSufficientSurplus) {
+            html += '      <p class="result-note">Note: Low or medium borrowing power may restrict your financing options. Banks require sufficient monthly surplus to remain after any top-up or refinance is completed.</p>';
+        }
+        html += '    </div>';
+        if (data.solarReady) {
+            html += '    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        // Power Grid
+        html += '<div class="power-grid">';
+        html += '  <div class="power-card ' + data.borrowingPower + '">';
+        html += '    <h3 class="power-header">Borrowing Power</h3>';
+        html += '    <div class="power-content">';
+        html += '      <div>';
+        html += '        <p class="power-text ' + data.borrowingPower + '">' + data.borrowingPowerText + '</p>';
+        html += '        <p class="power-subtext">' + data.borrowingPowerDesc + '</p>';
+        html += '      </div>';
+        html += '      <div class="power-dot ' + data.borrowingPower + '"></div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '  <div class="lvr-card">';
+        html += '    <h3 class="power-header">Current LVR</h3>';
+        html += '    <p class="power-text" style="color: #155263;">' + data.lvr + '%</p>';
+        html += '    <p class="power-subtext">Based on 80% lending threshold</p>';
+        html += '  </div>';
+        html += '</div>';
+
+        // Serviceability Card
+        html += '<div class="serviceability-card">';
+        html += '  <h3 class="power-header">Monthly Serviceability (at 6.8% test rate)</h3>';
+        html += '  <div class="service-grid">';
+        html += '    <div>';
+        html += '      <div class="service-row">';
+        html += '        <span class="service-label">Monthly Income:</span>';
+        html += '        <span class="service-value">$' + formatNumber(data.monthlyIncome) + '</span>';
+        html += '      </div>';
+        html += '      <div class="service-row">';
+        html += '        <span class="service-label">Monthly Expenses:</span>';
+        html += '        <span class="service-value">$' + formatNumber(data.monthlyExpenses) + '</span>';
+        html += '      </div>';
+        html += '      <div class="service-row">';
+        html += '        <span class="service-label">Current Mortgage Payment:</span>';
+        html += '        <span class="service-value">$' + formatNumber(data.currentMonthlyPayment) + '</span>';
+        html += '      </div>';
+        html += '    </div>';
+        html += '    <div class="surplus-box">';
+        html += '      <div>';
+        html += '        <p class="power-subtext">Monthly Surplus</p>';
+        var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0';
+        html += '        <p class="surplus-amount" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
+        html += '      </div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // ROI Card
+        html += '<div class="roi-card">';
+        html += '  <h3 class="result-title">Solar Investment Returns (25 Year Projection)</h3>';
+        html += '  <div class="roi-grid">';
+        html += '    <div class="roi-box blue">';
+        html += '      <p class="roi-label">' + (data.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost') + '</p>';
+        html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
+        if (data.calculationMethod === 'expenses') {
+            html += '      <p class="roi-note">Based on household expenses</p>';
+        }
+        html += '    </div>';
+        html += '    <div class="roi-box yellow">';
+        html += '      <p class="roi-label">Annual Solar Savings (80% coverage)</p>';
+        html += '      <p class="roi-value">$' + formatNumber(data.annualSolarSavings) + '</p>';
+        html += '    </div>';
+        html += '    <div class="roi-box green">';
+        html += '      <p class="roi-label">Payback Period</p>';
+        html += '      <p class="roi-value">8 years</p>';
+        html += '    </div>';
+        html += '  </div>';
+
+        html += '  <div class="system-cost-box">';
+        html += '    <p class="roi-label">Estimated Solar System Cost</p>';
+        html += '    <p class="roi-value">$' + formatNumber(data.solarSystemCost) + '</p>';
+        html += '    <p class="roi-note">Sized based on your power usage and 8-year payback</p>';
+        html += '  </div>';
+
+        html += '  <div class="savings-box">';
+        html += '    <p class="roi-label">Total 25-Year Net Savings</p>';
+        html += '    <p class="roi-value">$' + formatNumber(data.total25YearSavings) + '</p>';
+        html += '    <p class="roi-note">Based on 4% annual power price increase projection</p>';
+        html += '  </div>';
+
+        html += '  <div class="chart-container">';
+        html += '    <canvas id="solarChart"></canvas>';
+        html += '  </div>';
+
+        html += '  <div class="assumptions-box">';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for 8-year payback (9x annual savings) | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years';
+        if (data.calculationMethod === 'bills') {
+            html += ' | Calculation based on your actual power bills';
+        } else {
+            html += ' | Power costs estimated from household expenses';
+        }
+        html += '    </p>';
+        html += '  </div>';
+        html += '</div>';
+
+        resultsDiv.innerHTML = html;
+
+        // Destroy existing chart
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        // Create new chart
+        var ctx = document.getElementById('solarChart');
+        if (ctx && typeof Chart !== 'undefined') {
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.chartData.map(function(d) { return d.year; }),
+                    datasets: [
+                        {
+                            label: 'Without Solar',
+                            data: data.chartData.map(function(d) { return d.withoutSolar; }),
+                            borderColor: '#60e1e0',
+                            backgroundColor: 'rgba(96, 225, 224, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'With Solar (inc. system cost)',
+                            data: data.chartData.map(function(d) { return d.withSolar; }),
+                            borderColor: '#ffc93c',
+                            backgroundColor: 'rgba(255, 201, 60, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + formatNumber(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + formatNumber(value);
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Years'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Submit button handler
+    document.getElementById('submitBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Honeypot check - if these fields are filled/checked, it's a bot
+        var agreeToDisagree = document.getElementById('agreeToDisagree').checked;
+        var cityField = document.getElementById('city').value.trim();
+
+        if (agreeToDisagree || cityField) {
+            // Silently fail for bots
+            return;
+        }
+
+        var firstName = document.getElementById('firstName').value.trim();
+        var lastName = document.getElementById('lastName').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+
+        // Clear all errors first
+        document.querySelectorAll('.error-message').forEach(function(el) {
+            el.classList.remove('show');
+            el.textContent = '';
+        });
+        document.querySelectorAll('.form-input').forEach(function(input) {
+            input.classList.remove('error');
+        });
+
+        var errors = {};
+
+        if (!firstName) errors.firstName = "We'd love to know your name!";
+        if (!lastName) errors.lastName = "Last name too, please!";
+
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            errors.email = "We'll need your email to get in touch!";
+        } else if (!emailRegex.test(email)) {
+            errors.email = "Hmm, that email looks a bit odd. Check for typos?";
+        }
+
+        var nzPhoneRegex = /^(\+64|0)[2-9]\d{7,9}$/;
+        var cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+        if (!phone) {
+            errors.phone = "How can we call you?";
+        } else if (!nzPhoneRegex.test(cleanPhone)) {
+            errors.phone = "We need a valid NZ phone number (e.g., 021 234 5678)";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            for (var field in errors) {
+                var errorEl = document.getElementById('error-' + field);
+                var inputEl = document.getElementById(field);
+                if (errorEl) {
+                    errorEl.textContent = errors[field];
+                    errorEl.classList.add('show');
+                }
+                if (inputEl) {
+                    inputEl.classList.add('error');
                 }
             }
-            
-            // Start checking after a brief delay
-            setTimeout(checkLibraries, 200);
-        })();
-
-        function initCalculator() {
-            const { useState, useEffect, createElement: h } = React;
-            const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
-
-            // Check icon component
-            function Check({ className, style }) {
-                return h('svg', {
-                    className: className,
-                    style: style,
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "24",
-                    height: "24",
-                    viewBox: "0 0 24 24",
-                    fill: "none",
-                    stroke: "currentColor",
-                    strokeWidth: "2",
-                    strokeLinecap: "round",
-                    strokeLinejoin: "round"
-                }, h('polyline', { points: "20 6 9 17 4 12" }));
-            }
-
-            function SolarMortgageCalculator() {
-                const [formData, setFormData] = useState({
-                    householdIncome: '',
-                    propertyValue: '',
-                    currentLending: '',
-                    currentBank: '',
-                    expenseAmount: '',
-                    expenseFrequency: 'monthly',
-                    summerPowerBill: '',
-                    winterPowerBill: '',
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    phone: ''
-                });
-
-                const [results, setResults] = useState(null);
-                const [chartData, setChartData] = useState([]);
-                const [validationErrors, setValidationErrors] = useState({});
-                const [validationTimers, setValidationTimers] = useState({});
-                const [formSubmitted, setFormSubmitted] = useState(false);
-                const [calculationTimer, setCalculationTimer] = useState(null);
-
-                const formatCurrency = (value) => {
-                    if (!value) return '';
-                    const number = value.replace(/[^\d]/g, '');
-                    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                };
-
-                const parseCurrency = (value) => {
-                    return value.replace(/,/g, '');
-                };
-
-                const validateField = (name, value) => {
-                    if (validationTimers[name]) {
-                        clearTimeout(validationTimers[name]);
-                    }
-
-                    const timer = setTimeout(() => {
-                        const errors = { ...validationErrors };
-                        const numValue = parseFloat(parseCurrency(value));
-
-                        switch (name) {
-                            case 'householdIncome':
-                                if (numValue > 5000000) {
-                                    errors[name] = "Whoa there, Scrooge McDuck! 💰 Double-check this figure - that's a lot of zeros!";
-                                } else {
-                                    delete errors[name];
-                                }
-                                break;
-                            case 'summerPowerBill':
-                            case 'winterPowerBill':
-                                if (numValue > 0 && numValue < 50) {
-                                    errors[name] = "Really? Less than $50? 🤔 Why do you even need solar with that power bill!";
-                                } else if (numValue > 2000) {
-                                    errors[name] = "That's a serious power bill! 😱 Solar will definitely help, but double-check this number.";
-                                } else {
-                                    delete errors[name];
-                                }
-                                break;
-                            case 'propertyValue':
-                                if (numValue > 0 && numValue < 100000) {
-                                    errors[name] = "Is this a very cozy studio or a typo? 🏠 NZ property values are usually a bit higher!";
-                                } else if (numValue > 20000000) {
-                                    errors[name] = "Mansion alert! 🏰 That's quite the palace - mind double-checking?";
-                                } else {
-                                    delete errors[name];
-                                }
-                                break;
-                            case 'email':
-                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                                if (value && !emailRegex.test(value)) {
-                                    errors[name] = "Hmm, that email looks a bit odd. 📧 Check for typos?";
-                                } else {
-                                    delete errors[name];
-                                }
-                                break;
-                            case 'phone':
-                                const nzPhoneRegex = /^(\+64|0)[2-9]\d{7,9}$/;
-                                const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
-                                if (value && !nzPhoneRegex.test(cleanPhone)) {
-                                    errors[name] = "We need a valid NZ phone number 📱 (e.g., 021 234 5678 or +64 21 234 5678)";
-                                } else {
-                                    delete errors[name];
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-
-                        setValidationErrors(errors);
-                    }, 2000);
-
-                    setValidationTimers(prev => ({
-                        ...prev,
-                        [name]: timer
-                    }));
-                };
-
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    
-                    let formattedValue = value;
-                    if (['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill'].includes(name)) {
-                        formattedValue = formatCurrency(value);
-                    }
-                    
-                    setFormData(prev => ({
-                        ...prev,
-                        [name]: formattedValue
-                    }));
-
-                    validateField(name, formattedValue);
-                };
-
-                const calculateResults = () => {
-                    const income = parseFloat(parseCurrency(formData.householdIncome)) || 0;
-                    const propertyValue = parseFloat(parseCurrency(formData.propertyValue)) || 0;
-                    const currentLending = parseFloat(parseCurrency(formData.currentLending)) || 0;
-                    const expenseAmount = parseFloat(parseCurrency(formData.expenseAmount)) || 0;
-
-                    if (!income || !propertyValue || !currentLending || !expenseAmount) {
-                        return;
-                    }
-
-                    let monthlyExpenses = expenseAmount;
-                    if (formData.expenseFrequency === 'weekly') {
-                        monthlyExpenses = expenseAmount * 52 / 12;
-                    } else if (formData.expenseFrequency === 'fortnightly') {
-                        monthlyExpenses = expenseAmount * 26 / 12;
-                    }
-
-                    const monthlyIncome = income / 12;
-                    const testRate = 0.068;
-                    const monthlyRate = testRate / 12;
-                    const numPayments = 30 * 12;
-                    
-                    let currentMonthlyPayment = 0;
-                    if (currentLending > 0) {
-                        currentMonthlyPayment = currentLending * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                                                (Math.pow(1 + monthlyRate, numPayments) - 1);
-                    }
-
-                    const monthlySurplus = monthlyIncome - monthlyExpenses - currentMonthlyPayment;
-
-                    const lvr = propertyValue > 0 ? (currentLending / propertyValue) * 100 : 0;
-                    const maxLending = propertyValue * 0.80;
-                    const availableEquity = maxLending - currentLending;
-
-                    const hasSufficientSurplus = monthlySurplus > 500;
-
-                    let solarReady = false;
-                    let solarReadyMessage = '';
-                    
-                    if (availableEquity >= 20000 && hasSufficientSurplus) {
-                        solarReady = true;
-                        solarReadyMessage = 'Great news! You have sufficient equity and monthly surplus to proceed with solar financing.';
-                    } else if (availableEquity < 20000) {
-                        solarReady = false;
-                        solarReadyMessage = 'Additional equity needed to qualify for solar financing. You need at least $20,000 in available equity.';
-                    } else if (!hasSufficientSurplus) {
-                        solarReady = false;
-                        solarReadyMessage = 'Your equity looks good, but your monthly surplus may restrict financing options. A healthy surplus is needed after refinancing to ensure serviceability.';
-                    }
-
-                    let borrowingPower = 'low';
-                    let borrowingPowerText = 'Low';
-                    let borrowingPowerColor = 'bg-blue-50 border-blue-300';
-                    let borrowingPowerTextColor = 'text-blue-800';
-                    let borrowingPowerDotColor = 'bg-blue-400';
-                    
-                    if (availableEquity >= 50000) {
-                        borrowingPower = 'high';
-                        borrowingPowerText = 'High';
-                        borrowingPowerColor = 'bg-yellow-50 border-yellow-300';
-                        borrowingPowerTextColor = 'text-yellow-900';
-                        borrowingPowerDotColor = 'bg-yellow-400';
-                    } else if (availableEquity >= 20000) {
-                        borrowingPower = 'medium';
-                        borrowingPowerText = 'Medium';
-                        borrowingPowerColor = 'bg-green-50 border-green-300';
-                        borrowingPowerTextColor = 'text-green-800';
-                        borrowingPowerDotColor = 'bg-green-400';
-                    }
-
-                    const maxDebtService = monthlyIncome * 0.35;
-                    const availableForNewLending = maxDebtService - currentMonthlyPayment - monthlyExpenses;
-                    
-                    let potentialAdditionalBorrowing = 0;
-                    if (availableForNewLending > 0) {
-                        potentialAdditionalBorrowing = availableForNewLending * 
-                                                       (Math.pow(1 + monthlyRate, numPayments) - 1) / 
-                                                       (monthlyRate * Math.pow(1 + monthlyRate, numPayments));
-                    }
-
-                    const actualBorrowingCapacity = Math.min(availableEquity, potentialAdditionalBorrowing);
-
-                    let annualPowerCost;
-                    let calculationMethod = 'expenses';
-                    
-                    const summerBill = parseFloat(parseCurrency(formData.summerPowerBill)) || 0;
-                    const winterBill = parseFloat(parseCurrency(formData.winterPowerBill)) || 0;
-                    
-                    if (summerBill > 0 && winterBill > 0) {
-                        const avgMonthlyBill = (summerBill + winterBill) / 2;
-                        annualPowerCost = avgMonthlyBill * 12;
-                        calculationMethod = 'bills';
-                    } else {
-                        const monthlyPowerCost = monthlyExpenses * 0.05;
-                        annualPowerCost = monthlyPowerCost * 12;
-                    }
-
-                    const solarCoveragePercent = 0.80;
-                    const annualSolarSavings = annualPowerCost * solarCoveragePercent;
-                    const solarSystemCost = annualSolarSavings * 9;
-                    const paybackYears = 8;
-                    const annualPriceIncrease = 0.04;
-
-                    const chartProjection = [];
-                    let cumulativeSolarSavings = 0;
-                    let cumulativePowerCostWithoutSolar = annualPowerCost;
-                    let cumulativePowerCostWithSolar = annualPowerCost * (1 - solarCoveragePercent);
-
-                    for (let year = 0; year <= 25; year++) {
-                        const yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
-                        const yearlySolarSavings = yearlyPowerCost * solarCoveragePercent;
-                        
-                        if (year > 0) {
-                            cumulativeSolarSavings += yearlySolarSavings;
-                            cumulativePowerCostWithoutSolar += yearlyPowerCost;
-                            cumulativePowerCostWithSolar += yearlyPowerCost * (1 - solarCoveragePercent);
-                        }
-
-                        chartProjection.push({
-                            year: year,
-                            withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
-                            withSolar: Math.round(cumulativePowerCostWithSolar + solarSystemCost),
-                            savings: Math.round(cumulativeSolarSavings - solarSystemCost),
-                            cumulativeSavings: Math.round(cumulativeSolarSavings)
-                        });
-                    }
-
-                    setChartData(chartProjection);
-
-                    setResults({
-                        lvr: lvr.toFixed(2),
-                        availableEquity: availableEquity.toFixed(2),
-                        solarReady,
-                        solarReadyMessage,
-                        hasSufficientSurplus,
-                        borrowingPower,
-                        borrowingPowerText,
-                        borrowingPowerColor,
-                        borrowingPowerTextColor,
-                        borrowingPowerDotColor,
-                        monthlyIncome: monthlyIncome.toFixed(2),
-                        monthlyExpenses: monthlyExpenses.toFixed(2),
-                        currentMonthlyPayment: currentMonthlyPayment.toFixed(2),
-                        monthlySurplus: monthlySurplus.toFixed(2),
-                        maxDebtService: maxDebtService.toFixed(2),
-                        potentialAdditionalBorrowing: potentialAdditionalBorrowing.toFixed(2),
-                        actualBorrowingCapacity: actualBorrowingCapacity.toFixed(2),
-                        estimatedPowerCost: annualPowerCost.toFixed(2),
-                        annualSolarSavings: annualSolarSavings.toFixed(2),
-                        total25YearSavings: (chartProjection[25].cumulativeSavings - solarSystemCost).toFixed(2),
-                        solarSystemCost: solarSystemCost.toFixed(2),
-                        calculationMethod,
-                        paybackYears
-                    });
-                };
-
-                useEffect(() => {
-                    if (calculationTimer) {
-                        clearTimeout(calculationTimer);
-                    }
-
-                    if (formData.householdIncome && formData.propertyValue && formData.currentLending && formData.expenseAmount) {
-                        const timer = setTimeout(() => {
-                            calculateResults();
-                        }, 2000);
-                        
-                        setCalculationTimer(timer);
-                    }
-                }, [formData.householdIncome, formData.propertyValue, formData.currentLending, formData.expenseAmount, formData.expenseFrequency, formData.summerPowerBill, formData.winterPowerBill]);
-
-                const getSolarReadyIcon = () => {
-                    if (!results) return null;
-                    
-                    if (results.solarReady) {
-                        return h(Check, { className: "w-12 h-12", style: { color: '#96e0b3' } });
-                    }
-                    return null;
-                };
-
-                const handleSubmit = async () => {
-                    const errors = {};
-                    
-                    if (!formData.firstName) errors.firstName = "We'd love to know your name! 😊";
-                    if (!formData.lastName) errors.lastName = "Last name too, please!";
-                    
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!formData.email) {
-                        errors.email = "We'll need your email to get in touch! 📧";
-                    } else if (!emailRegex.test(formData.email)) {
-                        errors.email = "Hmm, that email looks a bit odd. 📧 Check for typos?";
-                    }
-                    
-                    const nzPhoneRegex = /^(\+64|0)[2-9]\d{7,9}$/;
-                    const cleanPhone = formData.phone.replace(/[\s\-\(\)]/g, '');
-                    if (!formData.phone) {
-                        errors.phone = "How can we call you? 📱";
-                    } else if (!nzPhoneRegex.test(cleanPhone)) {
-                        errors.phone = "We need a valid NZ phone number 📱 (e.g., 021 234 5678)";
-                    }
-                    
-                    setValidationErrors(errors);
-                    
-                    if (Object.keys(errors).length === 0) {
-                        try {
-                            const webhookData = {
-                                firstName: formData.firstName,
-                                lastName: formData.lastName,
-                                email: formData.email,
-                                phone: formData.phone,
-                                householdIncome: parseCurrency(formData.householdIncome),
-                                propertyValue: parseCurrency(formData.propertyValue),
-                                currentLending: parseCurrency(formData.currentLending),
-                                currentBank: formData.currentBank,
-                                expenseAmount: parseCurrency(formData.expenseAmount),
-                                expenseFrequency: formData.expenseFrequency,
-                                summerPowerBill: parseCurrency(formData.summerPowerBill),
-                                winterPowerBill: parseCurrency(formData.winterPowerBill),
-                                ...(results && {
-                                    lvr: results.lvr,
-                                    borrowingPower: results.borrowingPowerText,
-                                    solarReady: results.solarReady,
-                                    estimatedSolarSystemCost: results.solarSystemCost,
-                                    annualSolarSavings: results.annualSolarSavings,
-                                    total25YearSavings: results.total25YearSavings,
-                                    monthlySurplus: results.monthlySurplus
-                                }),
-                                submittedAt: new Date().toISOString()
-                            };
-
-                            console.log('Sending data to Zapier:', webhookData);
-
-                            const response = await fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(webhookData)
-                            });
-
-                            console.log('Zapier response status:', response.status);
-                            const responseText = await response.text();
-                            console.log('Zapier response:', responseText);
-
-                            setFormSubmitted(true);
-                            setValidationErrors({});
-                        } catch (error) {
-                            console.error('Error submitting to webhook:', error);
-                            setFormSubmitted(true);
-                        }
-                    }
-                };
-
-                // Build the component using createElement to avoid JSX/Babel
-                return h('div', {
-                    className: "min-h-screen p-6",
-                    style: { background: 'linear-gradient(to bottom right, #f0f9ff, #ffffff)' }
-                },
-                    h('div', { className: "max-w-6xl mx-auto" },
-                        h('div', {
-                            className: "bg-white rounded-lg shadow-xl p-8",
-                            style: { borderTop: '4px solid #155263' }
-                        },
-                            // Header
-                            h('div', { className: "text-center mb-8" },
-                                h('h1', {
-                                    className: "text-3xl font-bold mb-2",
-                                    style: { color: '#155263' }
-                                }, 'Solar System Financing Calculator'),
-                                h('p', { className: "text-gray-600" }, 
-                                    'Find out what solar system you can afford through green lending')
-                            ),
-
-                            // Input Fields Grid
-                            h('div', { className: "grid md:grid-cols-2 gap-6 mb-8" },
-                                // Household Income
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Annual Household Income ($NZ)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "householdIncome",
-                                        value: formData.householdIncome,
-                                        onChange: handleChange,
-                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' + 
-                                            (validationErrors.householdIncome ? 'border-red-500' : 'border-gray-300'),
-                                        placeholder: "120,000"
-                                    }),
-                                    validationErrors.householdIncome && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.householdIncome)
-                                ),
-
-                                // Property Value
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Current Property Value ($NZ)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "propertyValue",
-                                        value: formData.propertyValue,
-                                        onChange: handleChange,
-                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                            (validationErrors.propertyValue ? 'border-red-500' : 'border-gray-300'),
-                                        placeholder: "800,000"
-                                    }),
-                                    validationErrors.propertyValue && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.propertyValue)
-                                ),
-
-                                // Current Lending
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Current Lending/Mortgage ($NZ)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "currentLending",
-                                        value: formData.currentLending,
-                                        onChange: handleChange,
-                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
-                                        placeholder: "500,000"
-                                    })
-                                ),
-
-                                // Current Bank
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Current Bank'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "currentBank",
-                                        value: formData.currentBank,
-                                        onChange: handleChange,
-                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
-                                        placeholder: "ANZ, ASB, Westpac, etc."
-                                    })
-                                ),
-
-                                // Household Expenses
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Household Expenses ($NZ)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "expenseAmount",
-                                        value: formData.expenseAmount,
-                                        onChange: handleChange,
-                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent",
-                                        placeholder: "3,000"
-                                    })
-                                ),
-
-                                // Expense Frequency
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Expense Frequency'),
-                                    h('select', {
-                                        name: "expenseFrequency",
-                                        value: formData.expenseFrequency,
-                                        onChange: handleChange,
-                                        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                    },
-                                        h('option', { value: "weekly" }, 'Weekly'),
-                                        h('option', { value: "fortnightly" }, 'Fortnightly'),
-                                        h('option', { value: "monthly" }, 'Monthly')
-                                    )
-                                ),
-
-                                // Summer Power Bill
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Typical Summer Power Bill ($NZ/month)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "summerPowerBill",
-                                        value: formData.summerPowerBill,
-                                        onChange: handleChange,
-                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                            (validationErrors.summerPowerBill ? 'border-red-500' : 'border-gray-300'),
-                                        placeholder: "300"
-                                    }),
-                                    validationErrors.summerPowerBill && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.summerPowerBill)
-                                ),
-
-                                // Winter Power Bill
-                                h('div', null,
-                                    h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                        'Typical Winter Power Bill ($NZ/month)'),
-                                    h('input', {
-                                        type: "text",
-                                        name: "winterPowerBill",
-                                        value: formData.winterPowerBill,
-                                        onChange: handleChange,
-                                        className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                            (validationErrors.winterPowerBill ? 'border-red-500' : 'border-gray-300'),
-                                        placeholder: "400"
-                                    }),
-                                    validationErrors.winterPowerBill && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.winterPowerBill)
-                                )
-                            ),
-
-                            // Tip Box
-                            h('div', {
-                                className: "mb-8 p-4 rounded-lg border",
-                                style: { backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }
-                            },
-                                h('p', { className: "text-sm", style: { color: '#052b2f' } },
-                                    h('strong', null, 'Tip:'),
-                                    ' For more accurate solar savings calculations, enter your typical summer and winter power bills. If left blank, we\'ll estimate based on your household expenses.'
-                                )
-                            ),
-
-                            // Results Section (only show if results exist)
-                            results && h('div', { className: "space-y-8 mb-8" },
-                                // Solar Ready Status
-                                h('div', {
-                                    className: "p-6 rounded-lg border-2",
-                                    style: { background: 'linear-gradient(to right, #f0f9ff, #ffffff)', borderColor: '#60e1e0' }
-                                },
-                                    h('div', { className: "flex items-center justify-between" },
-                                        h('div', null,
-                                            h('h2', {
-                                                className: "text-2xl font-bold mb-2",
-                                                style: { color: '#155263' }
-                                            }, 'Solar Ready Status'),
-                                            h('p', { className: "text-gray-600 mb-3" }, results.solarReadyMessage),
-                                            !results.hasSufficientSurplus && h('p', { className: "text-sm text-gray-600 italic" },
-                                                'Note: Low or medium borrowing power may restrict your financing options. Banks require sufficient monthly surplus to remain after any top-up or refinance is completed.'
-                                            )
-                                        ),
-                                        getSolarReadyIcon()
-                                    )
-                                ),
-
-                                // Borrowing Power & LVR Grid
-                                h('div', { className: "grid md:grid-cols-2 gap-6" },
-                                    // Borrowing Power
-                                    h('div', { className: 'p-6 rounded-lg border-2 ' + results.borrowingPowerColor },
-                                        h('h3', {
-                                            className: "text-lg font-semibold mb-3",
-                                            style: { color: '#155263' }
-                                        }, 'Borrowing Power'),
-                                        h('div', { className: "flex items-center justify-between" },
-                                            h('div', null,
-                                                h('p', { className: 'text-3xl font-bold ' + results.borrowingPowerTextColor },
-                                                    results.borrowingPowerText),
-                                                h('p', { className: "text-sm text-gray-600 mt-2" },
-                                                    results.borrowingPower === 'low' ? 'Less than $20,000 available' :
-                                                    results.borrowingPower === 'medium' ? '$20,000 - $50,000 available' :
-                                                    'Over $50,000 available'
-                                                )
-                                            ),
-                                            h('div', { className: 'w-16 h-16 rounded-full ' + results.borrowingPowerDotColor })
-                                        )
-                                    ),
-
-                                    // Current LVR
-                                    h('div', {
-                                        className: "bg-white p-6 rounded-lg shadow border-2",
-                                        style: { borderColor: '#155263' }
-                                    },
-                                        h('h3', {
-                                            className: "text-lg font-semibold mb-3",
-                                            style: { color: '#155263' }
-                                        }, 'Current LVR'),
-                                        h('p', {
-                                            className: "text-3xl font-bold",
-                                            style: { color: '#155263' }
-                                        }, results.lvr + '%'),
-                                        h('p', { className: "text-sm text-gray-600 mt-2" },
-                                            'Based on 80% lending threshold')
-                                    )
-                                ),
-
-                                // Monthly Serviceability
-                                h('div', {
-                                    className: "bg-white p-6 rounded-lg shadow border-2",
-                                    style: { borderColor: '#155263' }
-                                },
-                                    h('h3', {
-                                        className: "font-semibold mb-4 text-lg",
-                                        style: { color: '#155263' }
-                                    }, 'Monthly Serviceability (at 6.8% test rate)'),
-                                    h('div', { className: "grid md:grid-cols-2 gap-4" },
-                                        h('div', { className: "space-y-2 text-sm" },
-                                            h('div', { className: "flex justify-between" },
-                                                h('span', { className: "text-gray-600" }, 'Monthly Income:'),
-                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.monthlyIncome).toLocaleString())
-                                            ),
-                                            h('div', { className: "flex justify-between" },
-                                                h('span', { className: "text-gray-600" }, 'Monthly Expenses:'),
-                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.monthlyExpenses).toLocaleString())
-                                            ),
-                                            h('div', { className: "flex justify-between" },
-                                                h('span', { className: "text-gray-600" }, 'Current Mortgage Payment:'),
-                                                h('span', { className: "font-medium" }, '$' + parseFloat(results.currentMonthlyPayment).toLocaleString())
-                                            )
-                                        ),
-                                        h('div', { className: "flex items-center justify-center" },
-                                            h('div', { className: "text-center" },
-                                                h('p', { className: "text-sm text-gray-600 mb-2" }, 'Monthly Surplus'),
-                                                h('p', {
-                                                    className: "text-3xl font-bold",
-                                                    style: { color: parseFloat(results.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0' }
-                                                }, '$' + parseFloat(results.monthlySurplus).toLocaleString())
-                                            )
-                                        )
-                                    )
-                                ),
-
-                                // Solar Investment Returns with Chart
-                                h('div', {
-                                    className: "bg-white p-6 rounded-lg shadow border-2",
-                                    style: { borderColor: '#155263' }
-                                },
-                                    h('h3', {
-                                        className: "font-semibold mb-4 text-xl",
-                                        style: { color: '#155263' }
-                                    }, 'Solar Investment Returns (25 Year Projection)'),
-                                    
-                                    // Three info boxes
-                                    h('div', { className: "grid md:grid-cols-3 gap-4 mb-6" },
-                                        h('div', {
-                                            className: "p-4 rounded-lg border",
-                                            style: { backgroundColor: '#f0f9ff', borderColor: '#60e1e0' }
-                                        },
-                                            h('p', { className: "text-sm text-gray-600 mb-1" },
-                                                results.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost'),
-                                            h('p', {
-                                                className: "text-2xl font-bold",
-                                                style: { color: '#155263' }
-                                            }, '$' + parseFloat(results.estimatedPowerCost).toLocaleString()),
-                                            results.calculationMethod === 'expenses' && h('p', { className: "text-xs text-gray-500 mt-1" },
-                                                'Based on household expenses')
-                                        ),
-                                        h('div', {
-                                            className: "p-4 rounded-lg border",
-                                            style: { backgroundColor: '#fffef0', borderColor: '#ffc93c' }
-                                        },
-                                            h('p', { className: "text-sm text-gray-600 mb-1" },
-                                                'Annual Solar Savings (80% coverage)'),
-                                            h('p', {
-                                                className: "text-2xl font-bold",
-                                                style: { color: '#155263' }
-                                            }, '$' + parseFloat(results.annualSolarSavings).toLocaleString())
-                                        ),
-                                        h('div', {
-                                            className: "p-4 rounded-lg border",
-                                            style: { backgroundColor: '#f0fff4', borderColor: '#96e0b3' }
-                                        },
-                                            h('p', { className: "text-sm text-gray-600 mb-1" }, 'Payback Period'),
-                                            h('p', {
-                                                className: "text-2xl font-bold",
-                                                style: { color: '#155263' }
-                                            }, results.paybackYears + ' years')
-                                        )
-                                    ),
-
-                                    // Solar System Cost
-                                    h('div', {
-                                        className: "p-4 rounded-lg border mb-6",
-                                        style: { backgroundColor: '#fffef0', borderColor: '#ffc93c' }
-                                    },
-                                        h('p', { className: "text-sm text-gray-600 mb-1" },
-                                            'Estimated Solar System Cost'),
-                                        h('p', {
-                                            className: "text-3xl font-bold",
-                                            style: { color: '#155263' }
-                                        }, '$' + parseFloat(results.solarSystemCost).toLocaleString()),
-                                        h('p', { className: "text-xs text-gray-500 mt-1" },
-                                            'Sized based on your power usage and 8-year payback')
-                                    ),
-
-                                    // Total Savings
-                                    h('div', {
-                                        className: "p-4 rounded-lg mb-6",
-                                        style: {
-                                            background: 'linear-gradient(to right, #f0f9ff, #fffef0)',
-                                            border: '2px solid #60e1e0'
-                                        }
-                                    },
-                                        h('p', { className: "text-sm text-gray-600 mb-1" },
-                                            'Total 25-Year Net Savings'),
-                                        h('p', {
-                                            className: "text-3xl font-bold",
-                                            style: { color: '#155263' }
-                                        }, '$' + parseFloat(results.total25YearSavings).toLocaleString()),
-                                        h('p', { className: "text-xs text-gray-500 mt-1" },
-                                            'Based on 4% annual power price increase projection')
-                                    ),
-
-                                    // Chart
-                                    h(ResponsiveContainer, { width: "100%", height: 400 },
-                                        h(AreaChart, { data: chartData },
-                                            h(CartesianGrid, { strokeDasharray: "3 3", stroke: "#e5e7eb" }),
-                                            h(XAxis, {
-                                                dataKey: "year",
-                                                label: { value: 'Years', position: 'insideBottom', offset: -5 },
-                                                stroke: "#6b7280"
-                                            }),
-                                            h(YAxis, {
-                                                label: { value: 'Cumulative Cost ($)', angle: -90, position: 'insideLeft' },
-                                                stroke: "#6b7280"
-                                            }),
-                                            h(Tooltip, {
-                                                formatter: (value) => '$' + value.toLocaleString(),
-                                                labelFormatter: (label) => 'Year ' + label
-                                            }),
-                                            h(Legend),
-                                            h(Area, {
-                                                type: "monotone",
-                                                dataKey: "withoutSolar",
-                                                stackId: "1",
-                                                stroke: "#60e1e0",
-                                                fill: "#60e1e0",
-                                                fillOpacity: 0.6,
-                                                name: "Without Solar"
-                                            }),
-                                            h(Area, {
-                                                type: "monotone",
-                                                dataKey: "withSolar",
-                                                stackId: "2",
-                                                stroke: "#ffc93c",
-                                                fill: "#ffc93c",
-                                                fillOpacity: 0.6,
-                                                name: "With Solar (inc. system cost)"
-                                            })
-                                        )
-                                    ),
-
-                                    // Assumptions
-                                    h('div', {
-                                        className: "mt-4 p-4 rounded-lg border",
-                                        style: { backgroundColor: '#f9fafb', borderColor: '#d1d5db' }
-                                    },
-                                        h('p', { className: "text-sm", style: { color: '#052b2f' } },
-                                            h('strong', null, 'Key Assumptions:'),
-                                            ' Solar system sized for 8-year payback (9x annual savings) | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years',
-                                            results.calculationMethod === 'bills' ? ' | Calculation based on your actual power bills' : ' | Power costs estimated from household expenses'
-                                        )
-                                    )
-                                )
-                            ),
-
-                            // Contact Form
-                            h('div', {
-                                className: "border-t-2 pt-8",
-                                style: { borderColor: '#155263' }
-                            },
-                                formSubmitted ? 
-                                    // Thank you message
-                                    h('div', { className: "text-center py-12" },
-                                        h('div', { className: "mb-6" },
-                                            h(Check, {
-                                                className: "w-16 h-16 mx-auto",
-                                                style: { color: '#96e0b3' }
-                                            })
-                                        ),
-                                        h('h2', {
-                                            className: "text-3xl font-bold mb-4",
-                                            style: { color: '#155263' }
-                                        }, 'Thank You!'),
-                                        h('p', { className: "text-lg text-gray-700 mb-2" },
-                                            'Your information has been received.'),
-                                        h('p', { className: "text-gray-600" },
-                                            'Someone will be in touch shortly to talk through your solar financing options.')
-                                    )
-                                :
-                                    // Contact form
-                                    h('div', null,
-                                        h('h2', {
-                                            className: "text-2xl font-bold mb-4",
-                                            style: { color: '#155263' }
-                                        }, 'Speak with a Mortgage Advisor'),
-                                        h('p', { className: "text-gray-600 mb-6" },
-                                            'Enter your details to explore green loan options with an expert'),
-                                        
-                                        h('div', { className: "grid md:grid-cols-2 gap-6" },
-                                            // First Name
-                                            h('div', null,
-                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                                    'First Name *'),
-                                                h('input', {
-                                                    type: "text",
-                                                    name: "firstName",
-                                                    value: formData.firstName,
-                                                    onChange: handleChange,
-                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                        (validationErrors.firstName ? 'border-red-500' : 'border-gray-300')
-                                                }),
-                                                validationErrors.firstName && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.firstName)
-                                            ),
-
-                                            // Last Name
-                                            h('div', null,
-                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                                    'Last Name *'),
-                                                h('input', {
-                                                    type: "text",
-                                                    name: "lastName",
-                                                    value: formData.lastName,
-                                                    onChange: handleChange,
-                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                        (validationErrors.lastName ? 'border-red-500' : 'border-gray-300')
-                                                }),
-                                                validationErrors.lastName && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.lastName)
-                                            ),
-
-                                            // Email
-                                            h('div', null,
-                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                                    'Email Address *'),
-                                                h('input', {
-                                                    type: "email",
-                                                    name: "email",
-                                                    value: formData.email,
-                                                    onChange: handleChange,
-                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                        (validationErrors.email ? 'border-red-500' : 'border-gray-300')
-                                                }),
-                                                validationErrors.email && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.email)
-                                            ),
-
-                                            // Phone
-                                            h('div', null,
-                                                h('label', { className: "block text-sm font-medium text-gray-700 mb-2" },
-                                                    'Phone Number *'),
-                                                h('input', {
-                                                    type: "tel",
-                                                    name: "phone",
-                                                    value: formData.phone,
-                                                    onChange: handleChange,
-                                                    className: 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ' +
-                                                        (validationErrors.phone ? 'border-red-500' : 'border-gray-300'),
-                                                    placeholder: "021 234 5678"
-                                                }),
-                                                validationErrors.phone && h('p', { className: "text-red-500 text-xs mt-1" }, validationErrors.phone)
-                                            ),
-
-                                            // Submit Button
-                                            h('div', { className: "md:col-span-2" },
-                                                h('button', {
-                                                    onClick: handleSubmit,
-                                                    className: "w-full font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl text-white",
-                                                    style: { backgroundColor: '#155263' }
-                                                }, 'Contact a Mortgage Advisor')
-                                            )
-                                        )
-                                    )
-                            )
-                        ),
-
-                        // Disclaimer
-                        h('div', { className: "mt-6 text-center text-sm text-gray-600" },
-                            h('p', null, '* Calculator provides estimates only. Actual lending subject to bank approval.')
-                        )
-                    )
-                );
-            }
-
-            // Render the app
-            ReactDOM.render(
-                h(SolarMortgageCalculator),
-                document.getElementById('root')
-            );
-            
-            console.log('✓ Calculator rendered successfully!');
+            var firstErrorField = Object.keys(errors)[0];
+            document.getElementById(firstErrorField).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
         }
-    </script>
+
+        var webhookData = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            householdIncome: rawValues.householdIncome,
+            propertyValue: rawValues.propertyValue,
+            currentLending: rawValues.currentLending,
+            currentBank: document.getElementById('currentBank').value,
+            expenseAmount: rawValues.expenseAmount,
+            expenseFrequency: document.getElementById('expenseFrequency').value,
+            summerPowerBill: rawValues.summerPowerBill,
+            winterPowerBill: rawValues.winterPowerBill,
+            submittedAt: new Date().toISOString()
+        };
+
+        if (resultsData) {
+            webhookData.lvr = resultsData.lvr;
+            webhookData.borrowingPower = resultsData.borrowingPowerText;
+            webhookData.solarReady = resultsData.solarReady;
+            webhookData.estimatedSolarSystemCost = resultsData.solarSystemCost;
+            webhookData.annualSolarSavings = resultsData.annualSolarSavings;
+            webhookData.total25YearSavings = resultsData.total25YearSavings;
+            webhookData.monthlySurplus = resultsData.monthlySurplus;
+        }
+
+        fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData)
+        }).then(function() {
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+        }).catch(function(error) {
+            console.error('Error:', error);
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+        });
+    });
+
+    // Initialize
+    setupInputs();
+})();
+</script>
+
 </body>
 </html>
