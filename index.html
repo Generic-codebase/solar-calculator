@@ -1120,12 +1120,17 @@
             webhookData.monthlySurplus = resultsData.monthlySurplus;
         }
 
+        // Convert to form data to avoid CORS preflight issues
+        var formData = new FormData();
+        for (var key in webhookData) {
+            if (webhookData.hasOwnProperty(key)) {
+                formData.append(key, webhookData[key]);
+            }
+        }
+
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(webhookData)
+            body: formData
         }).then(function() {
             document.getElementById('contactForm').classList.add('hidden');
             document.getElementById('successMessage').classList.add('show');
