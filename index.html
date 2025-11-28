@@ -623,16 +623,16 @@
 
         <div class="financing-section">
             <h3 class="financing-title">Loan Financing Options</h3>
-            <p class="financing-subtitle">Leave blank if you plan to pay cash. Otherwise, specify your loan terms below.</p>
+            <p class="financing-subtitle">Set loan term to 0 (Cash) if you plan to pay in full. Otherwise, specify your loan terms below.</p>
 
             <div class="form-grid">
                 <div class="form-group">
                     <div class="slider-container">
                         <div class="slider-header">
                             <label class="form-label">Loan Term</label>
-                            <span class="slider-value" id="loanTermValue">5 years</span>
+                            <span class="slider-value" id="loanTermValue">Cash</span>
                         </div>
-                        <input type="range" id="loanTerm" class="form-slider" min="1" max="10" value="5" step="1">
+                        <input type="range" id="loanTerm" class="form-slider" min="0" max="10" value="0" step="1">
                     </div>
                 </div>
 
@@ -729,7 +729,7 @@
         expenseAmount: '',
         summerPowerBill: '',
         winterPowerBill: '',
-        loanTerm: 5,
+        loanTerm: 0,
         interestRate: 1.0
     };
 
@@ -816,7 +816,11 @@
             loanTermSlider.addEventListener('input', function(e) {
                 var value = parseInt(e.target.value);
                 rawValues.loanTerm = value;
-                loanTermValue.textContent = value + (value === 1 ? ' year' : ' years');
+                if (value === 0) {
+                    loanTermValue.textContent = 'Cash';
+                } else {
+                    loanTermValue.textContent = value + (value === 1 ? ' year' : ' years');
+                }
                 scheduleCalculation();
             });
         }
@@ -930,7 +934,7 @@
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
         var interestRate = rawValues.interestRate;
-        var isFinanced = interestRate > 0;
+        var isFinanced = loanTerm > 0;
         var monthlyLoanPayment = 0;
         var totalLoanPayments = 0;
         var totalInterestPaid = 0;
@@ -955,6 +959,10 @@
             // Recalculate payback period considering financing costs
             var effectiveCost = totalLoanPayments;
             paybackPeriod = Math.ceil(effectiveCost / annualSolarSavings);
+
+            // Recalculate monthly surplus including solar loan payment
+            monthlySurplus = monthlySurplus - monthlyLoanPayment;
+            hasSufficientSurplus = monthlySurplus > 500;
         }
 
         var chartData = [];
@@ -1048,6 +1056,9 @@
         if (!data.hasSufficientSurplus) {
             html += '      <p class="result-note">Note: Low or medium borrowing power may restrict your financing options. Banks require sufficient monthly surplus to remain after any top-up or refinance is completed.</p>';
         }
+        if (data.isFinanced && data.hasSufficientSurplus) {
+            html += '      <p class="result-note">Monthly surplus includes the solar loan payment of $' + formatNumber(data.monthlyLoanPayment) + '/month.</p>';
+        }
         html += '    </div>';
         if (data.solarReady) {
             html += '    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
@@ -1091,6 +1102,12 @@
         html += '        <span class="service-label">Current Mortgage Payment:</span>';
         html += '        <span class="service-value">$' + formatNumber(data.currentMonthlyPayment) + '</span>';
         html += '      </div>';
+        if (data.isFinanced) {
+            html += '      <div class="service-row">';
+            html += '        <span class="service-label">Solar Loan Payment:</span>';
+            html += '        <span class="service-value">$' + formatNumber(data.monthlyLoanPayment) + '</span>';
+            html += '      </div>';
+        }
         html += '    </div>';
         html += '    <div class="surplus-box">';
         html += '      <div>';
@@ -1168,6 +1185,7 @@
         }
         html += '  </div>';
 
+        html += '  <h3 class="result-title" style="margin-top: 2rem;">Power Costs Over Time</h3>';
         html += '  <div class="chart-container">';
         html += '    <canvas id="solarChart"></canvas>';
         html += '  </div>';
