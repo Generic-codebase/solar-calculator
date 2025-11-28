@@ -984,7 +984,7 @@
             chartData.push({
                 year: year,
                 withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
-                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? totalLoanPayments : solarSystemCost))
+                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : solarSystemCost))
             });
 
             // Financing chart data: annual solar savings vs financing costs
