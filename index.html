@@ -509,27 +509,77 @@
     }
 
     .contact-subtitle {
-        color: #6b7280;
+        color: #374151;
         margin-bottom: 1.5rem;
+    }
+
+    .green-loan-highlight {
+        background: linear-gradient(135deg, #f0fff4 0%, #d1fae5 100%);
+        border: 2px solid #96e0b3;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .highlight-icon {
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .highlight-text {
+        flex: 1;
+    }
+
+    .highlight-text strong {
+        color: #155263;
+        font-size: 1.125rem;
     }
 
     .submit-btn {
         width: 100%;
-        background-color: #155263;
+        background: linear-gradient(135deg, #155263 0%, #0d3a45 100%);
         color: white;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        padding: 1rem 2rem;
         border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        border-radius: 12px;
+        font-size: 1.125rem;
         cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(21, 82, 99, 0.3);
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+        left: 100%;
     }
 
     .submit-btn:hover {
-        background-color: #0d3a45;
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        background: linear-gradient(135deg, #1a6577 0%, #155263 100%);
+        box-shadow: 0 10px 30px rgba(21, 82, 99, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(21, 82, 99, 0.3);
     }
 
     .success-section {
@@ -761,8 +811,15 @@
         <div id="results" class="results-section"></div>
 
         <div id="contactForm" class="contact-section">
-            <h2 class="contact-title">Speak with a Mortgage Advisor</h2>
-            <p class="contact-subtitle">Enter your details to explore green loan options with an expert</p>
+            <h2 class="contact-title">Unlock Your Solar Financing Options</h2>
+            <p class="contact-subtitle" style="font-size: 1rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our expert advisors will help you find the best deal and maximize your savings.</p>
+
+            <div class="green-loan-highlight">
+                <div class="highlight-icon">💰</div>
+                <div class="highlight-text">
+                    <strong>Limited Time: Up to $5,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
+                </div>
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
@@ -799,7 +856,7 @@
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <button type="button" id="submitBtn" class="submit-btn">Contact a Mortgage Advisor</button>
+                    <button type="button" id="submitBtn" class="submit-btn">Get My Green Loan Quote →</button>
                 </div>
             </div>
         </div>
