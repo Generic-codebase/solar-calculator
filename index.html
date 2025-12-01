@@ -159,7 +159,7 @@
     .status-icon {
         width: 3rem;
         height: 3rem;
-        color: #96e0b3;
+        color: #60e1e0;
         flex-shrink: 0;
     }
 
@@ -188,8 +188,8 @@
     }
 
     .power-card.medium {
-        background-color: #f0fdf4;
-        border-color: #86efac;
+        background-color: #fffef0;
+        border-color: #ffc93c;
     }
 
     .power-card.high {
@@ -220,7 +220,7 @@
     }
 
     .power-text.medium {
-        color: #15803d;
+        color: #92400e;
     }
 
     .power-text.high {
@@ -245,7 +245,7 @@
     }
 
     .power-dot.medium {
-        background-color: #4ade80;
+        background-color: #fbbf24;
     }
 
     .power-dot.high {
@@ -347,8 +347,8 @@
     }
 
     .roi-box.green {
-        background-color: #f0fff4;
-        border-color: #96e0b3;
+        background-color: #fffef0;
+        border-color: #ffc93c;
     }
 
     .roi-label {
@@ -395,8 +395,8 @@
     }
 
     .system-option-card.panel-battery {
-        border: 3px solid #96e0b3;
-        background: linear-gradient(to bottom, #f0fff4, #ffffff);
+        border: 3px solid #ffc93c;
+        background: linear-gradient(to bottom, #fffef0, #ffffff);
     }
 
     .system-option-header {
@@ -514,8 +514,8 @@
     }
 
     .green-loan-highlight {
-        background: linear-gradient(135deg, #f0fff4 0%, #d1fae5 100%);
-        border: 2px solid #96e0b3;
+        background: linear-gradient(135deg, #fffef0 0%, #fff9d6 100%);
+        border: 2px solid #ffc93c;
         border-radius: 12px;
         padding: 1.25rem;
         margin-bottom: 1.5rem;
@@ -598,7 +598,7 @@
         width: 4rem;
         height: 4rem;
         margin: 0 auto 1.5rem;
-        color: #96e0b3;
+        color: #60e1e0;
     }
 
     .success-title {
@@ -817,7 +817,7 @@
             <div class="green-loan-highlight">
                 <div class="highlight-icon">💰</div>
                 <div class="highlight-text">
-                    <strong>Limited Time: Up to $5,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
+                    <strong>Limited Time: Up to $30,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
                 </div>
             </div>
 
@@ -1395,7 +1395,7 @@
         html += '    <div class="surplus-box">';
         html += '      <div>';
         html += '        <p class="power-subtext">Monthly Surplus</p>';
-        var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0';
+        var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#60e1e0' : '#155263';
         html += '        <p class="surplus-amount" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
         html += '      </div>';
         html += '    </div>';
@@ -1510,7 +1510,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">25-Year Net Savings</span>';
-                    html += '    <div><span class="spec-value highlight" style="color: #15803d;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
                     html += '  </div>';
 
                     html += '</div>';
@@ -1562,7 +1562,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">25-Year Net Savings</span>';
-                    html += '    <div><span class="spec-value highlight" style="color: #15803d;">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</span><div class="spec-note">Battery replacement not factored</div></div>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</span><div class="spec-note">Battery replacement not factored</div></div>';
                     html += '  </div>';
 
                     html += '</div>';
@@ -1727,8 +1727,8 @@
                             {
                                 label: 'Cumulative Solar Savings',
                                 data: data.financingChartData.map(function(d) { return d.solarSavings; }),
-                                borderColor: '#96e0b3',
-                                backgroundColor: 'rgba(150, 224, 179, 0.2)',
+                                borderColor: '#60e1e0',
+                                backgroundColor: 'rgba(96, 225, 224, 0.2)',
                                 fill: true,
                                 tension: 0.1
                             },
