@@ -844,7 +844,9 @@
 
     function formatNumber(num) {
         if (!num && num !== 0) return '0';
-        return parseFloat(num).toLocaleString('en-NZ');
+        var parsed = parseFloat(num);
+        if (isNaN(parsed) || !isFinite(parsed)) return '0';
+        return parsed.toLocaleString('en-NZ');
     }
 
     function formatCurrency(value) {
@@ -1043,8 +1045,12 @@
                 avgMonthlyKwh = (summerKwh + winterKwh) / 2;
                 var annualKwh = avgMonthlyKwh * 12;
                 annualUsageCost = annualPowerCost - annualDailyCharges;
-                costPerKwh = annualUsageCost / annualKwh;
-                calculationMethod = 'kwh';
+
+                // Ensure we have valid data for cost per kWh calculation
+                if (annualKwh > 0 && annualUsageCost > 0) {
+                    costPerKwh = annualUsageCost / annualKwh;
+                    calculationMethod = 'kwh';
+                }
             }
         } else {
             var monthlyPowerCost = monthlyExpenses * 0.05;
@@ -1799,57 +1805,64 @@
             submittedAt: new Date().toISOString()
         };
 
-        if (resultsData) {
-            webhookData.lvr = resultsData.lvr;
-            webhookData.borrowingPower = resultsData.borrowingPowerText;
-            webhookData.solarReady = resultsData.solarReady;
-            webhookData.estimatedSolarSystemCost = resultsData.solarSystemCost;
-            webhookData.annualSolarSavings = resultsData.annualSolarSavings;
-            webhookData.total25YearSavings = resultsData.total25YearSavings;
-            webhookData.monthlySurplus = resultsData.monthlySurplus;
-            webhookData.isFinanced = resultsData.isFinanced;
+        // Helper function to safely add numeric values to webhook
+        function safeAddValue(obj, key, value) {
+            if (value !== null && value !== undefined && !isNaN(value) && isFinite(value)) {
+                obj[key] = value;
+            }
+        }
 
-            // kWh-based metrics
-            webhookData.avgMonthlyKwh = resultsData.avgMonthlyKwh;
-            webhookData.costPerKwh = resultsData.costPerKwh;
-            webhookData.annualDailyCharges = resultsData.annualDailyCharges;
-            webhookData.annualUsageCost = resultsData.annualUsageCost;
-            webhookData.calculationMethod = resultsData.calculationMethod;
+        if (resultsData) {
+            safeAddValue(webhookData, 'lvr', resultsData.lvr);
+            webhookData.borrowingPower = resultsData.borrowingPowerText || '';
+            webhookData.solarReady = resultsData.solarReady || false;
+            safeAddValue(webhookData, 'estimatedSolarSystemCost', resultsData.solarSystemCost);
+            safeAddValue(webhookData, 'annualSolarSavings', resultsData.annualSolarSavings);
+            safeAddValue(webhookData, 'total25YearSavings', resultsData.total25YearSavings);
+            safeAddValue(webhookData, 'monthlySurplus', resultsData.monthlySurplus);
+            webhookData.isFinanced = resultsData.isFinanced || false;
+
+            // kWh-based metrics (only if valid)
+            safeAddValue(webhookData, 'avgMonthlyKwh', resultsData.avgMonthlyKwh);
+            safeAddValue(webhookData, 'costPerKwh', resultsData.costPerKwh);
+            safeAddValue(webhookData, 'annualDailyCharges', resultsData.annualDailyCharges);
+            safeAddValue(webhookData, 'annualUsageCost', resultsData.annualUsageCost);
+            webhookData.calculationMethod = resultsData.calculationMethod || 'expenses';
 
             if (resultsData.isFinanced) {
-                webhookData.loanTerm = resultsData.loanTerm;
-                webhookData.interestRate = resultsData.interestRate;
-                webhookData.monthlyLoanPayment = resultsData.monthlyLoanPayment;
-                webhookData.totalLoanPayments = resultsData.totalLoanPayments;
-                webhookData.totalInterestPaid = resultsData.totalInterestPaid;
-                webhookData.paybackPeriod = resultsData.paybackPeriod;
+                safeAddValue(webhookData, 'loanTerm', resultsData.loanTerm);
+                safeAddValue(webhookData, 'interestRate', resultsData.interestRate);
+                safeAddValue(webhookData, 'monthlyLoanPayment', resultsData.monthlyLoanPayment);
+                safeAddValue(webhookData, 'totalLoanPayments', resultsData.totalLoanPayments);
+                safeAddValue(webhookData, 'totalInterestPaid', resultsData.totalInterestPaid);
+                safeAddValue(webhookData, 'paybackPeriod', resultsData.paybackPeriod);
             }
 
-            // Panel-only system data
+            // Panel-only system data (only if system was calculated)
             if (resultsData.panelOnlySystem) {
                 var panelOnly = resultsData.panelOnlySystem;
-                webhookData.panelOnly_monthlyGeneration = panelOnly.monthlyGeneration.toFixed(0);
-                webhookData.panelOnly_panelCount = panelOnly.panelCount;
-                webhookData.panelOnly_systemKw = panelOnly.systemKw.toFixed(1);
-                webhookData.panelOnly_systemCost = panelOnly.systemCost.toFixed(0);
-                webhookData.panelOnly_monthlySavings = panelOnly.monthlySavings.toFixed(0);
-                webhookData.panelOnly_annualSavings = panelOnly.annualSavings.toFixed(0);
-                webhookData.panelOnly_paybackYears = panelOnly.paybackYears.toFixed(2);
-                webhookData.panelOnly_25YearSavings = panelOnly.savings25Year.toFixed(0);
+                safeAddValue(webhookData, 'panelOnly_monthlyGeneration', panelOnly.monthlyGeneration ? panelOnly.monthlyGeneration.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelOnly_panelCount', panelOnly.panelCount);
+                safeAddValue(webhookData, 'panelOnly_systemKw', panelOnly.systemKw ? panelOnly.systemKw.toFixed(1) : null);
+                safeAddValue(webhookData, 'panelOnly_systemCost', panelOnly.systemCost ? panelOnly.systemCost.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelOnly_monthlySavings', panelOnly.monthlySavings ? panelOnly.monthlySavings.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelOnly_annualSavings', panelOnly.annualSavings ? panelOnly.annualSavings.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelOnly_paybackYears', panelOnly.paybackYears ? panelOnly.paybackYears.toFixed(2) : null);
+                safeAddValue(webhookData, 'panelOnly_25YearSavings', panelOnly.savings25Year ? panelOnly.savings25Year.toFixed(0) : null);
             }
 
-            // Panel + battery system data
+            // Panel + battery system data (only if system was calculated)
             if (resultsData.panelBatterySystem) {
                 var panelBattery = resultsData.panelBatterySystem;
-                webhookData.panelBattery_monthlyGeneration = panelBattery.monthlyGeneration.toFixed(0);
-                webhookData.panelBattery_panelCount = panelBattery.panelCount;
-                webhookData.panelBattery_systemKw = panelBattery.systemKw.toFixed(1);
-                webhookData.panelBattery_batteryKwh = panelBattery.batteryKwh;
-                webhookData.panelBattery_systemCost = panelBattery.systemCost.toFixed(0);
-                webhookData.panelBattery_monthlySavings = panelBattery.monthlySavings.toFixed(0);
-                webhookData.panelBattery_annualSavings = panelBattery.annualSavings.toFixed(0);
-                webhookData.panelBattery_paybackYears = panelBattery.paybackYears.toFixed(2);
-                webhookData.panelBattery_25YearSavings = panelBattery.savings25Year.toFixed(0);
+                safeAddValue(webhookData, 'panelBattery_monthlyGeneration', panelBattery.monthlyGeneration ? panelBattery.monthlyGeneration.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelBattery_panelCount', panelBattery.panelCount);
+                safeAddValue(webhookData, 'panelBattery_systemKw', panelBattery.systemKw ? panelBattery.systemKw.toFixed(1) : null);
+                safeAddValue(webhookData, 'panelBattery_batteryKwh', panelBattery.batteryKwh);
+                safeAddValue(webhookData, 'panelBattery_systemCost', panelBattery.systemCost ? panelBattery.systemCost.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelBattery_monthlySavings', panelBattery.monthlySavings ? panelBattery.monthlySavings.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelBattery_annualSavings', panelBattery.annualSavings ? panelBattery.annualSavings.toFixed(0) : null);
+                safeAddValue(webhookData, 'panelBattery_paybackYears', panelBattery.paybackYears ? panelBattery.paybackYears.toFixed(2) : null);
+                safeAddValue(webhookData, 'panelBattery_25YearSavings', panelBattery.savings25Year ? panelBattery.savings25Year.toFixed(0) : null);
             }
         }
 
