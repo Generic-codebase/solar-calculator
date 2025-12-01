@@ -967,28 +967,34 @@
         var panelOnlySystem = null;
         var panelBatterySystem = null;
 
-        if (avgMonthlyKwh > 0) {
+        if (avgMonthlyKwh > 0 && costPerKwh > 0) {
             var annualKwhUsage = avgMonthlyKwh * 12;
             var panelWattage = 460; // 460W panels
+            var sunHoursPerDay = 3.95; // NZ average sun hours
+            var exportRate = 0.18; // 18c per kWh export rate
             var annualPriceIncrease = 0.025; // 2.5% inflation
+            var savings25YearMultiplier = 30.82; // Geometric series multiplier for 2.5% over 25 years
 
             // Panel-only system (110% of annual usage)
             var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
             var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
-            var panelOnlyPanelCount = Math.ceil((panelOnlyMonthlyGeneration * 12) / (panelWattage * 4.5 * 365 / 1000)); // 4.5 sun hours/day average
+
+            // Calconic formula: ((monthlyGen/30.416)/3.95)/.460
+            var panelOnlyPanelCount = Math.ceil(((panelOnlyMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
             var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
-            var panelOnlySystemCost = panelOnlySystemKw * 2000; // $2000/kW estimate
-            var panelOnlyMonthlySavings = panelOnlyMonthlyGeneration * costPerKwh;
+
+            // Calconic cost formula: panels * 675 + 3500
+            var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
+
+            // Calconic savings: 45% self-consumption at retail, 55% export at 18c
+            var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
+            var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
+            var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
             var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
 
-            // Calculate 25-year savings with 2.5% inflation
-            var panelOnly25YearSavings = 0;
-            for (var y = 1; y <= 25; y++) {
-                var yearSavings = panelOnlyAnnualSavings * Math.pow(1 + annualPriceIncrease, y - 1);
-                panelOnly25YearSavings += yearSavings;
-            }
-            panelOnly25YearSavings -= panelOnlySystemCost;
+            // Calculate 25-year savings using Calconic multiplier
+            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
 
             panelOnlySystem = {
                 monthlyGeneration: panelOnlyMonthlyGeneration,
@@ -999,27 +1005,34 @@
                 monthlySavings: panelOnlyMonthlySavings,
                 annualSavings: panelOnlyAnnualSavings,
                 paybackYears: panelOnlyPaybackYears,
-                savings25Year: panelOnly25YearSavings
+                savings25Year: panelOnly25YearSavings,
+                selfConsumptionPercent: 45,
+                exportPercent: 55
             };
 
             // Panel + Battery system (135% of annual usage)
             var panelBatteryMonthlyGeneration = avgMonthlyKwh * 1.35;
             var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
-            var panelBatteryPanelCount = Math.ceil((panelBatteryMonthlyGeneration * 12) / (panelWattage * 4.5 * 365 / 1000));
+
+            // Calconic formula: same as panel-only
+            var panelBatteryPanelCount = Math.ceil(((panelBatteryMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
             var panelBatterySystemKw = (panelBatteryPanelCount * panelWattage) / 1000;
-            var batteryKwh = Math.ceil(avgMonthlyKwh / 30 * 0.4); // ~40% of daily usage
-            var panelBatterySystemCost = (panelBatterySystemKw * 2000) + (batteryKwh * 1200); // $1200/kWh for battery
-            var panelBatteryMonthlySavings = panelBatteryMonthlyGeneration * costPerKwh * 0.9; // 90% utilization with battery
+
+            // Calconic battery sizing: 0.55 * panel count
+            var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
+
+            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
+            var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
+
+            // Calconic savings: 75% self-consumption at retail, 25% export at 18c
+            var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
+            var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
+            var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
             var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
 
-            // Calculate 25-year savings with 2.5% inflation
-            var panelBattery25YearSavings = 0;
-            for (var y = 1; y <= 25; y++) {
-                var yearSavings = panelBatteryAnnualSavings * Math.pow(1 + annualPriceIncrease, y - 1);
-                panelBattery25YearSavings += yearSavings;
-            }
-            panelBattery25YearSavings -= panelBatterySystemCost;
+            // Calculate 25-year savings using Calconic multiplier
+            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
 
             panelBatterySystem = {
                 monthlyGeneration: panelBatteryMonthlyGeneration,
@@ -1031,7 +1044,9 @@
                 monthlySavings: panelBatteryMonthlySavings,
                 annualSavings: panelBatteryAnnualSavings,
                 paybackYears: panelBatteryPaybackYears,
-                savings25Year: panelBattery25YearSavings
+                savings25Year: panelBattery25YearSavings,
+                selfConsumptionPercent: 75,
+                exportPercent: 25
             };
         }
 
@@ -1291,9 +1306,9 @@
             html += '    </div>';
             html += '    <div class="roi-box green">';
             html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
-            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 25 * 1.3; // Rough projection with 2.5% inflation
+            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 35.45; // 3% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
-            html += '      <p class="roi-note">If you don\'t get solar</p>';
+            html += '      <p class="roi-note">If you don\'t get solar (3% annual inflation)</p>';
             html += '    </div>';
             html += '  </div>';
             html += '</div>';
@@ -1303,7 +1318,8 @@
                 var sys = data.panelOnlySystem;
                 html += '<div class="roi-card" style="background: linear-gradient(to right, #f0f9ff, #ffffff); border: 3px solid #60e1e0;">';
                 html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel-Only System</h3>';
-                html += '  <p class="result-text" style="margin-bottom: 1.5rem;">We suggest a system that can generate <strong>110%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sys.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <p class="result-text" style="margin-bottom: 0.5rem;">We suggest a system that can generate <strong>110%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sys.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <p class="result-note" style="margin-bottom: 1.5rem;">The system should produce enough to replace approximately 35% of your winter energy bills, and up to 80% of your summer bills.</p>';
                 html += '  <div class="roi-grid">';
                 html += '    <div class="roi-box blue">';
                 html += '      <p class="roi-label">System Size</p>';
@@ -1313,7 +1329,7 @@
                 html += '    <div class="roi-box yellow">';
                 html += '      <p class="roi-label">Monthly Savings</p>';
                 html += '      <p class="roi-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Per month (approx)</p>';
+                html += '      <p class="roi-note">Based on ' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export at 18c</p>';
                 html += '    </div>';
                 html += '    <div class="roi-box green">';
                 html += '      <p class="roi-label">System Cost</p>';
@@ -1341,7 +1357,8 @@
                 var sysBatt = data.panelBatterySystem;
                 html += '<div class="roi-card" style="background: linear-gradient(to right, #f0fff4, #ffffff); border: 3px solid #96e0b3;">';
                 html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel & Battery System</h3>';
-                html += '  <p class="result-text" style="margin-bottom: 1.5rem;">We suggest a system that can generate <strong>135%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sysBatt.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <p class="result-text" style="margin-bottom: 0.5rem;">We suggest a system that can generate <strong>135%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sysBatt.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <p class="result-note" style="margin-bottom: 1.5rem;">The system should produce enough to replace approximately 50% of your winter energy bills, and up to 100% of your summer bills.</p>';
                 html += '  <div class="roi-grid">';
                 html += '    <div class="roi-box blue">';
                 html += '      <p class="roi-label">System Size</p>';
@@ -1356,7 +1373,7 @@
                 html += '    <div class="roi-box green">';
                 html += '      <p class="roi-label">Monthly Savings</p>';
                 html += '      <p class="roi-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Per month (approx)</p>';
+                html += '      <p class="roi-note">Based on ' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export at 18c</p>';
                 html += '    </div>';
                 html += '  </div>';
                 html += '  <div class="roi-grid" style="margin-top: 1rem;">';
