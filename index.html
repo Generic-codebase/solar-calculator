@@ -369,6 +369,94 @@
         margin-top: 0.25rem;
     }
 
+    .system-comparison {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+        .system-comparison {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .system-option-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .system-option-card.panel-only {
+        border: 3px solid #60e1e0;
+        background: linear-gradient(to bottom, #f0f9ff, #ffffff);
+    }
+
+    .system-option-card.panel-battery {
+        border: 3px solid #96e0b3;
+        background: linear-gradient(to bottom, #f0fff4, #ffffff);
+    }
+
+    .system-option-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .system-option-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 0.5rem;
+    }
+
+    .system-option-subtitle {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .spec-row:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        flex: 1;
+    }
+
+    .spec-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #155263;
+        text-align: right;
+    }
+
+    .spec-value.highlight {
+        font-size: 1.25rem;
+        color: #155263;
+    }
+
+    .spec-note {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-top: 0.25rem;
+        text-align: right;
+    }
+
     .system-cost-box {
         background-color: #fffef0;
         border: 1px solid #ffc93c;
@@ -1313,86 +1401,110 @@
             html += '  </div>';
             html += '</div>';
 
-            // Panel-only system recommendation
-            if (data.panelOnlySystem) {
-                var sys = data.panelOnlySystem;
-                html += '<div class="roi-card" style="background: linear-gradient(to right, #f0f9ff, #ffffff); border: 3px solid #60e1e0;">';
-                html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel-Only System</h3>';
-                html += '  <p class="result-text" style="margin-bottom: 0.5rem;">We suggest a system that can generate <strong>110%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sys.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
-                html += '  <p class="result-note" style="margin-bottom: 1.5rem;">The system should produce enough to replace approximately 35% of your winter energy bills, and up to 80% of your summer bills.</p>';
-                html += '  <div class="roi-grid">';
-                html += '    <div class="roi-box blue">';
-                html += '      <p class="roi-label">System Size</p>';
-                html += '      <p class="roi-value">' + sys.panelCount + ' panels</p>';
-                html += '      <p class="roi-note">Using 460W panels, that\'s a ' + sys.systemKw.toFixed(1) + 'kW system</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box yellow">';
-                html += '      <p class="roi-label">Monthly Savings</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Based on ' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export at 18c</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box green">';
-                html += '      <p class="roi-label">System Cost</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sys.systemCost.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Estimated installed cost</p>';
-                html += '    </div>';
-                html += '  </div>';
-                html += '  <div class="roi-grid" style="margin-top: 1rem;">';
-                html += '    <div class="roi-box blue">';
-                html += '      <p class="roi-label">Payback Period</p>';
-                html += '      <p class="roi-value">' + sys.paybackYears.toFixed(2) + ' years</p>';
-                html += '      <p class="roi-note">If power prices stayed the same</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box green">';
-                html += '      <p class="roi-label">25-Year Net Savings</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Assuming 2.5% inflation on power rates</p>';
-                html += '    </div>';
-                html += '  </div>';
-                html += '</div>';
-            }
+            // System comparison section
+            if (data.panelOnlySystem || data.panelBatterySystem) {
+                html += '<h3 class="result-title" style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Recommended Solar System Options</h3>';
+                html += '<div class="system-comparison">';
 
-            // Panel + battery system recommendation
-            if (data.panelBatterySystem) {
-                var sysBatt = data.panelBatterySystem;
-                html += '<div class="roi-card" style="background: linear-gradient(to right, #f0fff4, #ffffff); border: 3px solid #96e0b3;">';
-                html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel & Battery System</h3>';
-                html += '  <p class="result-text" style="margin-bottom: 0.5rem;">We suggest a system that can generate <strong>135%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sysBatt.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
-                html += '  <p class="result-note" style="margin-bottom: 1.5rem;">The system should produce enough to replace approximately 50% of your winter energy bills, and up to 100% of your summer bills.</p>';
-                html += '  <div class="roi-grid">';
-                html += '    <div class="roi-box blue">';
-                html += '      <p class="roi-label">System Size</p>';
-                html += '      <p class="roi-value">' + sysBatt.panelCount + ' panels</p>';
-                html += '      <p class="roi-note">Using 460W panels, that\'s a ' + sysBatt.systemKw.toFixed(1) + 'kW system</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box yellow">';
-                html += '      <p class="roi-label">Battery Storage</p>';
-                html += '      <p class="roi-value">' + sysBatt.batteryKwh + ' kWh</p>';
-                html += '      <p class="roi-note">Recommended capacity</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box green">';
-                html += '      <p class="roi-label">Monthly Savings</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Based on ' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export at 18c</p>';
-                html += '    </div>';
-                html += '  </div>';
-                html += '  <div class="roi-grid" style="margin-top: 1rem;">';
-                html += '    <div class="roi-box yellow">';
-                html += '      <p class="roi-label">System Cost</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sysBatt.systemCost.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Estimated installed cost (incl. battery)</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box blue">';
-                html += '      <p class="roi-label">Payback Period</p>';
-                html += '      <p class="roi-value">' + sysBatt.paybackYears.toFixed(2) + ' years</p>';
-                html += '      <p class="roi-note">If power prices stayed the same</p>';
-                html += '    </div>';
-                html += '    <div class="roi-box green">';
-                html += '      <p class="roi-label">25-Year Net Savings</p>';
-                html += '      <p class="roi-value">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</p>';
-                html += '      <p class="roi-note">Assuming 2.5% inflation (battery replacement not factored)</p>';
-                html += '    </div>';
-                html += '  </div>';
+                // Panel-only system
+                if (data.panelOnlySystem) {
+                    var sys = data.panelOnlySystem;
+                    html += '<div class="system-option-card panel-only">';
+                    html += '  <div class="system-option-header">';
+                    html += '    <h4 class="system-option-title">Panel-Only System (110%)</h4>';
+                    html += '    <p class="system-option-subtitle">Replaces ~35% of winter bills, up to 80% of summer bills</p>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Generation Target</span>';
+                    html += '    <div><span class="spec-value highlight">' + Math.round(sys.monthlyGeneration) + ' kWh</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">System Size</span>';
+                    html += '    <div><span class="spec-value">' + sys.panelCount + ' panels (' + sys.systemKw.toFixed(1) + ' kW)</span><div class="spec-note">Using 460W panels</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Estimated System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sys.systemCost.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 18c</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Annual Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sys.annualSavings.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Payback Period</span>';
+                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">25-Year Net Savings</span>';
+                    html += '    <div><span class="spec-value highlight" style="color: #15803d;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
+                    html += '  </div>';
+
+                    html += '</div>';
+                }
+
+                // Panel + Battery system
+                if (data.panelBatterySystem) {
+                    var sysBatt = data.panelBatterySystem;
+                    html += '<div class="system-option-card panel-battery">';
+                    html += '  <div class="system-option-header">';
+                    html += '    <h4 class="system-option-title">Panel + Battery System (135%)</h4>';
+                    html += '    <p class="system-option-subtitle">Replaces ~50% of winter bills, up to 100% of summer bills</p>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Generation Target</span>';
+                    html += '    <div><span class="spec-value highlight">' + Math.round(sysBatt.monthlyGeneration) + ' kWh</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">System Size</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.panelCount + ' panels (' + sysBatt.systemKw.toFixed(1) + ' kW)</span><div class="spec-note">Using 460W panels</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Battery Storage</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.batteryKwh + ' kWh</span><div class="spec-note">Recommended capacity</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Estimated System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sysBatt.systemCost.toFixed(0)) + '</span><div class="spec-note">Including battery</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export @ 18c</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Annual Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.annualSavings.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Payback Period</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">25-Year Net Savings</span>';
+                    html += '    <div><span class="spec-value highlight" style="color: #15803d;">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</span><div class="spec-note">Battery replacement not factored</div></div>';
+                    html += '  </div>';
+
+                    html += '</div>';
+                }
+
                 html += '</div>';
             }
         }
