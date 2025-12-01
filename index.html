@@ -85,7 +85,7 @@
         background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid #9ca3af;
         border-radius: 12px;
         font-size: 1rem;
         transition: all 0.3s ease;
@@ -255,22 +255,29 @@
     }
 
     .power-dot {
-        width: 4rem;
-        height: 4rem;
-        border-radius: 50%;
+        width: 5rem;
+        height: 5rem;
         flex-shrink: 0;
+        position: relative;
     }
 
-    .power-dot.low {
-        background-color: #60a5fa;
+    .power-dot svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
     }
 
-    .power-dot.medium {
-        background-color: #fbbf24;
+    .sun-ray {
+        animation: pulse 2s ease-in-out infinite;
     }
 
-    .power-dot.high {
-        background-color: #fbbf24;
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 0.6;
+        }
+        50% {
+            opacity: 1;
+        }
     }
 
     .lvr-card {
@@ -867,8 +874,7 @@
             <div class="green-loan-highlight">
                 <div class="highlight-icon">💰</div>
                 <div class="highlight-text">
-                    <p style="margin: 0 0 0.75rem 0; font-size: 0.95rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our financial advisor partners can help guide you through your finance options and make the top-up or refinance process easy.</p>
-                    <strong style="font-size: 1.125rem;">Limited Time: Up to $30,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our financial advisor partners can help guide you through your finance options and make the top-up or refinance process easy.</p>
                 </div>
             </div>
 
@@ -1168,6 +1174,7 @@
         // System sizing based on kWh usage (if available)
         var panelOnlySystem = null;
         var panelBatterySystem = null;
+        var cashbackRate = 0.015; // 1.5% cashback rate
 
         if (avgMonthlyKwh > 0 && costPerKwh > 0) {
             var annualKwhUsage = avgMonthlyKwh * 12;
@@ -1187,16 +1194,18 @@
 
             // Calconic cost formula: panels * 675 + 3500
             var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
+            var panelOnlyCashback = panelOnlySystemCost * cashbackRate;
+            var panelOnlyNetCost = panelOnlySystemCost - panelOnlyCashback;
 
             // Calconic savings: 45% self-consumption at retail, 55% export at 18c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
             var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
-            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
+            var panelOnlyPaybackYears = panelOnlyNetCost / panelOnlyAnnualSavings;
 
-            // Calculate 25-year savings using Calconic multiplier
-            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
+            // Calculate 25-year savings using Calconic multiplier (including cashback)
+            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlyNetCost;
 
             panelOnlySystem = {
                 monthlyGeneration: panelOnlyMonthlyGeneration,
@@ -1204,6 +1213,8 @@
                 panelCount: panelOnlyPanelCount,
                 systemKw: panelOnlySystemKw,
                 systemCost: panelOnlySystemCost,
+                cashback: panelOnlyCashback,
+                netCost: panelOnlyNetCost,
                 monthlySavings: panelOnlyMonthlySavings,
                 annualSavings: panelOnlyAnnualSavings,
                 paybackYears: panelOnlyPaybackYears,
@@ -1225,16 +1236,18 @@
 
             // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
             var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
+            var panelBatteryCashback = panelBatterySystemCost * cashbackRate;
+            var panelBatteryNetCost = panelBatterySystemCost - panelBatteryCashback;
 
             // Calconic savings: 75% self-consumption at retail, 25% export at 18c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
             var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
-            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
+            var panelBatteryPaybackYears = panelBatteryNetCost / panelBatteryAnnualSavings;
 
-            // Calculate 25-year savings using Calconic multiplier
-            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
+            // Calculate 25-year savings using Calconic multiplier (including cashback)
+            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatteryNetCost;
 
             panelBatterySystem = {
                 monthlyGeneration: panelBatteryMonthlyGeneration,
@@ -1243,6 +1256,8 @@
                 systemKw: panelBatterySystemKw,
                 batteryKwh: batteryKwh,
                 systemCost: panelBatterySystemCost,
+                cashback: panelBatteryCashback,
+                netCost: panelBatteryNetCost,
                 monthlySavings: panelBatteryMonthlySavings,
                 annualSavings: panelBatteryAnnualSavings,
                 paybackYears: panelBatteryPaybackYears,
@@ -1409,7 +1424,36 @@
         html += '        <p class="power-text ' + data.borrowingPower + '">' + data.borrowingPowerText + '</p>';
         html += '        <p class="power-subtext">' + data.borrowingPowerDesc + '</p>';
         html += '      </div>';
-        html += '      <div class="power-dot ' + data.borrowingPower + '"></div>';
+        html += '      <div class="power-dot">';
+
+        // Determine color based on borrowing power
+        var dotColor = data.borrowingPower === 'high' ? '#fbbf24' : (data.borrowingPower === 'medium' ? '#fbbf24' : '#60a5fa');
+
+        html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+
+        // Draw sun rays (12 rays around the circle)
+        for (var i = 0; i < 12; i++) {
+            var angle = (i * 30) * Math.PI / 180;
+            var x1 = 50 + Math.cos(angle) * 38;
+            var y1 = 50 + Math.sin(angle) * 38;
+            var x2 = 50 + Math.cos(angle) * 48;
+            var y2 = 50 + Math.sin(angle) * 48;
+            html += '          <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
+        }
+
+        // Draw donut (outer circle)
+        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
+
+        // Draw donut fill based on power level (low=33%, medium=66%, high=100%)
+        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
+        var circumference = 2 * Math.PI * 30;
+        var fillLength = (percentage / 100) * circumference;
+        var dashArray = fillLength + ' ' + circumference;
+
+        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
+
+        html += '        </svg>';
+        html += '      </div>';
         html += '    </div>';
         html += '  </div>';
         html += '  <div class="lvr-card">';
@@ -1545,6 +1589,16 @@
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Bank Cashback (1.5%)</span>';
+                    html += '    <div><span class="spec-value">-$' + formatNumber(sys.cashback.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Net System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sys.netCost.toFixed(0)) + '</span><div class="spec-note">After cashback</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Monthly Savings</span>';
                     html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 18c</div></div>';
                     html += '  </div>';
@@ -1594,6 +1648,16 @@
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Estimated System Cost</span>';
                     html += '    <div><span class="spec-value highlight">$' + formatNumber(sysBatt.systemCost.toFixed(0)) + '</span><div class="spec-note">Including battery</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Bank Cashback (1.5%)</span>';
+                    html += '    <div><span class="spec-value">-$' + formatNumber(sysBatt.cashback.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Net System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sysBatt.netCost.toFixed(0)) + '</span><div class="spec-note">After cashback</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -1679,7 +1743,7 @@
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years | Bank cashback: 1.5% of system cost';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
