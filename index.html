@@ -615,9 +615,27 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Summer kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <input type="text" id="summerKwh" class="form-input" placeholder="500">
+                <span class="error-message" id="error-summerKwh"></span>
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Typical Winter Power Bill ($NZ/month)</label>
                 <input type="text" id="winterPowerBill" class="form-input" placeholder="400">
                 <span class="error-message" id="error-winterPowerBill"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Winter kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <input type="text" id="winterKwh" class="form-input" placeholder="1100">
+                <span class="error-message" id="error-winterKwh"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Fixed Daily Charge (Add GST to the figure on your bill)</label>
+                <input type="text" id="dailyCharge" class="form-input" placeholder="3.00" step="0.01">
+                <span class="error-message" id="error-dailyCharge"></span>
             </div>
         </div>
 
@@ -649,7 +667,7 @@
         </div>
 
         <div class="tip-box">
-            <p><strong>Tip:</strong> For more accurate solar savings calculations, enter your typical summer and winter power bills. If left blank, we'll estimate based on your household expenses.</p>
+            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including panel-only and panel+battery options.</p>
         </div>
 
         <div id="results" class="results-section"></div>
@@ -729,6 +747,9 @@
         expenseAmount: '',
         summerPowerBill: '',
         winterPowerBill: '',
+        summerKwh: '',
+        winterKwh: '',
+        dailyCharge: '',
         loanTerm: 0,
         interestRate: 1.0
     };
@@ -789,7 +810,7 @@
     }
 
     function setupInputs() {
-        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill'];
+        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh', 'dailyCharge'];
 
         currencyFields.forEach(function(id) {
             var input = document.getElementById(id);
@@ -913,23 +934,112 @@
 
         var summerBill = parseFloat(rawValues.summerPowerBill) || 0;
         var winterBill = parseFloat(rawValues.winterPowerBill) || 0;
+        var summerKwh = parseFloat(rawValues.summerKwh) || 0;
+        var winterKwh = parseFloat(rawValues.winterKwh) || 0;
+        var dailyCharge = parseFloat(rawValues.dailyCharge) || 0;
 
         var annualPowerCost;
+        var annualDailyCharges = dailyCharge * 365;
+        var annualUsageCost = 0;
+        var avgMonthlyKwh = 0;
+        var costPerKwh = 0;
         var calculationMethod = 'expenses';
 
         if (summerBill > 0 && winterBill > 0) {
             var avgMonthlyBill = (summerBill + winterBill) / 2;
             annualPowerCost = avgMonthlyBill * 12;
             calculationMethod = 'bills';
+
+            // Calculate kWh-based metrics if kWh data is provided
+            if (summerKwh > 0 && winterKwh > 0) {
+                avgMonthlyKwh = (summerKwh + winterKwh) / 2;
+                var annualKwh = avgMonthlyKwh * 12;
+                annualUsageCost = annualPowerCost - annualDailyCharges;
+                costPerKwh = annualUsageCost / annualKwh;
+                calculationMethod = 'kwh';
+            }
         } else {
             var monthlyPowerCost = monthlyExpenses * 0.05;
             annualPowerCost = monthlyPowerCost * 12;
         }
 
+        // System sizing based on kWh usage (if available)
+        var panelOnlySystem = null;
+        var panelBatterySystem = null;
+
+        if (avgMonthlyKwh > 0) {
+            var annualKwhUsage = avgMonthlyKwh * 12;
+            var panelWattage = 460; // 460W panels
+            var annualPriceIncrease = 0.025; // 2.5% inflation
+
+            // Panel-only system (110% of annual usage)
+            var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
+            var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
+            var panelOnlyPanelCount = Math.ceil((panelOnlyMonthlyGeneration * 12) / (panelWattage * 4.5 * 365 / 1000)); // 4.5 sun hours/day average
+            var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
+            var panelOnlySystemCost = panelOnlySystemKw * 2000; // $2000/kW estimate
+            var panelOnlyMonthlySavings = panelOnlyMonthlyGeneration * costPerKwh;
+            var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
+            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
+
+            // Calculate 25-year savings with 2.5% inflation
+            var panelOnly25YearSavings = 0;
+            for (var y = 1; y <= 25; y++) {
+                var yearSavings = panelOnlyAnnualSavings * Math.pow(1 + annualPriceIncrease, y - 1);
+                panelOnly25YearSavings += yearSavings;
+            }
+            panelOnly25YearSavings -= panelOnlySystemCost;
+
+            panelOnlySystem = {
+                monthlyGeneration: panelOnlyMonthlyGeneration,
+                annualGeneration: panelOnlyAnnualGeneration,
+                panelCount: panelOnlyPanelCount,
+                systemKw: panelOnlySystemKw,
+                systemCost: panelOnlySystemCost,
+                monthlySavings: panelOnlyMonthlySavings,
+                annualSavings: panelOnlyAnnualSavings,
+                paybackYears: panelOnlyPaybackYears,
+                savings25Year: panelOnly25YearSavings
+            };
+
+            // Panel + Battery system (135% of annual usage)
+            var panelBatteryMonthlyGeneration = avgMonthlyKwh * 1.35;
+            var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
+            var panelBatteryPanelCount = Math.ceil((panelBatteryMonthlyGeneration * 12) / (panelWattage * 4.5 * 365 / 1000));
+            var panelBatterySystemKw = (panelBatteryPanelCount * panelWattage) / 1000;
+            var batteryKwh = Math.ceil(avgMonthlyKwh / 30 * 0.4); // ~40% of daily usage
+            var panelBatterySystemCost = (panelBatterySystemKw * 2000) + (batteryKwh * 1200); // $1200/kWh for battery
+            var panelBatteryMonthlySavings = panelBatteryMonthlyGeneration * costPerKwh * 0.9; // 90% utilization with battery
+            var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
+            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
+
+            // Calculate 25-year savings with 2.5% inflation
+            var panelBattery25YearSavings = 0;
+            for (var y = 1; y <= 25; y++) {
+                var yearSavings = panelBatteryAnnualSavings * Math.pow(1 + annualPriceIncrease, y - 1);
+                panelBattery25YearSavings += yearSavings;
+            }
+            panelBattery25YearSavings -= panelBatterySystemCost;
+
+            panelBatterySystem = {
+                monthlyGeneration: panelBatteryMonthlyGeneration,
+                annualGeneration: panelBatteryAnnualGeneration,
+                panelCount: panelBatteryPanelCount,
+                systemKw: panelBatterySystemKw,
+                batteryKwh: batteryKwh,
+                systemCost: panelBatterySystemCost,
+                monthlySavings: panelBatteryMonthlySavings,
+                annualSavings: panelBatteryAnnualSavings,
+                paybackYears: panelBatteryPaybackYears,
+                savings25Year: panelBattery25YearSavings
+            };
+        }
+
+        // Keep original calculation for backwards compatibility
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = 0.04;
+        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.04;
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -1033,7 +1143,14 @@
             monthlyLoanPayment: monthlyLoanPayment.toFixed(2),
             totalLoanPayments: totalLoanPayments.toFixed(2),
             totalInterestPaid: totalInterestPaid.toFixed(2),
-            paybackPeriod: paybackPeriod
+            paybackPeriod: paybackPeriod,
+            // New kWh-based metrics
+            annualDailyCharges: annualDailyCharges.toFixed(2),
+            annualUsageCost: annualUsageCost.toFixed(2),
+            avgMonthlyKwh: avgMonthlyKwh.toFixed(0),
+            costPerKwh: costPerKwh.toFixed(4),
+            panelOnlySystem: panelOnlySystem,
+            panelBatterySystem: panelBatterySystem
         };
 
         displayResults(resultsData);
@@ -1142,6 +1259,126 @@
         }
         html += '    </div>';
         html += '  </div>';
+
+        // Detailed kWh-based outputs (if kWh data is available)
+        if (data.calculationMethod === 'kwh' && parseFloat(data.avgMonthlyKwh) > 0) {
+            html += '<div class="roi-card" style="background: linear-gradient(to right, #fffef0, #ffffff); border: 2px solid #ffc93c;">';
+            html += '  <h3 class="result-title">Your Power Usage Analysis</h3>';
+            html += '  <div class="roi-grid">';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Annual Power Cost</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box blue">';
+            html += '      <p class="roi-label">Annual Daily Charges</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.annualDailyCharges) + '</p>';
+            html += '      <p class="roi-note">Fixed connection fees</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box green">';
+            html += '      <p class="roi-label">Annual Usage Cost</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.annualUsageCost) + '</p>';
+            html += '      <p class="roi-note">What you pay for power itself</p>';
+            html += '    </div>';
+            html += '  </div>';
+            html += '  <div class="roi-grid" style="margin-top: 1rem;">';
+            html += '    <div class="roi-box blue">';
+            html += '      <p class="roi-label">Average Monthly kWh Usage</p>';
+            html += '      <p class="roi-value">' + data.avgMonthlyKwh + ' kWh</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Cost Per kWh (GST Inclusive)</p>';
+            html += '      <p class="roi-value">$' + data.costPerKwh + '</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box green">';
+            html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
+            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 25 * 1.3; // Rough projection with 2.5% inflation
+            html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
+            html += '      <p class="roi-note">If you don\'t get solar</p>';
+            html += '    </div>';
+            html += '  </div>';
+            html += '</div>';
+
+            // Panel-only system recommendation
+            if (data.panelOnlySystem) {
+                var sys = data.panelOnlySystem;
+                html += '<div class="roi-card" style="background: linear-gradient(to right, #f0f9ff, #ffffff); border: 3px solid #60e1e0;">';
+                html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel-Only System</h3>';
+                html += '  <p class="result-text" style="margin-bottom: 1.5rem;">We suggest a system that can generate <strong>110%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sys.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <div class="roi-grid">';
+                html += '    <div class="roi-box blue">';
+                html += '      <p class="roi-label">System Size</p>';
+                html += '      <p class="roi-value">' + sys.panelCount + ' panels</p>';
+                html += '      <p class="roi-note">Using 460W panels, that\'s a ' + sys.systemKw.toFixed(1) + 'kW system</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box yellow">';
+                html += '      <p class="roi-label">Monthly Savings</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Per month (approx)</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box green">';
+                html += '      <p class="roi-label">System Cost</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sys.systemCost.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Estimated installed cost</p>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="roi-grid" style="margin-top: 1rem;">';
+                html += '    <div class="roi-box blue">';
+                html += '      <p class="roi-label">Payback Period</p>';
+                html += '      <p class="roi-value">' + sys.paybackYears.toFixed(2) + ' years</p>';
+                html += '      <p class="roi-note">If power prices stayed the same</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box green">';
+                html += '      <p class="roi-label">25-Year Net Savings</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Assuming 2.5% inflation on power rates</p>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            }
+
+            // Panel + battery system recommendation
+            if (data.panelBatterySystem) {
+                var sysBatt = data.panelBatterySystem;
+                html += '<div class="roi-card" style="background: linear-gradient(to right, #f0fff4, #ffffff); border: 3px solid #96e0b3;">';
+                html += '  <h3 class="result-title" style="color: #155263;">Indicative Cost & Benefits of a Panel & Battery System</h3>';
+                html += '  <p class="result-text" style="margin-bottom: 1.5rem;">We suggest a system that can generate <strong>135%</strong> of your annual energy loads. Monthly, that would be <strong>' + Math.round(sysBatt.monthlyGeneration) + ' kWh</strong> of solar generation.</p>';
+                html += '  <div class="roi-grid">';
+                html += '    <div class="roi-box blue">';
+                html += '      <p class="roi-label">System Size</p>';
+                html += '      <p class="roi-value">' + sysBatt.panelCount + ' panels</p>';
+                html += '      <p class="roi-note">Using 460W panels, that\'s a ' + sysBatt.systemKw.toFixed(1) + 'kW system</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box yellow">';
+                html += '      <p class="roi-label">Battery Storage</p>';
+                html += '      <p class="roi-value">' + sysBatt.batteryKwh + ' kWh</p>';
+                html += '      <p class="roi-note">Recommended capacity</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box green">';
+                html += '      <p class="roi-label">Monthly Savings</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Per month (approx)</p>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="roi-grid" style="margin-top: 1rem;">';
+                html += '    <div class="roi-box yellow">';
+                html += '      <p class="roi-label">System Cost</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sysBatt.systemCost.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Estimated installed cost (incl. battery)</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box blue">';
+                html += '      <p class="roi-label">Payback Period</p>';
+                html += '      <p class="roi-value">' + sysBatt.paybackYears.toFixed(2) + ' years</p>';
+                html += '      <p class="roi-note">If power prices stayed the same</p>';
+                html += '    </div>';
+                html += '    <div class="roi-box green">';
+                html += '      <p class="roi-label">25-Year Net Savings</p>';
+                html += '      <p class="roi-value">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</p>';
+                html += '      <p class="roi-note">Assuming 2.5% inflation (battery replacement not factored)</p>';
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            }
+        }
 
         // Financing Details (if loan is used)
         if (data.isFinanced) {
