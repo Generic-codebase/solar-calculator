@@ -1174,7 +1174,8 @@
         // System sizing based on kWh usage (if available)
         var panelOnlySystem = null;
         var panelBatterySystem = null;
-        var cashbackRate = 0.015; // 1.5% cashback rate
+        var cashbackRate = 0.015; // 1.5% cashback rate on current lending
+        var bankCashback = currentLending * cashbackRate; // Cashback based on current mortgage
 
         if (avgMonthlyKwh > 0 && costPerKwh > 0) {
             var annualKwhUsage = avgMonthlyKwh * 12;
@@ -1194,8 +1195,7 @@
 
             // Calconic cost formula: panels * 675 + 3500
             var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
-            var panelOnlyCashback = panelOnlySystemCost * cashbackRate;
-            var panelOnlyNetCost = panelOnlySystemCost - panelOnlyCashback;
+            var panelOnlyNetCost = panelOnlySystemCost - bankCashback;
 
             // Calconic savings: 45% self-consumption at retail, 55% export at 18c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
@@ -1213,7 +1213,7 @@
                 panelCount: panelOnlyPanelCount,
                 systemKw: panelOnlySystemKw,
                 systemCost: panelOnlySystemCost,
-                cashback: panelOnlyCashback,
+                cashback: bankCashback,
                 netCost: panelOnlyNetCost,
                 monthlySavings: panelOnlyMonthlySavings,
                 annualSavings: panelOnlyAnnualSavings,
@@ -1236,8 +1236,7 @@
 
             // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
             var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
-            var panelBatteryCashback = panelBatterySystemCost * cashbackRate;
-            var panelBatteryNetCost = panelBatterySystemCost - panelBatteryCashback;
+            var panelBatteryNetCost = panelBatterySystemCost - bankCashback;
 
             // Calconic savings: 75% self-consumption at retail, 25% export at 18c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
@@ -1256,7 +1255,7 @@
                 systemKw: panelBatterySystemKw,
                 batteryKwh: batteryKwh,
                 systemCost: panelBatterySystemCost,
-                cashback: panelBatteryCashback,
+                cashback: bankCashback,
                 netCost: panelBatteryNetCost,
                 monthlySavings: panelBatteryMonthlySavings,
                 annualSavings: panelBatteryAnnualSavings,
@@ -1589,7 +1588,7 @@
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Bank Cashback (1.5%)</span>';
+                    html += '    <span class="spec-label">Bank Cashback (1.5% of Current Lending)</span>';
                     html += '    <div><span class="spec-value">-$' + formatNumber(sys.cashback.toFixed(0)) + '</span></div>';
                     html += '  </div>';
 
@@ -1651,7 +1650,7 @@
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Bank Cashback (1.5%)</span>';
+                    html += '    <span class="spec-label">Bank Cashback (1.5% of Current Lending)</span>';
                     html += '    <div><span class="spec-value">-$' + formatNumber(sysBatt.cashback.toFixed(0)) + '</span></div>';
                     html += '  </div>';
 
@@ -1743,7 +1742,7 @@
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years | Bank cashback: 1.5% of system cost';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years | Bank cashback: 1.5% of current lending/mortgage';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
