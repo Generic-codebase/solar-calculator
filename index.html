@@ -1793,6 +1793,9 @@
             expenseFrequency: document.getElementById('expenseFrequency').value,
             summerPowerBill: rawValues.summerPowerBill,
             winterPowerBill: rawValues.winterPowerBill,
+            summerKwh: rawValues.summerKwh,
+            winterKwh: rawValues.winterKwh,
+            dailyCharge: rawValues.dailyCharge,
             submittedAt: new Date().toISOString()
         };
 
@@ -1805,6 +1808,14 @@
             webhookData.total25YearSavings = resultsData.total25YearSavings;
             webhookData.monthlySurplus = resultsData.monthlySurplus;
             webhookData.isFinanced = resultsData.isFinanced;
+
+            // kWh-based metrics
+            webhookData.avgMonthlyKwh = resultsData.avgMonthlyKwh;
+            webhookData.costPerKwh = resultsData.costPerKwh;
+            webhookData.annualDailyCharges = resultsData.annualDailyCharges;
+            webhookData.annualUsageCost = resultsData.annualUsageCost;
+            webhookData.calculationMethod = resultsData.calculationMethod;
+
             if (resultsData.isFinanced) {
                 webhookData.loanTerm = resultsData.loanTerm;
                 webhookData.interestRate = resultsData.interestRate;
@@ -1812,6 +1823,33 @@
                 webhookData.totalLoanPayments = resultsData.totalLoanPayments;
                 webhookData.totalInterestPaid = resultsData.totalInterestPaid;
                 webhookData.paybackPeriod = resultsData.paybackPeriod;
+            }
+
+            // Panel-only system data
+            if (resultsData.panelOnlySystem) {
+                var panelOnly = resultsData.panelOnlySystem;
+                webhookData.panelOnly_monthlyGeneration = panelOnly.monthlyGeneration.toFixed(0);
+                webhookData.panelOnly_panelCount = panelOnly.panelCount;
+                webhookData.panelOnly_systemKw = panelOnly.systemKw.toFixed(1);
+                webhookData.panelOnly_systemCost = panelOnly.systemCost.toFixed(0);
+                webhookData.panelOnly_monthlySavings = panelOnly.monthlySavings.toFixed(0);
+                webhookData.panelOnly_annualSavings = panelOnly.annualSavings.toFixed(0);
+                webhookData.panelOnly_paybackYears = panelOnly.paybackYears.toFixed(2);
+                webhookData.panelOnly_25YearSavings = panelOnly.savings25Year.toFixed(0);
+            }
+
+            // Panel + battery system data
+            if (resultsData.panelBatterySystem) {
+                var panelBattery = resultsData.panelBatterySystem;
+                webhookData.panelBattery_monthlyGeneration = panelBattery.monthlyGeneration.toFixed(0);
+                webhookData.panelBattery_panelCount = panelBattery.panelCount;
+                webhookData.panelBattery_systemKw = panelBattery.systemKw.toFixed(1);
+                webhookData.panelBattery_batteryKwh = panelBattery.batteryKwh;
+                webhookData.panelBattery_systemCost = panelBattery.systemCost.toFixed(0);
+                webhookData.panelBattery_monthlySavings = panelBattery.monthlySavings.toFixed(0);
+                webhookData.panelBattery_annualSavings = panelBattery.annualSavings.toFixed(0);
+                webhookData.panelBattery_paybackYears = panelBattery.paybackYears.toFixed(2);
+                webhookData.panelBattery_25YearSavings = panelBattery.savings25Year.toFixed(0);
             }
         }
 
