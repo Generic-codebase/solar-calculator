@@ -14,6 +14,11 @@
         padding: 0;
     }
 
+    body {
+        background: linear-gradient(135deg, #e0f7fa 0%, #f0f9ff 50%, #fff9e6 100%);
+        min-height: 100vh;
+    }
+
     .solar-calculator {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         max-width: 1200px;
@@ -22,10 +27,13 @@
     }
 
     .calc-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(21, 82, 99, 0.15);
         padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-top: 4px solid #155263;
     }
 
@@ -74,16 +82,20 @@
     .form-input {
         width: 100%;
         padding: 0.75rem 1rem;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
         font-size: 1rem;
-        transition: border-color 0.2s;
+        transition: all 0.3s ease;
     }
 
     .form-input:focus {
         outline: none;
+        background: rgba(255, 255, 255, 0.7);
         border-color: #155263;
-        box-shadow: 0 0 0 3px rgba(21, 82, 99, 0.1);
+        box-shadow: 0 4px 20px rgba(21, 82, 99, 0.15);
     }
 
     .form-input.error {
@@ -102,11 +114,14 @@
     }
 
     .tip-box {
-        background-color: #f0f9ff;
-        border: 1px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1rem;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(96, 225, 224, 0.1);
     }
 
     .tip-box p {
@@ -125,11 +140,14 @@
     }
 
     .result-card {
-        background: linear-gradient(to right, #f0f9ff, #ffffff);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 2rem;
+        box-shadow: 0 8px 24px rgba(96, 225, 224, 0.12);
     }
 
     .result-header {
@@ -178,23 +196,26 @@
 
     .power-card {
         padding: 1.5rem;
-        border-radius: 8px;
-        border: 2px solid;
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     .power-card.low {
-        background-color: #eff6ff;
-        border-color: #93c5fd;
+        background: rgba(239, 246, 255, 0.6);
+        border-color: rgba(147, 197, 253, 0.4);
     }
 
     .power-card.medium {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-card.high {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-header {
@@ -253,19 +274,23 @@
     }
 
     .lvr-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
     }
 
     .serviceability-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
         margin-bottom: 2rem;
     }
 
@@ -309,11 +334,13 @@
     }
 
     .roi-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
         margin-bottom: 2rem;
     }
 
@@ -332,23 +359,26 @@
 
     .roi-box {
         padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .roi-box.blue {
-        background-color: #f0f9ff;
-        border-color: #60e1e0;
+        background: rgba(240, 249, 255, 0.6);
+        border-color: rgba(96, 225, 224, 0.3);
     }
 
     .roi-box.yellow {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.3);
     }
 
     .roi-box.green {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.3);
     }
 
     .roi-label {
@@ -383,20 +413,22 @@
     }
 
     .system-option-card {
-        background: white;
-        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .system-option-card.panel-only {
-        border: 3px solid #60e1e0;
-        background: linear-gradient(to bottom, #f0f9ff, #ffffff);
+        background: rgba(240, 249, 255, 0.5);
+        border-color: rgba(96, 225, 224, 0.4);
     }
 
     .system-option-card.panel-battery {
-        border: 3px solid #ffc93c;
-        background: linear-gradient(to bottom, #fffef0, #ffffff);
+        background: rgba(255, 254, 240, 0.5);
+        border-color: rgba(255, 201, 60, 0.4);
     }
 
     .system-option-header {
@@ -458,19 +490,25 @@
     }
 
     .system-cost-box {
-        background-color: #fffef0;
-        border: 1px solid #ffc93c;
-        border-radius: 8px;
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
     }
 
     .savings-box {
-        background: linear-gradient(to right, #f0f9ff, #fffef0);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(96, 225, 224, 0.1);
     }
 
     .chart-container {
@@ -480,10 +518,13 @@
     }
 
     .assumptions-box {
-        background-color: #f9fafb;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        background: rgba(249, 250, 251, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(209, 213, 219, 0.3);
+        border-radius: 12px;
         padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .assumptions-box p {
@@ -514,14 +555,17 @@
     }
 
     .green-loan-highlight {
-        background: linear-gradient(135deg, #fffef0 0%, #fff9d6 100%);
-        border: 2px solid #ffc93c;
-        border-radius: 12px;
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 16px;
         padding: 1.25rem;
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
         gap: 1rem;
+        box-shadow: 0 4px 16px rgba(255, 201, 60, 0.15);
     }
 
     .highlight-icon {
@@ -540,16 +584,18 @@
 
     .submit-btn {
         width: 100%;
-        background: linear-gradient(135deg, #155263 0%, #0d3a45 100%);
+        background: rgba(21, 82, 99, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         color: white;
         font-weight: 700;
         padding: 1rem 2rem;
-        border: none;
-        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
         font-size: 1.125rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 6px 20px rgba(21, 82, 99, 0.3);
+        box-shadow: 0 8px 24px rgba(21, 82, 99, 0.3);
         position: relative;
         overflow: hidden;
         letter-spacing: 0.5px;
@@ -572,8 +618,8 @@
     }
 
     .submit-btn:hover {
-        background: linear-gradient(135deg, #1a6577 0%, #155263 100%);
-        box-shadow: 0 10px 30px rgba(21, 82, 99, 0.5);
+        background: rgba(26, 101, 119, 0.95);
+        box-shadow: 0 12px 32px rgba(21, 82, 99, 0.4);
         transform: translateY(-2px);
     }
 
@@ -646,7 +692,9 @@
         width: 100%;
         height: 8px;
         border-radius: 5px;
-        background: #d1d5db;
+        background: rgba(209, 213, 219, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         outline: none;
         -webkit-appearance: none;
     }
@@ -681,11 +729,14 @@
     }
 
     .financing-section {
-        background: linear-gradient(to right, #f0f9ff, #ffffff);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(96, 225, 224, 0.1);
     }
 
     .financing-title {
@@ -812,12 +863,12 @@
 
         <div id="contactForm" class="contact-section">
             <h2 class="contact-title">Unlock Your Solar Financing Options</h2>
-            <p class="contact-subtitle" style="font-size: 1rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our financial advisor partners can help guide you through your finance options and make the top-up or refinance process easy.</p>
 
             <div class="green-loan-highlight">
                 <div class="highlight-icon">💰</div>
                 <div class="highlight-text">
-                    <strong>Limited Time: Up to $30,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
+                    <p style="margin: 0 0 0.75rem 0; font-size: 0.95rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our financial advisor partners can help guide you through your finance options and make the top-up or refinance process easy.</p>
+                    <strong style="font-size: 1.125rem;">Limited Time: Up to $30,000 cashback</strong> available from select banks when you refinance for solar + green loans from <strong>0% interest</strong>
                 </div>
             </div>
 
@@ -1413,11 +1464,11 @@
             html += '      <p class="roi-note">Based on household expenses</p>';
         }
         html += '    </div>';
-        html += '    <div class="roi-box yellow">';
+        html += '    <div class="roi-box blue">';
         html += '      <p class="roi-label">Annual Solar Savings (80% coverage)</p>';
         html += '      <p class="roi-value">$' + formatNumber(data.annualSolarSavings) + '</p>';
         html += '    </div>';
-        html += '    <div class="roi-box green">';
+        html += '    <div class="roi-box blue">';
         html += '      <p class="roi-label">Payback Period</p>';
         html += '      <p class="roi-value">' + data.paybackPeriod + ' years</p>';
         if (data.isFinanced) {
@@ -1435,19 +1486,19 @@
             html += '      <p class="roi-label">Annual Power Cost</p>';
             html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
             html += '    </div>';
-            html += '    <div class="roi-box blue">';
+            html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">Annual Daily Charges</p>';
             html += '      <p class="roi-value">$' + formatNumber(data.annualDailyCharges) + '</p>';
             html += '      <p class="roi-note">Fixed connection fees</p>';
             html += '    </div>';
-            html += '    <div class="roi-box green">';
+            html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">Annual Usage Cost</p>';
             html += '      <p class="roi-value">$' + formatNumber(data.annualUsageCost) + '</p>';
             html += '      <p class="roi-note">What you pay for power itself</p>';
             html += '    </div>';
             html += '  </div>';
             html += '  <div class="roi-grid" style="margin-top: 1rem;">';
-            html += '    <div class="roi-box blue">';
+            html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">Average Monthly kWh Usage</p>';
             html += '      <p class="roi-value">' + data.avgMonthlyKwh + ' kWh</p>';
             html += '    </div>';
@@ -1455,7 +1506,7 @@
             html += '      <p class="roi-label">Cost Per kWh (GST Inclusive)</p>';
             html += '      <p class="roi-value">$' + data.costPerKwh + '</p>';
             html += '    </div>';
-            html += '    <div class="roi-box green">';
+            html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
             var projected25YearCost = parseFloat(data.estimatedPowerCost) * 35.45; // 3% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
@@ -1474,7 +1525,7 @@
                     var sys = data.panelOnlySystem;
                     html += '<div class="system-option-card panel-only">';
                     html += '  <div class="system-option-header">';
-                    html += '    <h4 class="system-option-title">Panel-Only System (110%)</h4>';
+                    html += '    <h4 class="system-option-title">Panel-Only System - 110% Coverage</h4>';
                     html += '    <p class="system-option-subtitle">Replaces ~35% of winter bills, up to 80% of summer bills</p>';
                     html += '  </div>';
 
@@ -1521,7 +1572,7 @@
                     var sysBatt = data.panelBatterySystem;
                     html += '<div class="system-option-card panel-battery">';
                     html += '  <div class="system-option-header">';
-                    html += '    <h4 class="system-option-title">Panel + Battery System (135%)</h4>';
+                    html += '    <h4 class="system-option-title">Panel + Battery System - 135% Coverage</h4>';
                     html += '    <p class="system-option-subtitle">Replaces ~50% of winter bills, up to 100% of summer bills</p>';
                     html += '  </div>';
 
