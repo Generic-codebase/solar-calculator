@@ -431,11 +431,31 @@
     .system-option-card.panel-only {
         background: rgba(240, 249, 255, 0.5);
         border-color: rgba(96, 225, 224, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .system-option-card.panel-only.selected {
+        background: #60e1e0;
+        border-color: #60e1e0;
+    }
+
+    .system-option-card.panel-only.selected * {
+        color: white !important;
     }
 
     .system-option-card.panel-battery {
         background: rgba(255, 254, 240, 0.5);
         border-color: rgba(255, 201, 60, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .system-option-card.panel-battery.selected {
+        background: #ffc93c;
+        border-color: #ffc93c;
+    }
+
+    .system-option-card.panel-battery.selected * {
+        color: white !important;
     }
 
     .system-option-header {
@@ -1044,6 +1064,8 @@
     var chartInstance = null;
     var financingChartInstance = null;
     var quoteComparisonChartInstance = null;
+    var costBreakdownChartInstance = null;
+    var selectedSystem = 'panel-battery'; // Default to panel-battery
 
     var rawValues = {
         householdIncome: '',
@@ -1343,7 +1365,7 @@
             var annualKwhUsage = avgMonthlyKwh * 12;
             var panelWattage = 460; // 460W panels
             var sunHoursPerDay = 3.95; // NZ average sun hours
-            var exportRate = 0.18; // 18c per kWh export rate
+            var exportRate = 0.17; // 17c per kWh export rate
             var annualPriceIncrease = 0.025; // 2.5% inflation
             var savings25YearMultiplier = 30.82; // Geometric series multiplier for 2.5% over 25 years
 
@@ -1359,7 +1381,7 @@
             var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
             var panelOnlyNetCost = panelOnlySystemCost - bankCashback;
 
-            // Calconic savings: 45% self-consumption at retail, 55% export at 18c
+            // Calconic savings: 45% self-consumption at retail, 55% export at 17c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
             var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
@@ -1400,7 +1422,7 @@
             var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
             var panelBatteryNetCost = panelBatterySystemCost - bankCashback;
 
-            // Calconic savings: 75% self-consumption at retail, 25% export at 18c
+            // Calconic savings: 75% self-consumption at retail, 25% export at 17c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
             var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
@@ -1781,7 +1803,7 @@
                 // Panel-only system
                 if (data.panelOnlySystem) {
                     var sys = data.panelOnlySystem;
-                    html += '<div class="system-option-card panel-only">';
+                    html += '<div class="system-option-card panel-only" data-system="panel-only" style="cursor: pointer;">';
                     html += '  <div class="system-option-header">';
                     html += '    <h4 class="system-option-title">';
                     html += '      <span>Panel-Only System - 110% Coverage</span>';
@@ -1791,7 +1813,7 @@
                     html += '          <ul>';
                     html += '            <li>System generates <strong>110%</strong> of your annual kWh usage</li>';
                     html += '            <li>Only <strong>45% is self-consumed</strong> (used directly when sun shines)</li>';
-                    html += '            <li><strong>55% is exported</strong> to grid at lower rate (18c/kWh vs ~40-50c retail)</li>';
+                    html += '            <li><strong>55% is exported</strong> to grid at lower rate (17c/kWh vs ~40-50c retail)</li>';
                     html += '            <li>Solar only works during daytime - you still buy grid power at night</li>';
                     html += '            <li><strong>Bill coverage:</strong> ~35% winter, up to 80% summer</li>';
                     html += '            <li>Best for homes with high daytime power usage</li>';
@@ -1830,7 +1852,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Monthly Savings</span>';
-                    html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 18c</div></div>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 17c</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -1854,7 +1876,7 @@
                 // Panel + Battery system
                 if (data.panelBatterySystem) {
                     var sysBatt = data.panelBatterySystem;
-                    html += '<div class="system-option-card panel-battery">';
+                    html += '<div class="system-option-card panel-battery selected" data-system="panel-battery" style="cursor: pointer;">';
                     html += '  <div class="system-option-header">';
                     html += '    <h4 class="system-option-title">';
                     html += '      <span>Panel + Battery System - 135% Coverage</span>';
@@ -1909,7 +1931,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Monthly Savings</span>';
-                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export @ 18c</div></div>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export @ 17c</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -1964,6 +1986,12 @@
         } else {
             html += '    <p class="roi-note">Cash purchase - no financing costs</p>';
         }
+
+        // Add cost breakdown donut chart
+        html += '    <div style="margin-top: 1.5rem; max-width: 350px; margin-left: auto; margin-right: auto;">';
+        html += '      <canvas id="costBreakdownChart" style="max-height: 250px;"></canvas>';
+        html += '    </div>';
+        html += '    <div id="costBreakdownDetails" style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;"></div>';
         html += '  </div>';
 
         html += '  <div class="savings-box">';
@@ -2017,6 +2045,9 @@
         }
         if (quoteComparisonChartInstance) {
             quoteComparisonChartInstance.destroy();
+        }
+        if (costBreakdownChartInstance) {
+            costBreakdownChartInstance.destroy();
         }
 
         // Create main savings chart
@@ -2298,6 +2329,134 @@
             if (paybackMetricsDiv) {
                 paybackMetricsDiv.style.display = 'none';
             }
+        }
+
+        // Create cost breakdown chart based on selected system
+        createCostBreakdownChart(data);
+
+        // Add click handlers for system option cards
+        var systemCards = document.querySelectorAll('.system-option-card');
+        systemCards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                var systemType = this.getAttribute('data-system');
+                selectedSystem = systemType;
+
+                // Update selected state
+                systemCards.forEach(function(c) { c.classList.remove('selected'); });
+                this.classList.add('selected');
+
+                // Update cost breakdown chart
+                createCostBreakdownChart(data);
+            });
+        });
+    }
+
+    // Function to create cost breakdown donut chart
+    function createCostBreakdownChart(data) {
+        var costCtx = document.getElementById('costBreakdownChart');
+        var costDetailsDiv = document.getElementById('costBreakdownDetails');
+
+        if (!costCtx || !data) return;
+
+        // Destroy existing chart
+        if (costBreakdownChartInstance) {
+            costBreakdownChartInstance.destroy();
+        }
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate cost breakdown
+        var panelCost, installCost, batteryCost, financeCost;
+
+        if (selectedSystem === 'panel-battery') {
+            // Panel+Battery: (panels * 670) + (battery kWh * 850) + 6250
+            panelCost = systemData.panelCount * 670;
+            batteryCost = systemData.batteryKwh * 850;
+            installCost = 6250;
+        } else {
+            // Panel-only: panels * 675 + 3500
+            panelCost = systemData.panelCount * 675;
+            batteryCost = 0;
+            installCost = 3500;
+        }
+
+        financeCost = data.isFinanced ? (data.totalLoanPayments - systemData.systemCost) : 0;
+
+        var labels = [];
+        var values = [];
+        var colors = [];
+
+        labels.push('Solar Panels');
+        values.push(panelCost);
+        colors.push('#60e1e0');
+
+        labels.push('Installation & Project Costs');
+        values.push(installCost);
+        colors.push('#ffc93c');
+
+        if (batteryCost > 0) {
+            labels.push('Battery Storage');
+            values.push(batteryCost);
+            colors.push('#ff9a76');
+        }
+
+        if (financeCost > 0) {
+            labels.push('Finance Costs');
+            values.push(financeCost);
+            colors.push('#9ca3af');
+        }
+
+        // Create donut chart
+        costBreakdownChartInstance = new Chart(costCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                var value = context.parsed || 0;
+                                var total = context.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                var percentage = ((value / total) * 100).toFixed(1);
+                                return label + ': $' + formatNumber(value) + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Display breakdown details
+        if (costDetailsDiv) {
+            var detailsHtml = '<div style="text-align: center;">';
+            detailsHtml += '<strong>Cost Breakdown:</strong><br>';
+            for (var i = 0; i < labels.length; i++) {
+                detailsHtml += labels[i] + ': $' + formatNumber(values[i]) + '<br>';
+            }
+            detailsHtml += '</div>';
+            costDetailsDiv.innerHTML = detailsHtml;
         }
     }
 
