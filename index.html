@@ -958,6 +958,7 @@
                         <div style="height: 400px; position: relative;">
                             <canvas id="quoteComparisonChart"></canvas>
                         </div>
+                        <div id="quotePaybackMetrics" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -1033,7 +1034,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <script>
 (function() {
     'use strict';
@@ -1432,7 +1432,7 @@
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.04;
+        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.045;
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -1972,7 +1972,7 @@
         if (data.isFinanced) {
             html += '    <p class="roi-note">After deducting all financing costs ($' + formatNumber(data.totalLoanPayments) + ')</p>';
         } else {
-            html += '    <p class="roi-note">Based on 4% annual power price increase projection</p>';
+            html += '    <p class="roi-note">Based on 4.5% annual power price increase projection</p>';
         }
         html += '  </div>';
 
@@ -1991,7 +1991,7 @@
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years | Bank cashback: 1.5% of current lending/mortgage';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years | Bank cashback: 1.5% of current lending/mortgage';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
@@ -2163,14 +2163,13 @@
                 ];
 
                 var quoteDatasets = [];
-                var quoteAnnotations = {};
+                var quotePaybackData = [];
 
                 data.quotes.forEach(function(quote, index) {
                     var color = quoteColors[index % quoteColors.length];
 
                     // Calculate payback period (where savings >= cost)
                     var paybackYear = null;
-                    var paybackValue = null;
                     for (var i = 0; i < quote.data.length; i++) {
                         if (quote.data[i].savings >= quote.data[i].cost) {
                             // Linear interpolation for more accurate payback
@@ -2186,32 +2185,20 @@
                                 var fraction = -prevDiff / (currDiff - prevDiff);
 
                                 paybackYear = (i - 1) + fraction;
-                                paybackValue = prevCost + (currCost - prevCost) * fraction;
                             } else {
                                 paybackYear = i;
-                                paybackValue = quote.data[i].cost;
                             }
                             break;
                         }
                     }
 
-                    // Add annotation for payback period
+                    // Store payback data for display below chart
                     if (paybackYear !== null) {
-                        quoteAnnotations['payback' + index] = {
-                            type: 'label',
-                            xValue: paybackYear,
-                            yValue: paybackValue,
-                            backgroundColor: color.label,
-                            color: 'white',
-                            content: paybackYear.toFixed(1) + ' Year payback',
-                            font: {
-                                size: 11,
-                                weight: 'bold'
-                            },
-                            padding: 6,
-                            borderRadius: 6,
-                            position: 'center'
-                        };
+                        quotePaybackData.push({
+                            name: quote.name,
+                            payback: paybackYear,
+                            color: color.border
+                        });
                     }
 
                     // Add savings line for this quote
@@ -2258,9 +2245,6 @@
                                         return context.dataset.label + ': $' + formatNumber(context.parsed.y);
                                     }
                                 }
-                            },
-                            annotation: {
-                                annotations: quoteAnnotations
                             }
                         },
                         scales: {
@@ -2281,12 +2265,38 @@
                         }
                     }
                 });
+
+                // Display payback metrics below the chart
+                var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
+                if (paybackMetricsDiv && quotePaybackData.length > 0) {
+                    var metricsHtml = '<div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">';
+                    metricsHtml += '  <h6 style="margin: 0 0 1rem 0; color: #155263; font-size: 0.95rem; font-weight: 600;">Payback Periods</h6>';
+                    metricsHtml += '  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">';
+
+                    quotePaybackData.forEach(function(quote) {
+                        metricsHtml += '    <div style="text-align: center;">';
+                        metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">' + quote.name + '</div>';
+                        metricsHtml += '      <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + quote.payback.toFixed(1) + ' years</div>';
+                        metricsHtml += '    </div>';
+                    });
+
+                    metricsHtml += '  </div>';
+                    metricsHtml += '</div>';
+                    paybackMetricsDiv.innerHTML = metricsHtml;
+                    paybackMetricsDiv.style.display = 'block';
+                } else if (paybackMetricsDiv) {
+                    paybackMetricsDiv.style.display = 'none';
+                }
             }
         } else {
             // Hide the chart container if no quotes
             var quoteChartContainer = document.getElementById('quoteChartContainer');
             if (quoteChartContainer) {
                 quoteChartContainer.style.display = 'none';
+            }
+            var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
+            if (paybackMetricsDiv) {
+                paybackMetricsDiv.style.display = 'none';
             }
         }
     }
