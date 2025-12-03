@@ -947,6 +947,13 @@
                     <p style="margin: 0 0 1.5rem 0; font-size: 0.875rem; color: #6b7280;">Enter the system cost and estimated annual savings for each quote you've received (up to 3 quotes).</p>
 
                     <div id="quoteFields"></div>
+
+                    <div id="quoteChartContainer" style="display: none; margin-top: 2rem;">
+                        <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote Comparison Over 25 Years</h5>
+                        <div style="height: 400px; position: relative;">
+                            <canvas id="quoteComparisonChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1030,6 +1037,7 @@
     var resultsData = null;
     var chartInstance = null;
     var financingChartInstance = null;
+    var quoteComparisonChartInstance = null;
 
     var rawValues = {
         householdIncome: '',
@@ -1969,7 +1977,8 @@
 
         // Add financing chart if loan is used
         if (data.isFinanced) {
-            html += '  <h3 class="result-title" style="margin-top: 2rem;">Financing Cost vs Solar Savings</h3>';
+            html += '  <h3 class="result-title" style="margin-top: 2rem;">Estimated Financing Cost vs Solar Savings</h3>';
+            html += '  <p class="roi-note" style="text-align: center; margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">This is a high level estimate only, compare real quotes for a better financial estimate</p>';
             html += '  <div class="chart-container">';
             html += '    <canvas id="financingChart"></canvas>';
             html += '  </div>';
@@ -1999,6 +2008,9 @@
         }
         if (financingChartInstance) {
             financingChartInstance.destroy();
+        }
+        if (quoteComparisonChartInstance) {
+            quoteComparisonChartInstance.destroy();
         }
 
         // Create main savings chart
@@ -2067,7 +2079,7 @@
         if (data.isFinanced) {
             var financingCtx = document.getElementById('financingChart');
             if (financingCtx && typeof Chart !== 'undefined') {
-                // Build datasets array
+                // Build datasets array - only high-level estimates
                 var financingDatasets = [
                     {
                         label: 'Cumulative Solar Savings',
@@ -2086,42 +2098,6 @@
                         tension: 0.1
                     }
                 ];
-
-                // Add quote comparison lines if available
-                if (data.quotes && data.quotes.length > 0) {
-                    var quoteColors = [
-                        { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.1)' }, // Purple
-                        { border: '#fb923c', bg: 'rgba(251, 146, 60, 0.1)' }, // Orange
-                        { border: '#14b8a6', bg: 'rgba(20, 184, 166, 0.1)' }  // Teal
-                    ];
-
-                    data.quotes.forEach(function(quote, index) {
-                        var color = quoteColors[index % quoteColors.length];
-
-                        // Add savings line for this quote
-                        financingDatasets.push({
-                            label: quote.name + ' Savings',
-                            data: quote.data.map(function(d) { return d.savings; }),
-                            borderColor: color.border,
-                            backgroundColor: color.bg,
-                            fill: false,
-                            tension: 0.1,
-                            borderDash: [5, 5]
-                        });
-
-                        // Add cost line for this quote
-                        financingDatasets.push({
-                            label: quote.name + ' Cost',
-                            data: quote.data.map(function(d) { return d.cost; }),
-                            borderColor: color.border,
-                            backgroundColor: color.bg,
-                            fill: false,
-                            tension: 0.1,
-                            borderDash: [2, 2],
-                            borderWidth: 1
-                        });
-                    });
-                }
 
                 financingChartInstance = new Chart(financingCtx, {
                     type: 'line',
@@ -2162,6 +2138,99 @@
                         }
                     }
                 });
+            }
+        }
+
+        // Create quote comparison chart if quotes are available
+        if (data.quotes && data.quotes.length > 0) {
+            var quoteChartCtx = document.getElementById('quoteComparisonChart');
+            var quoteChartContainer = document.getElementById('quoteChartContainer');
+
+            if (quoteChartCtx && quoteChartContainer && typeof Chart !== 'undefined') {
+                // Show the chart container
+                quoteChartContainer.style.display = 'block';
+
+                var quoteColors = [
+                    { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.1)' }, // Purple
+                    { border: '#fb923c', bg: 'rgba(251, 146, 60, 0.1)' }, // Orange
+                    { border: '#14b8a6', bg: 'rgba(20, 184, 166, 0.1)' }  // Teal
+                ];
+
+                var quoteDatasets = [];
+
+                data.quotes.forEach(function(quote, index) {
+                    var color = quoteColors[index % quoteColors.length];
+
+                    // Add savings line for this quote
+                    quoteDatasets.push({
+                        label: quote.name + ' Savings',
+                        data: quote.data.map(function(d) { return d.savings; }),
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        fill: false,
+                        tension: 0.1,
+                        borderDash: [5, 5],
+                        borderWidth: 2
+                    });
+
+                    // Add cost line for this quote
+                    quoteDatasets.push({
+                        label: quote.name + ' Cost',
+                        data: quote.data.map(function(d) { return d.cost; }),
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        fill: false,
+                        tension: 0.1,
+                        borderDash: [2, 2],
+                        borderWidth: 2
+                    });
+                });
+
+                quoteComparisonChartInstance = new Chart(quoteChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.quotes[0].data.map(function(d) { return d.year; }),
+                        datasets: quoteDatasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': $' + formatNumber(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + formatNumber(value);
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        } else {
+            // Hide the chart container if no quotes
+            var quoteChartContainer = document.getElementById('quoteChartContainer');
+            if (quoteChartContainer) {
+                quoteChartContainer.style.display = 'none';
             }
         }
     }
