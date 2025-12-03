@@ -450,6 +450,81 @@
         font-weight: bold;
         color: #155263;
         margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .tooltip-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #60e1e0;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: help;
+        position: relative;
+    }
+
+    .tooltip-icon:hover .tooltip-content {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 1000;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(21, 82, 99, 0.98);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        text-align: left;
+        padding: 1rem;
+        border-radius: 12px;
+        width: 320px;
+        font-size: 0.875rem;
+        font-weight: normal;
+        line-height: 1.5;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .tooltip-content::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: rgba(21, 82, 99, 0.98) transparent transparent transparent;
+    }
+
+    .tooltip-content ul {
+        margin: 0.5rem 0 0 0;
+        padding-left: 1.25rem;
+    }
+
+    .tooltip-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .tooltip-content li:last-child {
+        margin-bottom: 0;
+    }
+
+    .tooltip-content strong {
+        color: #60e1e0;
     }
 
     .system-option-subtitle {
@@ -846,7 +921,7 @@
                             <label class="form-label">Loan Term</label>
                             <span class="slider-value" id="loanTermValue">Cash</span>
                         </div>
-                        <input type="range" id="loanTerm" class="form-slider" min="0" max="10" value="0" step="1">
+                        <input type="range" id="loanTerm" class="form-slider" min="0" max="20" value="0" step="1">
                     </div>
                 </div>
 
@@ -858,6 +933,20 @@
                         </div>
                         <input type="range" id="interestRate" class="form-slider" min="0" max="30" value="1" step="0.1">
                     </div>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 1.5rem;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                        <input type="checkbox" id="hasQuotes" style="width: auto; margin-right: 0.75rem; transform: scale(1.3);">
+                        Already have quotes? Compare them here
+                    </label>
+                </div>
+
+                <div id="quoteComparison" style="display: none; grid-column: 1 / -1; margin-top: 1rem; padding: 1.5rem; background: rgba(255, 254, 240, 0.4); border-radius: 12px; border: 1px solid rgba(255, 201, 60, 0.3);">
+                    <h4 style="margin: 0 0 1rem 0; color: #155263; font-size: 1.125rem;">Compare Your Quotes</h4>
+                    <p style="margin: 0 0 1.5rem 0; font-size: 0.875rem; color: #6b7280;">Enter the system cost and estimated annual savings for each quote you've received (up to 3 quotes).</p>
+
+                    <div id="quoteFields"></div>
                 </div>
             </div>
         </div>
@@ -1060,6 +1149,65 @@
                 interestRateValue.textContent = value.toFixed(1) + '%';
                 scheduleCalculation();
             });
+        }
+
+        // Quote comparison checkbox
+        var hasQuotesCheckbox = document.getElementById('hasQuotes');
+        var quoteComparisonDiv = document.getElementById('quoteComparison');
+        var quoteFieldsDiv = document.getElementById('quoteFields');
+
+        if (hasQuotesCheckbox && quoteComparisonDiv && quoteFieldsDiv) {
+            hasQuotesCheckbox.addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    quoteComparisonDiv.style.display = 'block';
+                    generateQuoteFields();
+                } else {
+                    quoteComparisonDiv.style.display = 'none';
+                }
+                scheduleCalculation();
+            });
+        }
+
+        function generateQuoteFields() {
+            var html = '';
+            for (var i = 1; i <= 3; i++) {
+                html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.6); border-radius: 8px; border: 1px solid rgba(0, 0, 0, 0.1);">';
+                html += '  <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote ' + i + '</h5>';
+                html += '  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">';
+                html += '    <div>';
+                html += '      <label class="form-label">System Cost ($)</label>';
+                html += '      <input type="text" id="quote' + i + 'Cost" class="form-input" placeholder="e.g., 25000">';
+                html += '    </div>';
+                html += '    <div>';
+                html += '      <label class="form-label">Annual Savings ($)</label>';
+                html += '      <input type="text" id="quote' + i + 'Savings" class="form-input" placeholder="e.g., 2500">';
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            }
+            quoteFieldsDiv.innerHTML = html;
+
+            // Add event listeners to quote fields
+            for (var i = 1; i <= 3; i++) {
+                (function(quoteNum) {
+                    var costField = document.getElementById('quote' + quoteNum + 'Cost');
+                    var savingsField = document.getElementById('quote' + quoteNum + 'Savings');
+
+                    if (costField) {
+                        costField.addEventListener('input', function(e) {
+                            e.target.value = formatCurrency(e.target.value);
+                            scheduleCalculation();
+                        });
+                    }
+
+                    if (savingsField) {
+                        savingsField.addEventListener('input', function(e) {
+                            e.target.value = formatCurrency(e.target.value);
+                            scheduleCalculation();
+                        });
+                    }
+                })(i);
+            }
         }
     }
 
@@ -1309,8 +1457,8 @@
         var chartData = [];
         var financingChartData = [];
         var cumulativeSolarSavings = 0;
-        var cumulativePowerCostWithoutSolar = annualPowerCost;
-        var cumulativePowerCostWithSolar = annualPowerCost * (1 - solarCoveragePercent);
+        var cumulativePowerCostWithoutSolar = 0;
+        var cumulativePowerCostWithSolar = isFinanced ? 0 : solarSystemCost; // System cost at year 0 for cash
         var cumulativeFinancingCost = 0;
 
         for (var year = 0; year <= 25; year++) {
@@ -1319,7 +1467,7 @@
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
-            if (isFinanced && year <= loanTerm) {
+            if (isFinanced && year > 0 && year <= loanTerm) {
                 yearlyFinancingCost = monthlyLoanPayment * 12;
             }
 
@@ -1333,13 +1481,13 @@
             chartData.push({
                 year: year,
                 withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
-                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : solarSystemCost))
+                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : 0))
             });
 
             // Financing chart data: annual solar savings vs financing costs
             financingChartData.push({
                 year: year,
-                solarSavings: year === 0 ? 0 : Math.round(cumulativeSolarSavings),
+                solarSavings: Math.round(cumulativeSolarSavings),
                 financingCost: Math.round(cumulativeFinancingCost)
             });
         }
@@ -1348,6 +1496,58 @@
         var net25YearSavings = isFinanced ?
             (cumulativeSolarSavings - totalLoanPayments) :
             (cumulativeSolarSavings - solarSystemCost);
+
+        // Collect quote comparison data
+        var quotes = [];
+        var hasQuotesChecked = document.getElementById('hasQuotes') && document.getElementById('hasQuotes').checked;
+        if (hasQuotesChecked) {
+            for (var i = 1; i <= 3; i++) {
+                var costEl = document.getElementById('quote' + i + 'Cost');
+                var savingsEl = document.getElementById('quote' + i + 'Savings');
+                var cost = costEl ? parseFloat(costEl.value.replace(/,/g, '')) : 0;
+                var savings = savingsEl ? parseFloat(savingsEl.value.replace(/,/g, '')) : 0;
+
+                if (cost > 0 && savings > 0) {
+                    var quoteData = [];
+                    var cumulativeQuoteSavings = 0;
+                    var cumulativeQuoteCost = isFinanced ? 0 : cost; // If financed, cost starts at 0
+                    var monthlyQuotePayment = 0;
+
+                    if (isFinanced && loanTerm > 0) {
+                        var loanRate = interestRate / 100 / 12;
+                        var numPayments = loanTerm * 12;
+                        monthlyQuotePayment = cost * (loanRate * Math.pow(1 + loanRate, numPayments)) / (Math.pow(1 + loanRate, numPayments) - 1);
+                    }
+
+                    for (var y = 0; y <= 25; y++) {
+                        var yearlyQuoteFinancingCost = 0;
+                        if (isFinanced && y > 0 && y <= loanTerm) {
+                            yearlyQuoteFinancingCost = monthlyQuotePayment * 12;
+                        }
+
+                        if (y > 0) {
+                            // Apply 2.5% inflation to savings
+                            var inflatedSavings = savings * Math.pow(1.025, y - 1);
+                            cumulativeQuoteSavings += inflatedSavings;
+                            cumulativeQuoteCost += yearlyQuoteFinancingCost;
+                        }
+
+                        quoteData.push({
+                            year: y,
+                            savings: Math.round(cumulativeQuoteSavings),
+                            cost: Math.round(cumulativeQuoteCost)
+                        });
+                    }
+
+                    quotes.push({
+                        name: 'Quote ' + i,
+                        cost: cost,
+                        annualSavings: savings,
+                        data: quoteData
+                    });
+                }
+            }
+        }
 
         resultsData = {
             lvr: lvr.toFixed(2),
@@ -1381,7 +1581,8 @@
             avgMonthlyKwh: avgMonthlyKwh.toFixed(0),
             costPerKwh: costPerKwh.toFixed(4),
             panelOnlySystem: panelOnlySystem,
-            panelBatterySystem: panelBatterySystem
+            panelBatterySystem: panelBatterySystem,
+            quotes: quotes
         };
 
         displayResults(resultsData);
@@ -1568,7 +1769,22 @@
                     var sys = data.panelOnlySystem;
                     html += '<div class="system-option-card panel-only">';
                     html += '  <div class="system-option-header">';
-                    html += '    <h4 class="system-option-title">Panel-Only System - 110% Coverage</h4>';
+                    html += '    <h4 class="system-option-title">';
+                    html += '      <span>Panel-Only System - 110% Coverage</span>';
+                    html += '      <span class="tooltip-icon">?';
+                    html += '        <div class="tooltip-content">';
+                    html += '          <strong>What does 110% coverage mean?</strong>';
+                    html += '          <ul>';
+                    html += '            <li>System generates <strong>110%</strong> of your annual kWh usage</li>';
+                    html += '            <li>Only <strong>45% is self-consumed</strong> (used directly when sun shines)</li>';
+                    html += '            <li><strong>55% is exported</strong> to grid at lower rate (18c/kWh vs ~40-50c retail)</li>';
+                    html += '            <li>Solar only works during daytime - you still buy grid power at night</li>';
+                    html += '            <li><strong>Bill coverage:</strong> ~35% winter, up to 80% summer</li>';
+                    html += '            <li>Best for homes with high daytime power usage</li>';
+                    html += '          </ul>';
+                    html += '        </div>';
+                    html += '      </span>';
+                    html += '    </h4>';
                     html += '    <p class="system-option-subtitle">Generates 110% of your annual usage, but only 45% is self-consumed (rest exported at lower rate). Best for high daytime power use.</p>';
                     html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~35% of winter bills, up to 80% of summer bills</p>';
                     html += '  </div>';
@@ -1626,7 +1842,23 @@
                     var sysBatt = data.panelBatterySystem;
                     html += '<div class="system-option-card panel-battery">';
                     html += '  <div class="system-option-header">';
-                    html += '    <h4 class="system-option-title">Panel + Battery System - 135% Coverage</h4>';
+                    html += '    <h4 class="system-option-title">';
+                    html += '      <span>Panel + Battery System - 135% Coverage</span>';
+                    html += '      <span class="tooltip-icon">?';
+                    html += '        <div class="tooltip-content">';
+                    html += '          <strong>What does 135% coverage mean?</strong>';
+                    html += '          <ul>';
+                    html += '            <li>System generates <strong>135%</strong> of your annual kWh usage</li>';
+                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for nighttime)</li>';
+                    html += '            <li>Only <strong>25% is exported</strong> to grid</li>';
+                    html += '            <li>Extra 25% (vs 110%) accounts for battery charging/discharging efficiency (~10-15% loss)</li>';
+                    html += '            <li>Battery provides power during evening/night when solar stops</li>';
+                    html += '            <li><strong>Bill coverage:</strong> ~50% winter, up to 100% summer</li>';
+                    html += '            <li>Better bill coverage despite needing more generation</li>';
+                    html += '          </ul>';
+                    html += '        </div>';
+                    html += '      </span>';
+                    html += '    </h4>';
                     html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for nighttime use). Extra 25% accounts for battery charging efficiency.</p>';
                     html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~50% of winter bills, up to 100% of summer bills</p>';
                     html += '  </div>';
@@ -1835,28 +2067,67 @@
         if (data.isFinanced) {
             var financingCtx = document.getElementById('financingChart');
             if (financingCtx && typeof Chart !== 'undefined') {
+                // Build datasets array
+                var financingDatasets = [
+                    {
+                        label: 'Cumulative Solar Savings',
+                        data: data.financingChartData.map(function(d) { return d.solarSavings; }),
+                        borderColor: '#60e1e0',
+                        backgroundColor: 'rgba(96, 225, 224, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Cumulative Financing Cost',
+                        data: data.financingChartData.map(function(d) { return d.financingCost; }),
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }
+                ];
+
+                // Add quote comparison lines if available
+                if (data.quotes && data.quotes.length > 0) {
+                    var quoteColors = [
+                        { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.1)' }, // Purple
+                        { border: '#fb923c', bg: 'rgba(251, 146, 60, 0.1)' }, // Orange
+                        { border: '#14b8a6', bg: 'rgba(20, 184, 166, 0.1)' }  // Teal
+                    ];
+
+                    data.quotes.forEach(function(quote, index) {
+                        var color = quoteColors[index % quoteColors.length];
+
+                        // Add savings line for this quote
+                        financingDatasets.push({
+                            label: quote.name + ' Savings',
+                            data: quote.data.map(function(d) { return d.savings; }),
+                            borderColor: color.border,
+                            backgroundColor: color.bg,
+                            fill: false,
+                            tension: 0.1,
+                            borderDash: [5, 5]
+                        });
+
+                        // Add cost line for this quote
+                        financingDatasets.push({
+                            label: quote.name + ' Cost',
+                            data: quote.data.map(function(d) { return d.cost; }),
+                            borderColor: color.border,
+                            backgroundColor: color.bg,
+                            fill: false,
+                            tension: 0.1,
+                            borderDash: [2, 2],
+                            borderWidth: 1
+                        });
+                    });
+                }
+
                 financingChartInstance = new Chart(financingCtx, {
                     type: 'line',
                     data: {
                         labels: data.financingChartData.map(function(d) { return d.year; }),
-                        datasets: [
-                            {
-                                label: 'Cumulative Solar Savings',
-                                data: data.financingChartData.map(function(d) { return d.solarSavings; }),
-                                borderColor: '#60e1e0',
-                                backgroundColor: 'rgba(96, 225, 224, 0.2)',
-                                fill: true,
-                                tension: 0.1
-                            },
-                            {
-                                label: 'Cumulative Financing Cost',
-                                data: data.financingChartData.map(function(d) { return d.financingCost; }),
-                                borderColor: '#ff6b6b',
-                                backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                                fill: true,
-                                tension: 0.1
-                            }
-                        ]
+                        datasets: financingDatasets
                     },
                     options: {
                         responsive: true,
