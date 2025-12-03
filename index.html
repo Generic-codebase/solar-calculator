@@ -1028,6 +1028,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <script>
 (function() {
     'use strict';
@@ -2151,22 +2152,69 @@
                 quoteChartContainer.style.display = 'block';
 
                 var quoteColors = [
-                    { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.1)' }, // Purple
-                    { border: '#fb923c', bg: 'rgba(251, 146, 60, 0.1)' }, // Orange
-                    { border: '#14b8a6', bg: 'rgba(20, 184, 166, 0.1)' }  // Teal
+                    { border: '#9333ea', bg: 'rgba(147, 51, 234, 1)', label: 'rgba(147, 51, 234, 0.95)' }, // Purple
+                    { border: '#fb923c', bg: 'rgba(251, 146, 60, 1)', label: 'rgba(251, 146, 60, 0.95)' }, // Orange
+                    { border: '#14b8a6', bg: 'rgba(20, 184, 166, 1)', label: 'rgba(20, 184, 166, 0.95)' }  // Teal
                 ];
 
                 var quoteDatasets = [];
+                var quoteAnnotations = {};
 
                 data.quotes.forEach(function(quote, index) {
                     var color = quoteColors[index % quoteColors.length];
+
+                    // Calculate payback period (where savings >= cost)
+                    var paybackYear = null;
+                    var paybackValue = null;
+                    for (var i = 0; i < quote.data.length; i++) {
+                        if (quote.data[i].savings >= quote.data[i].cost) {
+                            // Linear interpolation for more accurate payback
+                            if (i > 0) {
+                                var prevSavings = quote.data[i-1].savings;
+                                var prevCost = quote.data[i-1].cost;
+                                var currSavings = quote.data[i].savings;
+                                var currCost = quote.data[i].cost;
+
+                                // Calculate the fraction of the year where crossover happens
+                                var prevDiff = prevSavings - prevCost;
+                                var currDiff = currSavings - currCost;
+                                var fraction = -prevDiff / (currDiff - prevDiff);
+
+                                paybackYear = (i - 1) + fraction;
+                                paybackValue = prevCost + (currCost - prevCost) * fraction;
+                            } else {
+                                paybackYear = i;
+                                paybackValue = quote.data[i].cost;
+                            }
+                            break;
+                        }
+                    }
+
+                    // Add annotation for payback period
+                    if (paybackYear !== null) {
+                        quoteAnnotations['payback' + index] = {
+                            type: 'label',
+                            xValue: paybackYear,
+                            yValue: paybackValue,
+                            backgroundColor: color.label,
+                            color: 'white',
+                            content: paybackYear.toFixed(1) + ' Year payback',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            },
+                            padding: 6,
+                            borderRadius: 6,
+                            position: 'center'
+                        };
+                    }
 
                     // Add savings line for this quote
                     quoteDatasets.push({
                         label: quote.name + ' Savings',
                         data: quote.data.map(function(d) { return d.savings; }),
                         borderColor: color.border,
-                        backgroundColor: color.bg,
+                        backgroundColor: 'rgba(0,0,0,0)',
                         fill: false,
                         tension: 0.1,
                         borderDash: [5, 5],
@@ -2178,7 +2226,7 @@
                         label: quote.name + ' Cost',
                         data: quote.data.map(function(d) { return d.cost; }),
                         borderColor: color.border,
-                        backgroundColor: color.bg,
+                        backgroundColor: 'rgba(0,0,0,0)',
                         fill: false,
                         tension: 0.1,
                         borderDash: [2, 2],
@@ -2205,6 +2253,9 @@
                                         return context.dataset.label + ': $' + formatNumber(context.parsed.y);
                                     }
                                 }
+                            },
+                            annotation: {
+                                annotations: quoteAnnotations
                             }
                         },
                         scales: {
