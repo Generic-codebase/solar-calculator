@@ -429,14 +429,14 @@
     }
 
     .system-option-card.panel-only {
-        background: rgba(240, 249, 255, 0.5);
-        border-color: rgba(96, 225, 224, 0.4);
+        background: white;
+        border-color: rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
     }
 
     .system-option-card.panel-only.selected {
-        background: #60e1e0;
-        border-color: #60e1e0;
+        background: #155263;
+        border-color: #155263;
     }
 
     .system-option-card.panel-only.selected * {
@@ -444,8 +444,8 @@
     }
 
     .system-option-card.panel-battery {
-        background: rgba(255, 254, 240, 0.5);
-        border-color: rgba(255, 201, 60, 0.4);
+        background: white;
+        border-color: rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
     }
 
@@ -1752,7 +1752,7 @@
         html += '      <p class="roi-label">Payback Period</p>';
         html += '      <p class="roi-value">' + data.paybackPeriod + ' years</p>';
         if (data.isFinanced) {
-            html += '      <p class="roi-note">Including financing costs</p>';
+            html += '      <p class="roi-note">Including financing costs - excluding cashback from refinancing</p>';
         }
         html += '    </div>';
         html += '  </div>';
@@ -2367,8 +2367,8 @@
         var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
         if (!systemData) return;
 
-        // Calculate cost breakdown
-        var panelCost, installCost, batteryCost, financeCost;
+        // Calculate cost breakdown (before financing)
+        var panelCost, installCost, batteryCost;
 
         if (selectedSystem === 'panel-battery') {
             // Panel+Battery: (panels * 670) + (battery kWh * 850) + 6250
@@ -2381,8 +2381,6 @@
             batteryCost = 0;
             installCost = 3500;
         }
-
-        financeCost = data.isFinanced ? (data.totalLoanPayments - systemData.systemCost) : 0;
 
         var labels = [];
         var values = [];
@@ -2400,12 +2398,6 @@
             labels.push('Battery Storage');
             values.push(batteryCost);
             colors.push('#ff9a76');
-        }
-
-        if (financeCost > 0) {
-            labels.push('Finance Costs');
-            values.push(financeCost);
-            colors.push('#9ca3af');
         }
 
         // Create donut chart
