@@ -1788,9 +1788,9 @@
             html += '    </div>';
             html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
-            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 35.45; // 3% inflation over 25 years
+            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 44.57; // 4.5% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
-            html += '      <p class="roi-note">If you don\'t get solar (3% annual inflation)</p>';
+            html += '      <p class="roi-note">If you don\'t get solar (4.5% annual inflation)</p>';
             html += '    </div>';
             html += '  </div>';
             html += '</div>';
@@ -1958,22 +1958,9 @@
 
         // Financing Details (if loan is used)
         if (data.isFinanced) {
-            html += '  <div class="system-cost-box" style="background-color: #f0f9ff; border-color: #60e1e0;">';
+            html += '  <div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0;">';
             html += '    <p class="roi-label">Loan Financing Details</p>';
-            html += '    <div class="roi-grid" style="margin-bottom: 0;">';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(data.monthlyLoanPayment) + '</p>';
-            html += '      </div>';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Loan Term</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">' + data.loanTerm + ' years @ ' + data.interestRate + '%</p>';
-            html += '      </div>';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(data.totalInterestPaid) + '</p>';
-            html += '      </div>';
-            html += '    </div>';
+            html += '    <div id="financingDetailsContent"></div>';
             html += '  </div>';
         }
         html += '  </div>';
@@ -2334,6 +2321,9 @@
         // Create cost breakdown chart based on selected system
         createCostBreakdownChart(data);
 
+        // Update financing details based on selected system
+        updateFinancingDetails(data);
+
         // Add click handlers for system option cards
         var systemCards = document.querySelectorAll('.system-option-card');
         systemCards.forEach(function(card) {
@@ -2347,8 +2337,50 @@
 
                 // Update cost breakdown chart
                 createCostBreakdownChart(data);
+
+                // Update financing details
+                updateFinancingDetails(data);
             });
         });
+    }
+
+    // Function to update financing details based on selected system
+    function updateFinancingDetails(data) {
+        var financingDetailsDiv = document.getElementById('financingDetailsContent');
+        if (!financingDetailsDiv || !data.isFinanced) return;
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate financing for selected system
+        var systemCost = systemData.systemCost;
+        var loanTerm = data.loanTerm;
+        var interestRate = data.interestRate;
+
+        var monthlyRate = interestRate / 100 / 12;
+        var numPayments = loanTerm * 12;
+        var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        var totalPayments = monthlyPayment * numPayments;
+        var totalInterest = totalPayments - systemCost;
+
+        var html = '';
+        html += '<div class="roi-grid" style="margin-bottom: 0;">';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(monthlyPayment.toFixed(2)) + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Loan Term</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + loanTerm + ' years @ ' + interestRate + '%</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(totalInterest.toFixed(2)) + '</p>';
+        html += '  </div>';
+        html += '</div>';
+
+        financingDetailsDiv.innerHTML = html;
     }
 
     // Function to create cost breakdown donut chart
@@ -2367,8 +2399,8 @@
         var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
         if (!systemData) return;
 
-        // Calculate cost breakdown (before financing)
-        var panelCost, installCost, batteryCost;
+        // Calculate cost breakdown
+        var panelCost, installCost, batteryCost, interestCost;
 
         if (selectedSystem === 'panel-battery') {
             // Panel+Battery: (panels * 670) + (battery kWh * 850) + 6250
@@ -2380,6 +2412,19 @@
             panelCost = systemData.panelCount * 675;
             batteryCost = 0;
             installCost = 3500;
+        }
+
+        // Calculate interest if financed
+        interestCost = 0;
+        if (data.isFinanced) {
+            var systemCost = systemData.systemCost;
+            var loanTerm = data.loanTerm;
+            var interestRate = data.interestRate;
+            var monthlyRate = interestRate / 100 / 12;
+            var numPayments = loanTerm * 12;
+            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            var totalPayments = monthlyPayment * numPayments;
+            interestCost = totalPayments - systemCost;
         }
 
         var labels = [];
@@ -2398,6 +2443,12 @@
             labels.push('Battery Storage');
             values.push(batteryCost);
             colors.push('#ff9a76');
+        }
+
+        if (interestCost > 0) {
+            labels.push('Finance Interest');
+            values.push(interestCost);
+            colors.push('#9ca3af');
         }
 
         // Create donut chart
