@@ -2276,24 +2276,21 @@
 
                     // Calculate payback period (where savings >= cost)
                     var paybackYear = null;
-                    for (var i = 0; i < quote.data.length; i++) {
+                    // Start from year 1 since year 0 has both savings and cost at 0
+                    for (var i = 1; i < quote.data.length; i++) {
                         if (quote.data[i].savings >= quote.data[i].cost) {
                             // Linear interpolation for more accurate payback
-                            if (i > 0) {
-                                var prevSavings = quote.data[i-1].savings;
-                                var prevCost = quote.data[i-1].cost;
-                                var currSavings = quote.data[i].savings;
-                                var currCost = quote.data[i].cost;
+                            var prevSavings = quote.data[i-1].savings;
+                            var prevCost = quote.data[i-1].cost;
+                            var currSavings = quote.data[i].savings;
+                            var currCost = quote.data[i].cost;
 
-                                // Calculate the fraction of the year where crossover happens
-                                var prevDiff = prevSavings - prevCost;
-                                var currDiff = currSavings - currCost;
-                                var fraction = -prevDiff / (currDiff - prevDiff);
+                            // Calculate the fraction of the year where crossover happens
+                            var prevDiff = prevSavings - prevCost;
+                            var currDiff = currSavings - currCost;
+                            var fraction = -prevDiff / (currDiff - prevDiff);
 
-                                paybackYear = (i - 1) + fraction;
-                            } else {
-                                paybackYear = i;
-                            }
+                            paybackYear = (i - 1) + fraction;
                             break;
                         }
                     }
