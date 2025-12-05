@@ -2046,28 +2046,37 @@
 
         html += '  <div class="system-cost-box">';
         html += '    <p class="roi-label">Estimated Solar System Cost</p>';
-        html += '    <p class="roi-value">$' + formatNumber(data.solarSystemCost) + '</p>';
-        if (data.isFinanced) {
-            html += '    <p class="roi-note">Total financed cost: $' + formatNumber(data.totalLoanPayments) + ' (' + data.loanTerm + ' year loan @ ' + data.interestRate + '%)</p>';
-        } else {
-            html += '    <p class="roi-note">Cash purchase - no financing costs</p>';
-        }
+        html += '    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">';
+
+        // System Cost
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(96, 225, 224, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">System Cost</p>';
+        html += '        <p id="dynamicSystemCost" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">$' + formatNumber(data.solarSystemCost) + '</p>';
+        html += '        <p id="dynamicSystemCostNote" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'Total financed: $' + formatNumber(data.totalLoanPayments) : 'Cash purchase') + '</p>';
+        html += '      </div>';
+
+        // 25-Year Net Savings
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(255, 201, 60, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">25-Year Net Savings</p>';
+        html += '        <p id="dynamic25YearSavings" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">$' + formatNumber(data.total25YearSavings) + '</p>';
+        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'After financing costs' : 'Based on 4.5% inflation') + '</p>';
+        html += '      </div>';
+
+        // Solar ROI
+        var solarROI = ((parseFloat(data.total25YearSavings) / parseFloat(data.solarSystemCost)) * 100).toFixed(0);
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(255, 154, 118, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Solar ROI (25 Years)</p>';
+        html += '        <p id="dynamicSolarROI" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">' + solarROI + '%</p>';
+        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">Return on investment</p>';
+        html += '      </div>';
+
+        html += '    </div>';
 
         // Add cost breakdown donut chart
         html += '    <div style="margin-top: 1.5rem; max-width: 350px; margin-left: auto; margin-right: auto;">';
         html += '      <canvas id="costBreakdownChart" style="max-height: 250px;"></canvas>';
         html += '    </div>';
         html += '    <div id="costBreakdownDetails" style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;"></div>';
-        html += '  </div>';
-
-        html += '  <div class="savings-box">';
-        html += '    <p class="roi-label">Total 25-Year Net Savings</p>';
-        html += '    <p class="roi-value">$' + formatNumber(data.total25YearSavings) + '</p>';
-        if (data.isFinanced) {
-            html += '    <p class="roi-note">After deducting all financing costs ($' + formatNumber(data.totalLoanPayments) + ')</p>';
-        } else {
-            html += '    <p class="roi-note">Based on 4.5% annual power price increase projection</p>';
-        }
         html += '  </div>';
 
         html += '  <h3 class="result-title" style="margin-top: 2rem;">Power Costs Over Time</h3>';
@@ -2291,10 +2300,18 @@
 
                     // Store payback data for display below chart
                     if (paybackYear !== null) {
+                        // Calculate 25-year ROI: (total savings - cost) / cost * 100
+                        var total25YearSavings = quote.data[25].savings;
+                        var quoteCost = quote.cost;
+                        var quoteROI = ((total25YearSavings / quoteCost) * 100).toFixed(0);
+
                         quotePaybackData.push({
                             name: quote.name,
                             payback: paybackYear,
-                            color: color.border
+                            color: color.border,
+                            roi: quoteROI,
+                            cost: quoteCost,
+                            annualSavings: quote.annualSavings
                         });
                     }
 
@@ -2375,10 +2392,30 @@
 
                     var rankings = ['🥇 1st Place', '🥈 2nd Place', '🥉 3rd Place'];
                     quotePaybackData.forEach(function(quote, index) {
-                        metricsHtml += '    <div style="text-align: center; padding: 1rem; background: white; border-radius: 8px; border: 2px solid ' + quote.color + ';">';
+                        // Convert payback to years and months
+                        var years = Math.floor(quote.payback);
+                        var months = Math.round((quote.payback - years) * 12);
+                        var paybackText = years + ' yr' + (years !== 1 ? 's' : '');
+                        if (months > 0) {
+                            paybackText += ' ' + months + ' mo' + (months !== 1 ? 's' : '');
+                        }
+
+                        metricsHtml += '    <div style="text-align: center; padding: 1.25rem; background: white; border-radius: 8px; border: 2px solid ' + quote.color + ';">';
                         metricsHtml += '      <div style="font-size: 1rem; font-weight: bold; color: #155263; margin-bottom: 0.25rem;">' + rankings[index] + '</div>';
-                        metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">' + quote.name + '</div>';
-                        metricsHtml += '      <div style="font-size: 1.5rem; font-weight: bold; color: ' + quote.color + ';">' + quote.payback.toFixed(1) + ' years</div>';
+                        metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">' + quote.name + '</div>';
+
+                        // Payback Period
+                        metricsHtml += '      <div style="margin-bottom: 0.75rem;">';
+                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payback Period</div>';
+                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + paybackText + '</div>';
+                        metricsHtml += '      </div>';
+
+                        // 25-Year ROI
+                        metricsHtml += '      <div>';
+                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">25-Year ROI</div>';
+                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + quote.roi + '%</div>';
+                        metricsHtml += '      </div>';
+
                         metricsHtml += '    </div>';
                     });
 
@@ -2408,6 +2445,9 @@
         // Update financing details based on selected system
         updateFinancingDetails(data);
 
+        // Update system cost metrics based on selected system
+        updateSystemCostMetrics(data);
+
         // Update main charts based on selected system
         updateMainCharts(data);
 
@@ -2427,6 +2467,9 @@
 
                 // Update financing details
                 updateFinancingDetails(data);
+
+                // Update system cost metrics
+                updateSystemCostMetrics(data);
 
                 // Update main charts
                 updateMainCharts(data);
@@ -2503,6 +2546,51 @@
         html += '</div>';
 
         financingDetailsDiv.innerHTML = html;
+    }
+
+    // Function to update system cost metrics based on selected system
+    function updateSystemCostMetrics(data) {
+        var systemCostEl = document.getElementById('dynamicSystemCost');
+        var systemCostNoteEl = document.getElementById('dynamicSystemCostNote');
+        var savings25YearEl = document.getElementById('dynamic25YearSavings');
+        var solarROIEl = document.getElementById('dynamicSolarROI');
+
+        if (!systemCostEl || !data) return;
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        var systemCost = systemData.systemCost;
+        var savings25Year = systemData.savings25Year;
+
+        // Calculate financing if applicable
+        var totalFinancedCost = systemCost;
+        if (data.isFinanced) {
+            var loanTerm = data.loanTerm;
+            var interestRate = data.interestRate;
+            var monthlyRate = interestRate / 100 / 12;
+            var numPayments = loanTerm * 12;
+            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            totalFinancedCost = monthlyPayment * numPayments;
+        }
+
+        // Calculate Solar ROI
+        var solarROI = ((savings25Year / systemCost) * 100).toFixed(0);
+
+        // Update the display
+        systemCostEl.textContent = '$' + formatNumber(systemCost.toFixed(0));
+        if (systemCostNoteEl) {
+            systemCostNoteEl.textContent = data.isFinanced ? 'Total financed: $' + formatNumber(totalFinancedCost.toFixed(0)) : 'Cash purchase';
+        }
+
+        if (savings25YearEl) {
+            savings25YearEl.textContent = '$' + formatNumber(savings25Year.toFixed(0));
+        }
+
+        if (solarROIEl) {
+            solarROIEl.textContent = solarROI + '%';
+        }
     }
 
     // Function to create cost breakdown donut chart
