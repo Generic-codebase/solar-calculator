@@ -1815,26 +1815,6 @@
         // ROI Card
         html += '<div class="roi-card">';
         html += '  <h3 class="result-title">Solar Investment Returns (25 Year Projection)</h3>';
-        html += '  <div class="roi-grid">';
-        html += '    <div class="roi-box blue">';
-        html += '      <p class="roi-label">' + (data.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost') + '</p>';
-        html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
-        if (data.calculationMethod === 'expenses') {
-            html += '      <p class="roi-note">Based on household expenses</p>';
-        }
-        html += '    </div>';
-        html += '    <div class="roi-box blue">';
-        html += '      <p class="roi-label">Annual Solar Savings (80% coverage)</p>';
-        html += '      <p class="roi-value">$' + formatNumber(data.annualSolarSavings) + '</p>';
-        html += '    </div>';
-        html += '    <div class="roi-box blue">';
-        html += '      <p class="roi-label">Payback Period</p>';
-        html += '      <p class="roi-value">' + data.paybackPeriod + ' years</p>';
-        if (data.isFinanced) {
-            html += '      <p class="roi-note">Including financing costs - excluding cashback from refinancing</p>';
-        }
-        html += '    </div>';
-        html += '  </div>';
 
         // Detailed kWh-based outputs (if kWh data is available)
         if (data.calculationMethod === 'kwh' && parseFloat(data.avgMonthlyKwh) > 0) {
