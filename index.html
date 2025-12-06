@@ -2144,32 +2144,44 @@
         if (data.isFinanced) {
             var financingCtx = document.getElementById('financingChart');
             if (financingCtx && typeof Chart !== 'undefined') {
-                // Build datasets array - only high-level estimates
-                var financingDatasets = [
-                    {
-                        label: 'Cumulative Solar Savings',
-                        data: data.financingChartData.map(function(d) { return d.solarSavings; }),
-                        borderColor: '#60e1e0',
-                        backgroundColor: 'rgba(96, 225, 224, 0.2)',
-                        fill: true,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Cumulative Financing Cost',
-                        data: data.financingChartData.map(function(d) { return d.financingCost; }),
-                        borderColor: '#ff6b6b',
-                        backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                        fill: true,
-                        tension: 0.1
-                    }
-                ];
+                // Get financing data for selected system
+                var financingData;
+                if (selectedSystem === 'panel-battery' && data.panelBatteryFinancingData) {
+                    financingData = data.panelBatteryFinancingData;
+                } else if (selectedSystem === 'panel-only' && data.panelOnlyFinancingData) {
+                    financingData = data.panelOnlyFinancingData;
+                } else {
+                    financingData = data.financingChartData;
+                }
 
-                financingChartInstance = new Chart(financingCtx, {
-                    type: 'line',
-                    data: {
-                        labels: data.financingChartData.map(function(d) { return d.year; }),
-                        datasets: financingDatasets
-                    },
+                // Only create chart if we have financing data
+                if (financingData && financingData.length > 0) {
+                    // Build datasets array - only high-level estimates
+                    var financingDatasets = [
+                        {
+                            label: 'Cumulative Solar Savings',
+                            data: financingData.map(function(d) { return d.solarSavings; }),
+                            borderColor: '#60e1e0',
+                            backgroundColor: 'rgba(96, 225, 224, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Cumulative Financing Cost',
+                            data: financingData.map(function(d) { return d.financingCost; }),
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ];
+
+                    financingChartInstance = new Chart(financingCtx, {
+                        type: 'line',
+                        data: {
+                            labels: financingData.map(function(d) { return d.year; }),
+                            datasets: financingDatasets
+                        },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -2203,6 +2215,7 @@
                         }
                     }
                 });
+                }
             }
         }
 
@@ -2479,8 +2492,10 @@
 
         // Calculate financing for selected system
         var systemCost = systemData.systemCost;
-        var loanTerm = data.loanTerm;
-        var interestRate = data.interestRate;
+        var loanTerm = parseInt(data.loanTerm) || 0;
+        var interestRate = parseFloat(data.interestRate) || 0;
+
+        if (loanTerm <= 0) return;
 
         var monthlyRate = interestRate / 100 / 12;
         var numPayments = loanTerm * 12;
@@ -2500,7 +2515,7 @@
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Loan Term</p>';
-        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + loanTerm + ' years @ ' + interestRate + '%</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + loanTerm + ' years @ ' + interestRate.toFixed(1) + '%</p>';
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
