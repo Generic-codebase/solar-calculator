@@ -1678,6 +1678,7 @@
             totalLoanPayments: totalLoanPayments.toFixed(2),
             totalInterestPaid: totalInterestPaid.toFixed(2),
             paybackPeriod: paybackPeriod,
+            currentLending: currentLending,
             // New kWh-based metrics
             annualDailyCharges: annualDailyCharges.toFixed(2),
             annualUsageCost: annualUsageCost.toFixed(2),
@@ -2487,8 +2488,9 @@
         var totalPayments = monthlyPayment * numPayments;
         var totalInterest = totalPayments - systemCost;
 
-        // Calculate bank cashback at 1% of loan value
-        var bankCashback = systemCost * 0.01;
+        // Calculate bank cashback at 1% of current lending/mortgage
+        var currentLending = parseFloat(data.currentLending) || 0;
+        var bankCashback = currentLending * 0.01;
 
         var html = '';
         html += '<div class="roi-grid" style="margin-bottom: 0;">';
@@ -2505,7 +2507,7 @@
         html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(totalInterest.toFixed(2)) + '</p>';
         html += '  </div>';
         html += '  <div>';
-        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Loan)</p>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
         html += '    <p class="roi-value" style="font-size: 1.25rem; color: #16a34a;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
