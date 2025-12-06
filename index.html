@@ -1832,9 +1832,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             yearlyQuoteFinancingCost = monthlyQuotePayment * 12;
                         }
 
+                        // Calculate yearly savings with inflation and degradation (matching main solar calculation)
+                        var panelDegradation = Math.pow(0.995, y); // 0.5% degradation per year
+                        var inflatedSavings = savings * Math.pow(1.025, y) * panelDegradation;
+
                         if (y > 0) {
-                            // Apply 4.5% inflation to savings
-                            var inflatedSavings = savings * Math.pow(1.045, y - 1);
                             cumulativeQuoteSavings += inflatedSavings;
                             cumulativeQuoteCost += yearlyQuoteFinancingCost;
                         }
