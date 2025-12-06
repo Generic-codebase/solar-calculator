@@ -2859,9 +2859,9 @@
         var cityField = document.getElementById('city').value.trim();
         var honeypotTimestamp = document.getElementById('honeypotTimestamp').value.trim();
 
-        // Check if honeypot fields are filled OR if form submitted too quickly (< 3 seconds)
+        // Check if honeypot fields are filled OR if form submitted too quickly (< 10 seconds)
         var timeSincePageLoad = now - pageLoadTime;
-        if (agreeToDisagree || cityField || honeypotTimestamp || timeSincePageLoad < 3000) {
+        if (agreeToDisagree || cityField || honeypotTimestamp || timeSincePageLoad < 10000) {
             // Silently fail for bots
             console.log('Bot detected');
             return;
