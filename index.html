@@ -426,31 +426,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
     }
 
-    .quote-fields-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    @media (min-width: 768px) {
-        .quote-fields-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-    .quote-metric-card {
-        text-align: center;
-        padding: 1rem;
-        background: white;
-        border-radius: 8px;
-    }
-
-    @media (min-width: 768px) {
-        .quote-metric-card {
-            padding: 1.25rem;
-        }
-    }
-
     .roi-box {
         padding: 1rem;
         border-radius: 12px;
@@ -1046,28 +1021,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <input type="range" id="interestRate" class="form-slider" min="0" max="30" value="1" step="0.1">
                     </div>
                 </div>
-
-                <div class="form-group" style="grid-column: 1 / -1; margin-top: 1.5rem;">
-                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 1rem; font-weight: 600;">
-                        <input type="checkbox" id="hasQuotes" style="width: auto; margin-right: 0.75rem; transform: scale(1.3);">
-                        Already have quotes? Compare them here
-                    </label>
-                </div>
-
-                <div id="quoteComparison" style="display: none; grid-column: 1 / -1; margin-top: 1rem; padding: 1.5rem; background: rgba(255, 254, 240, 0.4); border-radius: 12px; border: 1px solid rgba(255, 201, 60, 0.3);">
-                    <h4 style="margin: 0 0 1rem 0; color: #155263; font-size: 1.125rem;">Compare Your Quotes</h4>
-                    <p style="margin: 0 0 1.5rem 0; font-size: 0.875rem; color: #6b7280;">Enter the system cost and estimated annual savings for each quote you've received (up to 3 quotes).</p>
-
-                    <div id="quoteFields"></div>
-
-                    <div id="quoteChartContainer" style="display: none; margin-top: 2rem;">
-                        <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote Comparison Over 25 Years</h5>
-                        <div style="height: 400px; position: relative;">
-                            <canvas id="quoteComparisonChart"></canvas>
-                        </div>
-                        <div id="quotePaybackMetrics" style="display: none;"></div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -1171,7 +1124,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var resultsData = null;
     var chartInstance = null;
     var financingChartInstance = null;
-    var quoteComparisonChartInstance = null;
     var costBreakdownChartInstance = null;
     var selectedSystem = 'panel-battery'; // Default to panel-battery
     var finalSystemSelection = 'panel-battery'; // Track final selection for form submission
@@ -1357,73 +1309,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 scheduleCalculation();
             });
-        }
-
-        // Quote comparison checkbox
-        var hasQuotesCheckbox = document.getElementById('hasQuotes');
-        var quoteComparisonDiv = document.getElementById('quoteComparison');
-        var quoteFieldsDiv = document.getElementById('quoteFields');
-
-        if (hasQuotesCheckbox && quoteComparisonDiv && quoteFieldsDiv) {
-            hasQuotesCheckbox.addEventListener('change', function(e) {
-                if (e.target.checked) {
-                    quoteComparisonDiv.style.display = 'block';
-                    generateQuoteFields();
-
-                    // Track quote comparison enabled
-                    window.dataLayer.push({
-                        'event': 'quote_comparison_enabled',
-                        'calculator_name': CALCULATOR_NAME,
-                        'calculator_version': CALCULATOR_VERSION,
-                        'timestamp': new Date().toISOString()
-                    });
-                } else {
-                    quoteComparisonDiv.style.display = 'none';
-                }
-                scheduleCalculation();
-            });
-        }
-
-        function generateQuoteFields() {
-            var html = '';
-            for (var i = 1; i <= 3; i++) {
-                html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.6); border-radius: 8px; border: 1px solid rgba(0, 0, 0, 0.1);">';
-                html += '  <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote ' + i + '</h5>';
-                html += '  <div class="quote-fields-grid">';
-                html += '    <div>';
-                html += '      <label class="form-label">System Cost ($)</label>';
-                html += '      <input type="text" id="quote' + i + 'Cost" class="form-input" placeholder="e.g., 25000">';
-                html += '    </div>';
-                html += '    <div>';
-                html += '      <label class="form-label">Annual Savings ($)</label>';
-                html += '      <input type="text" id="quote' + i + 'Savings" class="form-input" placeholder="e.g., 2500">';
-                html += '    </div>';
-                html += '  </div>';
-                html += '</div>';
-            }
-            quoteFieldsDiv.innerHTML = html;
-
-            // Add event listeners to quote fields
-            for (var i = 1; i <= 3; i++) {
-                (function(quoteNum) {
-                    var costField = document.getElementById('quote' + quoteNum + 'Cost');
-                    var savingsField = document.getElementById('quote' + quoteNum + 'Savings');
-
-                    if (costField) {
-                        costField.addEventListener('input', function(e) {
-                            e.target.value = formatCurrency(e.target.value);
-                            scheduleCalculation();
-                        });
-                    }
-
-                    if (savingsField) {
-                        savingsField.addEventListener('input', function(e) {
-                            e.target.value = formatCurrency(e.target.value);
-                            scheduleCalculation();
-                        });
-                    }
-                })(i);
-            }
         }
     }
 
@@ -1803,60 +1688,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             (cumulativeSolarSavings - totalLoanPayments) :
             (cumulativeSolarSavings - solarSystemCost);
 
-        // Collect quote comparison data
-        var quotes = [];
-        var hasQuotesChecked = document.getElementById('hasQuotes') && document.getElementById('hasQuotes').checked;
-        if (hasQuotesChecked) {
-            for (var i = 1; i <= 3; i++) {
-                var costEl = document.getElementById('quote' + i + 'Cost');
-                var savingsEl = document.getElementById('quote' + i + 'Savings');
-                var cost = costEl ? parseFloat(costEl.value.replace(/,/g, '')) : 0;
-                var savings = savingsEl ? parseFloat(savingsEl.value.replace(/,/g, '')) : 0;
-
-                if (cost > 0 && savings > 0) {
-                    var quoteData = [];
-                    var cumulativeQuoteSavings = 0;
-                    var cumulativeQuoteCost = isFinanced ? 0 : cost; // If financed, cost starts at 0
-                    var monthlyQuotePayment = 0;
-
-                    if (isFinanced && loanTerm > 0) {
-                        var loanRate = interestRate / 100 / 12;
-                        var numPayments = loanTerm * 12;
-                        monthlyQuotePayment = cost * (loanRate * Math.pow(1 + loanRate, numPayments)) / (Math.pow(1 + loanRate, numPayments) - 1);
-                    }
-
-                    for (var y = 0; y <= 25; y++) {
-                        var yearlyQuoteFinancingCost = 0;
-                        if (isFinanced && y > 0 && y <= loanTerm) {
-                            yearlyQuoteFinancingCost = monthlyQuotePayment * 12;
-                        }
-
-                        // Calculate yearly savings with inflation and degradation (matching main solar calculation)
-                        var panelDegradation = Math.pow(0.995, y); // 0.5% degradation per year
-                        var inflatedSavings = savings * Math.pow(1 + annualPriceIncrease, y) * panelDegradation;
-
-                        if (y > 0) {
-                            cumulativeQuoteSavings += inflatedSavings;
-                            cumulativeQuoteCost += yearlyQuoteFinancingCost;
-                        }
-
-                        quoteData.push({
-                            year: y,
-                            savings: Math.round(cumulativeQuoteSavings),
-                            cost: Math.round(cumulativeQuoteCost)
-                        });
-                    }
-
-                    quotes.push({
-                        name: 'Quote ' + i,
-                        cost: cost,
-                        annualSavings: savings,
-                        data: quoteData
-                    });
-                }
-            }
-        }
-
         // Generate chart data for both systems
         var panelOnlyChartData = null;
         var panelOnlyFinancingData = null;
@@ -1910,8 +1741,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             panelOnlyChartData: panelOnlyChartData,
             panelOnlyFinancingData: panelOnlyFinancingData,
             panelBatteryChartData: panelBatteryChartData,
-            panelBatteryFinancingData: panelBatteryFinancingData,
-            quotes: quotes
+            panelBatteryFinancingData: panelBatteryFinancingData
         };
 
         displayResults(resultsData);
@@ -2327,9 +2157,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (financingChartInstance) {
             financingChartInstance.destroy();
         }
-        if (quoteComparisonChartInstance) {
-            quoteComparisonChartInstance.destroy();
-        }
         if (costBreakdownChartInstance) {
             costBreakdownChartInstance.destroy();
         }
@@ -2472,199 +2299,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     }
                 });
                 }
-            }
-        }
-
-        // Create quote comparison chart if quotes are available
-        if (data.quotes && data.quotes.length > 0) {
-            var quoteChartCtx = document.getElementById('quoteComparisonChart');
-            var quoteChartContainer = document.getElementById('quoteChartContainer');
-
-            if (quoteChartCtx && quoteChartContainer && typeof Chart !== 'undefined') {
-                // Show the chart container
-                quoteChartContainer.style.display = 'block';
-
-                var quoteColors = [
-                    { border: '#9333ea', bg: 'rgba(147, 51, 234, 1)', label: 'rgba(147, 51, 234, 0.95)' }, // Purple
-                    { border: '#fb923c', bg: 'rgba(251, 146, 60, 1)', label: 'rgba(251, 146, 60, 0.95)' }, // Orange
-                    { border: '#14b8a6', bg: 'rgba(20, 184, 166, 1)', label: 'rgba(20, 184, 166, 0.95)' }  // Teal
-                ];
-
-                var quoteDatasets = [];
-                var quotePaybackData = [];
-
-                data.quotes.forEach(function(quote, index) {
-                    var color = quoteColors[index % quoteColors.length];
-
-                    // Calculate payback period (where savings >= cost)
-                    var paybackYear = null;
-                    // Start from year 1 since year 0 has both savings and cost at 0
-                    for (var i = 1; i < quote.data.length; i++) {
-                        if (quote.data[i].savings >= quote.data[i].cost) {
-                            // Linear interpolation for more accurate payback
-                            var prevSavings = quote.data[i-1].savings;
-                            var prevCost = quote.data[i-1].cost;
-                            var currSavings = quote.data[i].savings;
-                            var currCost = quote.data[i].cost;
-
-                            // Calculate the fraction of the year where crossover happens
-                            var prevDiff = prevSavings - prevCost;
-                            var currDiff = currSavings - currCost;
-                            var fraction = -prevDiff / (currDiff - prevDiff);
-
-                            paybackYear = (i - 1) + fraction;
-                            break;
-                        }
-                    }
-
-                    // Store payback data for display below chart
-                    if (paybackYear !== null) {
-                        // Calculate 25-year ROI: (total savings - cost) / cost * 100
-                        var total25YearSavings = quote.data[25].savings;
-                        var quoteCost = quote.cost;
-                        var quoteROI = ((total25YearSavings / quoteCost) * 100).toFixed(0);
-
-                        quotePaybackData.push({
-                            name: quote.name,
-                            payback: paybackYear,
-                            color: color.border,
-                            roi: quoteROI,
-                            cost: quoteCost,
-                            annualSavings: quote.annualSavings
-                        });
-                    }
-
-                    // Add savings line for this quote
-                    quoteDatasets.push({
-                        label: quote.name + ' Savings',
-                        data: quote.data.map(function(d) { return d.savings; }),
-                        borderColor: color.border,
-                        backgroundColor: 'rgba(0,0,0,0)',
-                        fill: false,
-                        tension: 0.1,
-                        borderDash: [5, 5],
-                        borderWidth: 2
-                    });
-
-                    // Add cost line for this quote
-                    quoteDatasets.push({
-                        label: quote.name + ' Cost',
-                        data: quote.data.map(function(d) { return d.cost; }),
-                        borderColor: color.border,
-                        backgroundColor: 'rgba(0,0,0,0)',
-                        fill: false,
-                        tension: 0.1,
-                        borderDash: [2, 2],
-                        borderWidth: 2
-                    });
-                });
-
-                quoteComparisonChartInstance = new Chart(quoteChartCtx, {
-                    type: 'line',
-                    data: {
-                        labels: data.quotes[0].data.map(function(d) { return d.year; }),
-                        datasets: quoteDatasets
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': $' + formatNumber(context.parsed.y);
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return '$' + formatNumber(value);
-                                    }
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Years'
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Display payback metrics below the chart
-                var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
-                if (paybackMetricsDiv && quotePaybackData.length > 0) {
-                    // Sort quotes by payback period (shortest first)
-                    quotePaybackData.sort(function(a, b) { return a.payback - b.payback; });
-
-                    var metricsHtml = '<div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">';
-                    metricsHtml += '  <h6 style="margin: 0 0 1rem 0; color: #155263; font-size: 0.95rem; font-weight: 600;">Payback Periods (Ranked)</h6>';
-                    metricsHtml += '  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">';
-
-                    var rankings = ['🥇 1st Place', '🥈 2nd Place', '🥉 3rd Place'];
-                    quotePaybackData.forEach(function(quote, index) {
-                        // Convert payback to years and months
-                        var totalYears = quote.payback;
-                        var years = Math.floor(totalYears);
-                        var fractionalYear = totalYears - years;
-                        var months = Math.round(fractionalYear * 12);
-
-                        // Handle edge case where months round to 12
-                        if (months === 12) {
-                            years += 1;
-                            months = 0;
-                        }
-
-                        var paybackText = years + ' yr' + (years !== 1 ? 's' : '');
-                        if (months > 0) {
-                            paybackText += ' ' + months + ' mo' + (months !== 1 ? 's' : '');
-                        }
-
-                        metricsHtml += '    <div class="quote-metric-card" style="border: 2px solid ' + quote.color + ';">';
-                        metricsHtml += '      <div style="font-size: 1rem; font-weight: bold; color: #155263; margin-bottom: 0.25rem;">' + rankings[index] + '</div>';
-                        metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">' + quote.name + '</div>';
-
-                        // Payback Period
-                        metricsHtml += '      <div style="margin-bottom: 0.75rem;">';
-                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payback Period</div>';
-                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + paybackText + '</div>';
-                        metricsHtml += '        <div style="font-size: 0.65rem; color: #9ca3af; margin-top: 0.25rem;">With 4.5% Annual Price Inflation</div>';
-                        metricsHtml += '      </div>';
-
-                        // 25-Year ROI
-                        metricsHtml += '      <div>';
-                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">25-Year ROI</div>';
-                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + quote.roi + '%</div>';
-                        metricsHtml += '      </div>';
-
-                        metricsHtml += '    </div>';
-                    });
-
-                    metricsHtml += '  </div>';
-                    metricsHtml += '</div>';
-                    paybackMetricsDiv.innerHTML = metricsHtml;
-                    paybackMetricsDiv.style.display = 'block';
-                } else if (paybackMetricsDiv) {
-                    paybackMetricsDiv.style.display = 'none';
-                }
-            }
-        } else {
-            // Hide the chart container if no quotes
-            var quoteChartContainer = document.getElementById('quoteChartContainer');
-            if (quoteChartContainer) {
-                quoteChartContainer.style.display = 'none';
-            }
-            var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
-            if (paybackMetricsDiv) {
-                paybackMetricsDiv.style.display = 'none';
             }
         }
 
@@ -3217,15 +2851,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     safeAddValue(webhookData, 'panelBattery_25YearSavings', panelBattery.savings25Year ? panelBattery.savings25Year.toFixed(0) : null);
                 }
             }
-
-            // Add quotes if provided (quotes are optional customer input)
-            if (resultsData.quotes && resultsData.quotes.length > 0) {
-                resultsData.quotes.forEach(function(quote, index) {
-                    var prefix = 'quote' + (index + 1) + '_';
-                    safeAddValue(webhookData, prefix + 'cost', quote.cost);
-                    safeAddValue(webhookData, prefix + 'annualSavings', quote.annualSavings);
-                });
-            }
         }
 
         // Convert to form data to avoid CORS preflight issues
@@ -3244,7 +2869,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             'solar_ready': webhookData.solarReady,
             'borrowing_power': webhookData.borrowingPower,
             'is_financed': webhookData.isFinanced,
-            'has_quotes': !!(webhookData.quote1_cost || webhookData.quote2_cost || webhookData.quote3_cost),
             'final_system_selection': finalSystemSelection,
             'timestamp': new Date().toISOString()
         };
