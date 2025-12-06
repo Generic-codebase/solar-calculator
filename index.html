@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solar Calculator Embed</title>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-M9NQGKJ2');</script>
+    <!-- End Google Tag Manager -->
 </head>
 <body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M9NQGKJ2"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <style>
     * {
@@ -23,7 +36,13 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem 1rem;
+        padding: 1rem 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .solar-calculator {
+            padding: 2rem 1rem;
+        }
     }
 
     .calc-card {
@@ -32,26 +51,50 @@
         -webkit-backdrop-filter: blur(10px);
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(21, 82, 99, 0.15);
-        padding: 2rem;
+        padding: 1rem;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-top: 4px solid #155263;
     }
 
+    @media (min-width: 768px) {
+        .calc-card {
+            padding: 2rem;
+        }
+    }
+
     .calc-header {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .calc-header {
+            margin-bottom: 2rem;
+        }
     }
 
     .calc-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
         font-weight: bold;
         color: #155263;
         margin-bottom: 0.5rem;
     }
 
+    @media (min-width: 768px) {
+        .calc-title {
+            font-size: 2rem;
+        }
+    }
+
     .calc-subtitle {
         color: #6b7280;
-        font-size: 1rem;
+        font-size: 0.875rem;
+    }
+
+    @media (min-width: 768px) {
+        .calc-subtitle {
+            font-size: 1rem;
+        }
     }
 
     .form-grid {
@@ -145,9 +188,16 @@
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(96, 225, 224, 0.3);
         border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
         box-shadow: 0 8px 24px rgba(96, 225, 224, 0.12);
+    }
+
+    @media (min-width: 768px) {
+        .result-card {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
     }
 
     .result-header {
@@ -157,10 +207,16 @@
     }
 
     .result-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: bold;
         color: #155263;
         margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .result-title {
+            font-size: 1.5rem;
+        }
     }
 
     .result-text {
@@ -195,12 +251,18 @@
     }
 
     .power-card {
-        padding: 1.5rem;
+        padding: 1rem;
         border-radius: 16px;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (min-width: 768px) {
+        .power-card {
+            padding: 1.5rem;
+        }
     }
 
     .power-card.low {
@@ -361,6 +423,31 @@
     @media (min-width: 768px) {
         .roi-grid {
             grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .quote-fields-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .quote-fields-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .quote-metric-card {
+        text-align: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+    }
+
+    @media (min-width: 768px) {
+        .quote-metric-card {
+            padding: 1.25rem;
         }
     }
 
@@ -1032,7 +1119,11 @@
                         Agree to disagree
                     </label>
                     <input type="text" id="city" name="city" tabindex="-1" autocomplete="off" placeholder="City">
+                    <input type="text" id="honeypotTimestamp" name="timestamp" tabindex="-1" autocomplete="off">
                 </div>
+
+                <!-- Hidden field for calculator version (for Zapier validation) -->
+                <input type="hidden" id="calculatorVersion" name="calculator_version" value="">
 
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <button type="button" id="submitBtn" class="submit-btn">Request A Callback</button>
@@ -1058,6 +1149,23 @@
 (function() {
     'use strict';
 
+    // Calculator Version
+    // To update: Create a git tag with version number (e.g., git tag v1.0.0)
+    // Version format: ESB_solar-calculator-v{version}
+    var CALCULATOR_VERSION = '1.0.0';
+    var CALCULATOR_NAME = 'ESB_solar-calculator-v' + CALCULATOR_VERSION;
+
+    // Initialize DataLayer if not exists
+    window.dataLayer = window.dataLayer || [];
+
+    // Push calculator initialization event
+    window.dataLayer.push({
+        'event': 'calculator_loaded',
+        'calculator_name': CALCULATOR_NAME,
+        'calculator_version': CALCULATOR_VERSION,
+        'timestamp': new Date().toISOString()
+    });
+
     var calculationTimer = null;
     var validationTimers = {};
     var resultsData = null;
@@ -1066,6 +1174,12 @@
     var quoteComparisonChartInstance = null;
     var costBreakdownChartInstance = null;
     var selectedSystem = 'panel-battery'; // Default to panel-battery
+    var finalSystemSelection = 'panel-battery'; // Track final selection for form submission
+
+    // Security: Rate limiting
+    var lastSubmitTime = 0;
+    var SUBMIT_COOLDOWN = 60000; // 1 minute between submissions
+    var pageLoadTime = Date.now();
 
     var rawValues = {
         householdIncome: '',
@@ -1092,6 +1206,17 @@
         if (!value) return '';
         var digits = value.replace(/\D/g, '');
         return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Security: Input sanitization to prevent XSS
+    function sanitizeInput(input) {
+        if (typeof input !== 'string') return input;
+        return input
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
     }
 
     function validateField(fieldId, rawValue) {
@@ -1139,7 +1264,7 @@
     }
 
     function setupInputs() {
-        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh', 'dailyCharge'];
+        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh'];
 
         currencyFields.forEach(function(id) {
             var input = document.getElementById(id);
@@ -1153,6 +1278,30 @@
                 scheduleCalculation();
             });
         });
+
+        // Daily charge field with decimal support
+        var dailyChargeInput = document.getElementById('dailyCharge');
+        if (dailyChargeInput) {
+            dailyChargeInput.addEventListener('input', function(e) {
+                // Allow digits, decimal point, and limit to 2 decimal places
+                var value = e.target.value;
+                // Remove everything except digits and decimal point
+                value = value.replace(/[^\d.]/g, '');
+                // Allow only one decimal point
+                var parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                // Limit to 2 decimal places
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
+                rawValues.dailyCharge = value;
+                e.target.value = value;
+                validateField('dailyCharge', value);
+                scheduleCalculation();
+            });
+        }
 
         var expenseFreq = document.getElementById('expenseFrequency');
         if (expenseFreq) {
@@ -1171,6 +1320,18 @@
                 } else {
                     loanTermValue.textContent = value + (value === 1 ? ' year' : ' years');
                 }
+
+                // Track financing option change
+                window.dataLayer.push({
+                    'event': 'financing_option_changed',
+                    'calculator_name': CALCULATOR_NAME,
+                    'calculator_version': CALCULATOR_VERSION,
+                    'option_type': 'loan_term',
+                    'loan_term': value,
+                    'is_cash': value === 0,
+                    'timestamp': new Date().toISOString()
+                });
+
                 scheduleCalculation();
             });
         }
@@ -1183,6 +1344,17 @@
                 var value = parseFloat(e.target.value);
                 rawValues.interestRate = value;
                 interestRateValue.textContent = value.toFixed(1) + '%';
+
+                // Track financing option change
+                window.dataLayer.push({
+                    'event': 'financing_option_changed',
+                    'calculator_name': CALCULATOR_NAME,
+                    'calculator_version': CALCULATOR_VERSION,
+                    'option_type': 'interest_rate',
+                    'interest_rate': value,
+                    'timestamp': new Date().toISOString()
+                });
+
                 scheduleCalculation();
             });
         }
@@ -1197,6 +1369,14 @@
                 if (e.target.checked) {
                     quoteComparisonDiv.style.display = 'block';
                     generateQuoteFields();
+
+                    // Track quote comparison enabled
+                    window.dataLayer.push({
+                        'event': 'quote_comparison_enabled',
+                        'calculator_name': CALCULATOR_NAME,
+                        'calculator_version': CALCULATOR_VERSION,
+                        'timestamp': new Date().toISOString()
+                    });
                 } else {
                     quoteComparisonDiv.style.display = 'none';
                 }
@@ -1209,7 +1389,7 @@
             for (var i = 1; i <= 3; i++) {
                 html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.6); border-radius: 8px; border: 1px solid rgba(0, 0, 0, 0.1);">';
                 html += '  <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote ' + i + '</h5>';
-                html += '  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">';
+                html += '  <div class="quote-fields-grid">';
                 html += '    <div>';
                 html += '      <label class="form-label">System Cost ($)</label>';
                 html += '      <input type="text" id="quote' + i + 'Cost" class="form-input" placeholder="e.g., 25000">';
@@ -1282,7 +1462,10 @@
 
         for (var year = 0; year <= 25; year++) {
             var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
-            var yearlySolarSavings = annualSavings * Math.pow(1.025, year); // 2.5% inflation on savings
+
+            // Apply panel efficiency degradation (0.5% per year)
+            var panelDegradation = Math.pow(0.995, year); // 0.5% degradation per year
+            var yearlySolarSavings = annualSavings * Math.pow(1 + annualPriceIncrease, year) * panelDegradation;
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
@@ -1293,7 +1476,9 @@
             if (year > 0) {
                 cumulativeSolarSavings += yearlySolarSavings;
                 cumulativePowerCostWithoutSolar += yearlyPowerCost;
-                cumulativePowerCostWithSolar += (yearlyPowerCost - yearlySolarSavings);
+                // Only add positive net costs (prevent negative cumulative when solar saves more than power costs)
+                var netYearlyCost = Math.max(0, yearlyPowerCost - yearlySolarSavings);
+                cumulativePowerCostWithSolar += netYearlyCost;
                 cumulativeFinancingCost += yearlyFinancingCost;
             }
 
@@ -1423,8 +1608,7 @@
             var panelWattage = 460; // 460W panels
             var sunHoursPerDay = 3.95; // NZ average sun hours
             var exportRate = 0.17; // 17c per kWh export rate
-            var annualPriceIncrease = 0.025; // 2.5% inflation
-            var savings25YearMultiplier = 30.82; // Geometric series multiplier for 2.5% over 25 years
+            var savings25YearMultiplier = 44.57; // Geometric series multiplier for 4.5% annual price increase over 25 years
 
             // Panel-only system (110% of annual usage)
             var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
@@ -1434,15 +1618,31 @@
             var panelOnlyPanelCount = Math.ceil(((panelOnlyMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
             var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
 
-            // Calconic cost formula: panels * 675 + 3500
-            var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
+            // Calconic cost formula: panels * 675 + 3500 (increased by 5%)
+            var panelOnlySystemCost = (panelOnlyPanelCount * 708.75) + 3675;
 
             // Calconic savings: 45% self-consumption at retail, 55% export at 17c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
             var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
-            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
+
+            // Calculate payback period with 4.5% annual price inflation
+            var inflationRate = 0.045;
+            var cumulativeSavings = 0;
+            var panelOnlyPaybackYears = 0;
+            for (var year = 1; year <= 30; year++) {
+                cumulativeSavings += panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                if (cumulativeSavings >= panelOnlySystemCost) {
+                    // Linear interpolation for fractional year
+                    var prevSavings = cumulativeSavings - (panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1));
+                    var yearSavings = panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                    var remainingCost = panelOnlySystemCost - prevSavings;
+                    var fraction = remainingCost / yearSavings;
+                    panelOnlyPaybackYears = (year - 1) + fraction;
+                    break;
+                }
+            }
 
             // Calculate 25-year savings using Calconic multiplier
             var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
@@ -1472,15 +1672,30 @@
             // Calconic battery sizing: 0.55 * panel count
             var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
 
-            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
-            var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
+            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 5%)
+            var panelBatterySystemCost = (panelBatteryPanelCount * 703.5) + (batteryKwh * 892.5) + 6562.5;
 
             // Calconic savings: 75% self-consumption at retail, 25% export at 17c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
             var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
-            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
+
+            // Calculate payback period with 4.5% annual price inflation
+            var cumulativeSavingsBattery = 0;
+            var panelBatteryPaybackYears = 0;
+            for (var year = 1; year <= 30; year++) {
+                cumulativeSavingsBattery += panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                if (cumulativeSavingsBattery >= panelBatterySystemCost) {
+                    // Linear interpolation for fractional year
+                    var prevSavingsBattery = cumulativeSavingsBattery - (panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1));
+                    var yearSavingsBattery = panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                    var remainingCostBattery = panelBatterySystemCost - prevSavingsBattery;
+                    var fractionBattery = remainingCostBattery / yearSavingsBattery;
+                    panelBatteryPaybackYears = (year - 1) + fractionBattery;
+                    break;
+                }
+            }
 
             // Calculate 25-year savings using Calconic multiplier
             var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
@@ -1505,7 +1720,7 @@
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.045;
+        var annualPriceIncrease = 0.045; // 4.5% annual power price increase
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -1550,7 +1765,11 @@
 
         for (var year = 0; year <= 25; year++) {
             var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
-            var yearlySolarSavings = yearlyPowerCost * solarCoveragePercent;
+
+            // Apply panel efficiency degradation (0.5% per year)
+            var panelDegradation = Math.pow(0.995, year); // 0.5% degradation per year
+            var adjustedCoverage = solarCoveragePercent * panelDegradation;
+            var yearlySolarSavings = yearlyPowerCost * adjustedCoverage;
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
@@ -1561,7 +1780,7 @@
             if (year > 0) {
                 cumulativeSolarSavings += yearlySolarSavings;
                 cumulativePowerCostWithoutSolar += yearlyPowerCost;
-                cumulativePowerCostWithSolar += yearlyPowerCost * (1 - solarCoveragePercent);
+                cumulativePowerCostWithSolar += yearlyPowerCost * (1 - adjustedCoverage);
                 cumulativeFinancingCost += yearlyFinancingCost;
             }
 
@@ -1612,9 +1831,11 @@
                             yearlyQuoteFinancingCost = monthlyQuotePayment * 12;
                         }
 
+                        // Calculate yearly savings with inflation and degradation (matching main solar calculation)
+                        var panelDegradation = Math.pow(0.995, y); // 0.5% degradation per year
+                        var inflatedSavings = savings * Math.pow(1 + annualPriceIncrease, y) * panelDegradation;
+
                         if (y > 0) {
-                            // Apply 2.5% inflation to savings
-                            var inflatedSavings = savings * Math.pow(1.025, y - 1);
                             cumulativeQuoteSavings += inflatedSavings;
                             cumulativeQuoteCost += yearlyQuoteFinancingCost;
                         }
@@ -1839,10 +2060,10 @@
             html += '      <p class="roi-value">$' + data.costPerKwh + '</p>';
             html += '    </div>';
             html += '    <div class="roi-box yellow">';
-            html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
+            html += '      <p class="roi-label">Your bills without solar (over 25 years)</p>';
             var projected25YearCost = parseFloat(data.estimatedPowerCost) * 44.57; // 4.5% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
-            html += '      <p class="roi-note">If you don\'t get solar (4.5% annual inflation)</p>';
+            html += '      <p class="roi-note">25-Year Power Cost Projection Without Solar System Install (4.5% Annual Price Inflation)</p>';
             html += '    </div>';
             html += '  </div>';
             html += '</div>';
@@ -1904,12 +2125,12 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">25-Year Net Savings</span>';
-                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 4.5% annual price increase</div></div>';
                     html += '  </div>';
 
                     html += '</div>';
@@ -1927,7 +2148,7 @@
                     html += '          <strong>What does 135% coverage mean?</strong>';
                     html += '          <ul>';
                     html += '            <li>System generates <strong>135%</strong> of your annual kWh usage</li>';
-                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for nighttime)</li>';
+                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for night time)</li>';
                     html += '            <li>Only <strong>25% is exported</strong> to grid</li>';
                     html += '            <li>Extra 25% (vs 110%) accounts for battery charging/discharging efficiency (~10-15% loss)</li>';
                     html += '            <li>Battery provides power during evening/night when solar stops</li>';
@@ -1937,7 +2158,7 @@
                     html += '        </div>';
                     html += '      </span>';
                     html += '    </h4>';
-                    html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for nighttime use). Extra 25% accounts for battery charging efficiency.</p>';
+                    html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for night time use). Extra 25% accounts for battery charging efficiency.</p>';
                     html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~50% of winter bills, up to 100% of summer bills</p>';
                     html += '  </div>';
 
@@ -1973,7 +2194,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -2047,7 +2268,7 @@
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
@@ -2063,6 +2284,41 @@
         html += '</div>';
 
         resultsDiv.innerHTML = html;
+
+        // Track calculation completion in DataLayer
+        var eventData = {
+            'event': 'calculator_results_generated',
+            'calculator_name': CALCULATOR_NAME,
+            'calculator_version': CALCULATOR_VERSION,
+            'solar_ready': data.solarReady,
+            'borrowing_power': data.borrowingPowerText,
+            'is_financed': data.isFinanced,
+            'loan_term': data.isFinanced ? data.loanTerm : null,
+            'estimated_system_cost': data.solarSystemCost,
+            'annual_savings': data.annualSolarSavings,
+            'has_panel_only': !!data.panelOnlySystem,
+            'has_panel_battery': !!data.panelBatterySystem,
+            'system_selected': finalSystemSelection,
+            'timestamp': new Date().toISOString()
+        };
+
+        // Add power bill data if available
+        if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+            eventData.power_bill_summer = rawValues.summerPowerBill;
+        }
+        if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+            eventData.power_bill_winter = rawValues.winterPowerBill;
+        }
+
+        // Add kWh data if available
+        if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+            eventData.summer_kwh = rawValues.summerKwh;
+        }
+        if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+            eventData.winter_kwh = rawValues.winterKwh;
+        }
+
+        window.dataLayer.push(eventData);
 
         // Destroy existing charts
         if (chartInstance) {
@@ -2372,7 +2628,7 @@
                             paybackText += ' ' + months + ' mo' + (months !== 1 ? 's' : '');
                         }
 
-                        metricsHtml += '    <div style="text-align: center; padding: 1.25rem; background: white; border-radius: 8px; border: 2px solid ' + quote.color + ';">';
+                        metricsHtml += '    <div class="quote-metric-card" style="border: 2px solid ' + quote.color + ';">';
                         metricsHtml += '      <div style="font-size: 1rem; font-weight: bold; color: #155263; margin-bottom: 0.25rem;">' + rankings[index] + '</div>';
                         metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">' + quote.name + '</div>';
 
@@ -2380,6 +2636,7 @@
                         metricsHtml += '      <div style="margin-bottom: 0.75rem;">';
                         metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payback Period</div>';
                         metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + paybackText + '</div>';
+                        metricsHtml += '        <div style="font-size: 0.65rem; color: #9ca3af; margin-top: 0.25rem;">With 4.5% Annual Price Inflation</div>';
                         metricsHtml += '      </div>';
 
                         // 25-Year ROI
@@ -2428,7 +2685,53 @@
         systemCards.forEach(function(card) {
             card.addEventListener('click', function() {
                 var systemType = this.getAttribute('data-system');
+                var previousSelection = selectedSystem;
                 selectedSystem = systemType;
+                finalSystemSelection = systemType; // Track for form submission
+
+                // Track system selection in DataLayer
+                var systemData = systemType === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+                var eventData = {
+                    'event': 'system_selected',
+                    'calculator_name': CALCULATOR_NAME,
+                    'calculator_version': CALCULATOR_VERSION,
+                    'system_type': systemType,
+                    'system_cost': systemData ? systemData.systemCost : null,
+                    'panel_count': systemData ? systemData.panelCount : null,
+                    'has_battery': systemType === 'panel-battery',
+                    'annual_savings': systemData ? systemData.annualSavings : null,
+                    'timestamp': new Date().toISOString()
+                };
+
+                // Add power bill data if available
+                if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+                    eventData.power_bill_summer = rawValues.summerPowerBill;
+                }
+                if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+                    eventData.power_bill_winter = rawValues.winterPowerBill;
+                }
+
+                // Add kWh data if available
+                if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+                    eventData.summer_kwh = rawValues.summerKwh;
+                }
+                if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+                    eventData.winter_kwh = rawValues.winterKwh;
+                }
+
+                window.dataLayer.push(eventData);
+
+                // If this is a toggle (not initial selection), fire additional toggle event
+                if (previousSelection !== systemType) {
+                    window.dataLayer.push({
+                        'event': 'system_toggled',
+                        'calculator_name': CALCULATOR_NAME,
+                        'calculator_version': CALCULATOR_VERSION,
+                        'from_system': previousSelection,
+                        'to_system': systemType,
+                        'timestamp': new Date().toISOString()
+                    });
+                }
 
                 // Update selected state
                 systemCards.forEach(function(c) { c.classList.remove('selected'); });
@@ -2699,12 +3002,24 @@
     document.getElementById('submitBtn').addEventListener('click', function(e) {
         e.preventDefault();
 
-        // Honeypot check - if these fields are filled/checked, it's a bot
+        // Security: Rate limiting check
+        var now = Date.now();
+        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+            var secondsRemaining = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmitTime)) / 1000);
+            alert('Please wait ' + secondsRemaining + ' seconds before submitting again.');
+            return;
+        }
+
+        // Security: Honeypot check - if these fields are filled/checked, it's a bot
         var agreeToDisagree = document.getElementById('agreeToDisagree').checked;
         var cityField = document.getElementById('city').value.trim();
+        var honeypotTimestamp = document.getElementById('honeypotTimestamp').value.trim();
 
-        if (agreeToDisagree || cityField) {
+        // Check if honeypot fields are filled OR if form submitted too quickly (< 10 seconds)
+        var timeSincePageLoad = now - pageLoadTime;
+        if (agreeToDisagree || cityField || honeypotTimestamp || timeSincePageLoad < 10000) {
             // Silently fail for bots
+            console.log('Bot detected');
             return;
         }
 
@@ -2765,13 +3080,24 @@
             return;
         }
 
+        // Security: Update last submit time for rate limiting
+        lastSubmitTime = now;
+
+        // Security: Sanitize all user inputs before submission
+        firstName = sanitizeInput(firstName);
+        lastName = sanitizeInput(lastName);
+        email = sanitizeInput(email);
+        phone = sanitizeInput(phone);
+
         // Build webhook data - only include customer-provided values
         var webhookData = {
             firstName: firstName,
             lastName: lastName,
             email: email,
             phone: phone,
-            submittedAt: new Date().toISOString()
+            submittedAt: new Date().toISOString(),
+            calculator_version: CALCULATOR_VERSION,
+            calculator_name: CALCULATOR_NAME
         };
 
         // Add customer input data (not assumptions)
@@ -2910,6 +3236,37 @@
             }
         }
 
+        // Track form submission in DataLayer
+        var submissionEventData = {
+            'event': 'form_submitted',
+            'calculator_name': CALCULATOR_NAME,
+            'calculator_version': CALCULATOR_VERSION,
+            'solar_ready': webhookData.solarReady,
+            'borrowing_power': webhookData.borrowingPower,
+            'is_financed': webhookData.isFinanced,
+            'has_quotes': !!(webhookData.quote1_cost || webhookData.quote2_cost || webhookData.quote3_cost),
+            'final_system_selection': finalSystemSelection,
+            'timestamp': new Date().toISOString()
+        };
+
+        // Add power bill data if available
+        if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+            submissionEventData.power_bill_summer = rawValues.summerPowerBill;
+        }
+        if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+            submissionEventData.power_bill_winter = rawValues.winterPowerBill;
+        }
+
+        // Add kWh data if available
+        if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+            submissionEventData.summer_kwh = rawValues.summerKwh;
+        }
+        if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+            submissionEventData.winter_kwh = rawValues.winterKwh;
+        }
+
+        window.dataLayer.push(submissionEventData);
+
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
             method: 'POST',
             body: formData
@@ -2925,6 +3282,12 @@
 
     // Initialize
     setupInputs();
+
+    // Set calculator version in hidden field for Zapier validation
+    var versionField = document.getElementById('calculatorVersion');
+    if (versionField) {
+        versionField.value = CALCULATOR_NAME;
+    }
 })();
 </script>
 
