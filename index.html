@@ -10,13 +10,13 @@
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    })(window,document,'script','dataLayer','GTM-M9NQGKJ2');</script>
     <!-- End Google Tag Manager -->
 </head>
 <body>
 
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M9NQGKJ2"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
@@ -1174,6 +1174,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var quoteComparisonChartInstance = null;
     var costBreakdownChartInstance = null;
     var selectedSystem = 'panel-battery'; // Default to panel-battery
+    var finalSystemSelection = 'panel-battery'; // Track final selection for form submission
 
     // Security: Rate limiting
     var lastSubmitTime = 0;
@@ -2275,7 +2276,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         resultsDiv.innerHTML = html;
 
         // Track calculation completion in DataLayer
-        window.dataLayer.push({
+        var eventData = {
             'event': 'calculator_results_generated',
             'calculator_name': CALCULATOR_NAME,
             'calculator_version': CALCULATOR_VERSION,
@@ -2287,9 +2288,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             'annual_savings': data.annualSolarSavings,
             'has_panel_only': !!data.panelOnlySystem,
             'has_panel_battery': !!data.panelBatterySystem,
-            'calculation_method': data.calculationMethod,
+            'system_selected': finalSystemSelection,
             'timestamp': new Date().toISOString()
-        });
+        };
+
+        // Add power bill data if available
+        if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+            eventData.power_bill_summer = rawValues.summerPowerBill;
+        }
+        if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+            eventData.power_bill_winter = rawValues.winterPowerBill;
+        }
+
+        // Add kWh data if available
+        if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+            eventData.summer_kwh = rawValues.summerKwh;
+        }
+        if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+            eventData.winter_kwh = rawValues.winterKwh;
+        }
+
+        window.dataLayer.push(eventData);
 
         // Destroy existing charts
         if (chartInstance) {
@@ -2656,11 +2675,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         systemCards.forEach(function(card) {
             card.addEventListener('click', function() {
                 var systemType = this.getAttribute('data-system');
+                var previousSelection = selectedSystem;
                 selectedSystem = systemType;
+                finalSystemSelection = systemType; // Track for form submission
 
                 // Track system selection in DataLayer
                 var systemData = systemType === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
-                window.dataLayer.push({
+                var eventData = {
                     'event': 'system_selected',
                     'calculator_name': CALCULATOR_NAME,
                     'calculator_version': CALCULATOR_VERSION,
@@ -2670,7 +2691,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     'has_battery': systemType === 'panel-battery',
                     'annual_savings': systemData ? systemData.annualSavings : null,
                     'timestamp': new Date().toISOString()
-                });
+                };
+
+                // Add power bill data if available
+                if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+                    eventData.power_bill_summer = rawValues.summerPowerBill;
+                }
+                if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+                    eventData.power_bill_winter = rawValues.winterPowerBill;
+                }
+
+                // Add kWh data if available
+                if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+                    eventData.summer_kwh = rawValues.summerKwh;
+                }
+                if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+                    eventData.winter_kwh = rawValues.winterKwh;
+                }
+
+                window.dataLayer.push(eventData);
+
+                // If this is a toggle (not initial selection), fire additional toggle event
+                if (previousSelection !== systemType) {
+                    window.dataLayer.push({
+                        'event': 'system_toggled',
+                        'calculator_name': CALCULATOR_NAME,
+                        'calculator_version': CALCULATOR_VERSION,
+                        'from_system': previousSelection,
+                        'to_system': systemType,
+                        'timestamp': new Date().toISOString()
+                    });
+                }
 
                 // Update selected state
                 systemCards.forEach(function(c) { c.classList.remove('selected'); });
@@ -3176,7 +3227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         // Track form submission in DataLayer
-        window.dataLayer.push({
+        var submissionEventData = {
             'event': 'form_submitted',
             'calculator_name': CALCULATOR_NAME,
             'calculator_version': CALCULATOR_VERSION,
@@ -3184,9 +3235,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             'borrowing_power': webhookData.borrowingPower,
             'is_financed': webhookData.isFinanced,
             'has_quotes': !!(webhookData.quote1_cost || webhookData.quote2_cost || webhookData.quote3_cost),
-            'calculation_method': webhookData.calculationMethod,
+            'final_system_selection': finalSystemSelection,
             'timestamp': new Date().toISOString()
-        });
+        };
+
+        // Add power bill data if available
+        if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+            submissionEventData.power_bill_summer = rawValues.summerPowerBill;
+        }
+        if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+            submissionEventData.power_bill_winter = rawValues.winterPowerBill;
+        }
+
+        // Add kWh data if available
+        if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+            submissionEventData.summer_kwh = rawValues.summerKwh;
+        }
+        if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+            submissionEventData.winter_kwh = rawValues.winterKwh;
+        }
+
+        window.dataLayer.push(submissionEventData);
 
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
             method: 'POST',
