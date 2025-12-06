@@ -1106,6 +1106,7 @@
                         Agree to disagree
                     </label>
                     <input type="text" id="city" name="city" tabindex="-1" autocomplete="off" placeholder="City">
+                    <input type="text" id="honeypotTimestamp" name="timestamp" tabindex="-1" autocomplete="off">
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
@@ -1141,6 +1142,11 @@
     var costBreakdownChartInstance = null;
     var selectedSystem = 'panel-battery'; // Default to panel-battery
 
+    // Security: Rate limiting
+    var lastSubmitTime = 0;
+    var SUBMIT_COOLDOWN = 60000; // 1 minute between submissions
+    var pageLoadTime = Date.now();
+
     var rawValues = {
         householdIncome: '',
         propertyValue: '',
@@ -1166,6 +1172,17 @@
         if (!value) return '';
         var digits = value.replace(/\D/g, '');
         return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Security: Input sanitization to prevent XSS
+    function sanitizeInput(input) {
+        if (typeof input !== 'string') return input;
+        return input
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
     }
 
     function validateField(fieldId, rawValue) {
@@ -2829,12 +2846,24 @@
     document.getElementById('submitBtn').addEventListener('click', function(e) {
         e.preventDefault();
 
-        // Honeypot check - if these fields are filled/checked, it's a bot
+        // Security: Rate limiting check
+        var now = Date.now();
+        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+            var secondsRemaining = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmitTime)) / 1000);
+            alert('Please wait ' + secondsRemaining + ' seconds before submitting again.');
+            return;
+        }
+
+        // Security: Honeypot check - if these fields are filled/checked, it's a bot
         var agreeToDisagree = document.getElementById('agreeToDisagree').checked;
         var cityField = document.getElementById('city').value.trim();
+        var honeypotTimestamp = document.getElementById('honeypotTimestamp').value.trim();
 
-        if (agreeToDisagree || cityField) {
+        // Check if honeypot fields are filled OR if form submitted too quickly (< 3 seconds)
+        var timeSincePageLoad = now - pageLoadTime;
+        if (agreeToDisagree || cityField || honeypotTimestamp || timeSincePageLoad < 3000) {
             // Silently fail for bots
+            console.log('Bot detected');
             return;
         }
 
@@ -2894,6 +2923,15 @@
             document.getElementById(firstErrorField).scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
+
+        // Security: Update last submit time for rate limiting
+        lastSubmitTime = now;
+
+        // Security: Sanitize all user inputs before submission
+        firstName = sanitizeInput(firstName);
+        lastName = sanitizeInput(lastName);
+        email = sanitizeInput(email);
+        phone = sanitizeInput(phone);
 
         // Build webhook data - only include customer-provided values
         var webhookData = {
