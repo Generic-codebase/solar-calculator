@@ -1139,7 +1139,7 @@
     }
 
     function setupInputs() {
-        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh', 'dailyCharge'];
+        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh'];
 
         currencyFields.forEach(function(id) {
             var input = document.getElementById(id);
@@ -1153,6 +1153,30 @@
                 scheduleCalculation();
             });
         });
+
+        // Daily charge field with decimal support
+        var dailyChargeInput = document.getElementById('dailyCharge');
+        if (dailyChargeInput) {
+            dailyChargeInput.addEventListener('input', function(e) {
+                // Allow digits, decimal point, and limit to 2 decimal places
+                var value = e.target.value;
+                // Remove everything except digits and decimal point
+                value = value.replace(/[^\d.]/g, '');
+                // Allow only one decimal point
+                var parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                // Limit to 2 decimal places
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
+                rawValues.dailyCharge = value;
+                e.target.value = value;
+                validateField('dailyCharge', value);
+                scheduleCalculation();
+            });
+        }
 
         var expenseFreq = document.getElementById('expenseFrequency');
         if (expenseFreq) {
@@ -1434,15 +1458,31 @@
             var panelOnlyPanelCount = Math.ceil(((panelOnlyMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
             var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
 
-            // Calconic cost formula: panels * 675 + 3500
-            var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
+            // Calconic cost formula: panels * 675 + 3500 (increased by 5%)
+            var panelOnlySystemCost = (panelOnlyPanelCount * 708.75) + 3675;
 
             // Calconic savings: 45% self-consumption at retail, 55% export at 17c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
             var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
-            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
+
+            // Calculate payback period with 4.5% annual price inflation
+            var inflationRate = 0.045;
+            var cumulativeSavings = 0;
+            var panelOnlyPaybackYears = 0;
+            for (var year = 1; year <= 30; year++) {
+                cumulativeSavings += panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                if (cumulativeSavings >= panelOnlySystemCost) {
+                    // Linear interpolation for fractional year
+                    var prevSavings = cumulativeSavings - (panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1));
+                    var yearSavings = panelOnlyAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                    var remainingCost = panelOnlySystemCost - prevSavings;
+                    var fraction = remainingCost / yearSavings;
+                    panelOnlyPaybackYears = (year - 1) + fraction;
+                    break;
+                }
+            }
 
             // Calculate 25-year savings using Calconic multiplier
             var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
@@ -1472,15 +1512,30 @@
             // Calconic battery sizing: 0.55 * panel count
             var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
 
-            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
-            var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
+            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 5%)
+            var panelBatterySystemCost = (panelBatteryPanelCount * 703.5) + (batteryKwh * 892.5) + 6562.5;
 
             // Calconic savings: 75% self-consumption at retail, 25% export at 17c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
             var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
-            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
+
+            // Calculate payback period with 4.5% annual price inflation
+            var cumulativeSavingsBattery = 0;
+            var panelBatteryPaybackYears = 0;
+            for (var year = 1; year <= 30; year++) {
+                cumulativeSavingsBattery += panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                if (cumulativeSavingsBattery >= panelBatterySystemCost) {
+                    // Linear interpolation for fractional year
+                    var prevSavingsBattery = cumulativeSavingsBattery - (panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1));
+                    var yearSavingsBattery = panelBatteryAnnualSavings * Math.pow(1 + inflationRate, year - 1);
+                    var remainingCostBattery = panelBatterySystemCost - prevSavingsBattery;
+                    var fractionBattery = remainingCostBattery / yearSavingsBattery;
+                    panelBatteryPaybackYears = (year - 1) + fractionBattery;
+                    break;
+                }
+            }
 
             // Calculate 25-year savings using Calconic multiplier
             var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
@@ -1613,8 +1668,8 @@
                         }
 
                         if (y > 0) {
-                            // Apply 2.5% inflation to savings
-                            var inflatedSavings = savings * Math.pow(1.025, y - 1);
+                            // Apply 4.5% inflation to savings
+                            var inflatedSavings = savings * Math.pow(1.045, y - 1);
                             cumulativeQuoteSavings += inflatedSavings;
                             cumulativeQuoteCost += yearlyQuoteFinancingCost;
                         }
@@ -1839,10 +1894,10 @@
             html += '      <p class="roi-value">$' + data.costPerKwh + '</p>';
             html += '    </div>';
             html += '    <div class="roi-box yellow">';
-            html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
+            html += '      <p class="roi-label">Your bills without solar (over 25 years)</p>';
             var projected25YearCost = parseFloat(data.estimatedPowerCost) * 44.57; // 4.5% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
-            html += '      <p class="roi-note">If you don\'t get solar (4.5% annual inflation)</p>';
+            html += '      <p class="roi-note">25-Year Power Cost Projection Without Solar System Install (4.5% Annual Price Inflation)</p>';
             html += '    </div>';
             html += '  </div>';
             html += '</div>';
@@ -1904,7 +1959,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -1927,7 +1982,7 @@
                     html += '          <strong>What does 135% coverage mean?</strong>';
                     html += '          <ul>';
                     html += '            <li>System generates <strong>135%</strong> of your annual kWh usage</li>';
-                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for nighttime)</li>';
+                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for night time)</li>';
                     html += '            <li>Only <strong>25% is exported</strong> to grid</li>';
                     html += '            <li>Extra 25% (vs 110%) accounts for battery charging/discharging efficiency (~10-15% loss)</li>';
                     html += '            <li>Battery provides power during evening/night when solar stops</li>';
@@ -1937,7 +1992,7 @@
                     html += '        </div>';
                     html += '      </span>';
                     html += '    </h4>';
-                    html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for nighttime use). Extra 25% accounts for battery charging efficiency.</p>';
+                    html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for night time use). Extra 25% accounts for battery charging efficiency.</p>';
                     html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~50% of winter bills, up to 100% of summer bills</p>';
                     html += '  </div>';
 
@@ -1973,7 +2028,7 @@
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -2380,6 +2435,7 @@
                         metricsHtml += '      <div style="margin-bottom: 0.75rem;">';
                         metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payback Period</div>';
                         metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + paybackText + '</div>';
+                        metricsHtml += '        <div style="font-size: 0.65rem; color: #9ca3af; margin-top: 0.25rem;">With 4.5% Annual Price Inflation</div>';
                         metricsHtml += '      </div>';
 
                         // 25-Year ROI
