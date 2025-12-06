@@ -1473,7 +1473,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (year > 0) {
                 cumulativeSolarSavings += yearlySolarSavings;
                 cumulativePowerCostWithoutSolar += yearlyPowerCost;
-                cumulativePowerCostWithSolar += (yearlyPowerCost - yearlySolarSavings);
+                // Only add positive net costs (prevent negative cumulative when solar saves more than power costs)
+                var netYearlyCost = Math.max(0, yearlyPowerCost - yearlySolarSavings);
+                cumulativePowerCostWithSolar += netYearlyCost;
                 cumulativeFinancingCost += yearlyFinancingCost;
             }
 
