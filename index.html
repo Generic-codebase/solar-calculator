@@ -14,6 +14,11 @@
         padding: 0;
     }
 
+    body {
+        background: linear-gradient(135deg, #e0f7fa 0%, #f0f9ff 50%, #fff9e6 100%);
+        min-height: 100vh;
+    }
+
     .solar-calculator {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         max-width: 1200px;
@@ -22,10 +27,13 @@
     }
 
     .calc-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(21, 82, 99, 0.15);
         padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-top: 4px solid #155263;
     }
 
@@ -74,16 +82,20 @@
     .form-input {
         width: 100%;
         padding: 0.75rem 1rem;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid #9ca3af;
+        border-radius: 12px;
         font-size: 1rem;
-        transition: border-color 0.2s;
+        transition: all 0.3s ease;
     }
 
     .form-input:focus {
         outline: none;
+        background: rgba(255, 255, 255, 0.7);
         border-color: #155263;
-        box-shadow: 0 0 0 3px rgba(21, 82, 99, 0.1);
+        box-shadow: 0 4px 20px rgba(21, 82, 99, 0.15);
     }
 
     .form-input.error {
@@ -102,11 +114,14 @@
     }
 
     .tip-box {
-        background-color: #f0f9ff;
-        border: 1px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1rem;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(96, 225, 224, 0.1);
     }
 
     .tip-box p {
@@ -125,11 +140,14 @@
     }
 
     .result-card {
-        background: linear-gradient(to right, #f0f9ff, #ffffff);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 2rem;
+        box-shadow: 0 8px 24px rgba(96, 225, 224, 0.12);
     }
 
     .result-header {
@@ -159,7 +177,7 @@
     .status-icon {
         width: 3rem;
         height: 3rem;
-        color: #96e0b3;
+        color: #60e1e0;
         flex-shrink: 0;
     }
 
@@ -178,23 +196,26 @@
 
     .power-card {
         padding: 1.5rem;
-        border-radius: 8px;
-        border: 2px solid;
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     .power-card.low {
-        background-color: #eff6ff;
-        border-color: #93c5fd;
+        background: rgba(239, 246, 255, 0.6);
+        border-color: rgba(147, 197, 253, 0.4);
     }
 
     .power-card.medium {
-        background-color: #f0fdf4;
-        border-color: #86efac;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-card.high {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-header {
@@ -220,7 +241,7 @@
     }
 
     .power-text.medium {
-        color: #15803d;
+        color: #92400e;
     }
 
     .power-text.high {
@@ -234,38 +255,49 @@
     }
 
     .power-dot {
-        width: 4rem;
-        height: 4rem;
-        border-radius: 50%;
+        width: 5rem;
+        height: 5rem;
         flex-shrink: 0;
+        position: relative;
     }
 
-    .power-dot.low {
-        background-color: #60a5fa;
+    .power-dot svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
     }
 
-    .power-dot.medium {
-        background-color: #4ade80;
+    .sun-ray {
+        animation: pulse 2s ease-in-out infinite;
     }
 
-    .power-dot.high {
-        background-color: #fbbf24;
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 0.6;
+        }
+        50% {
+            opacity: 1;
+        }
     }
 
     .lvr-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
     }
 
     .serviceability-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
         margin-bottom: 2rem;
     }
 
@@ -309,11 +341,13 @@
     }
 
     .roi-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 2px solid #155263;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(21, 82, 99, 0.1);
+        border: 1px solid rgba(21, 82, 99, 0.2);
         margin-bottom: 2rem;
     }
 
@@ -332,23 +366,26 @@
 
     .roi-box {
         padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .roi-box.blue {
-        background-color: #f0f9ff;
-        border-color: #60e1e0;
+        background: rgba(240, 249, 255, 0.6);
+        border-color: rgba(96, 225, 224, 0.3);
     }
 
     .roi-box.yellow {
-        background-color: #fffef0;
-        border-color: #ffc93c;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.3);
     }
 
     .roi-box.green {
-        background-color: #f0fff4;
-        border-color: #96e0b3;
+        background: rgba(255, 254, 240, 0.6);
+        border-color: rgba(255, 201, 60, 0.3);
     }
 
     .roi-label {
@@ -369,20 +406,216 @@
         margin-top: 0.25rem;
     }
 
+    .system-comparison {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+        .system-comparison {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .system-option-card {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .system-option-card.panel-only {
+        background: white;
+        border-color: rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .system-option-card.panel-only.selected {
+        background: #155263;
+        border-color: #155263;
+    }
+
+    .system-option-card.panel-only.selected * {
+        color: white !important;
+    }
+
+    .system-option-card.panel-battery {
+        background: white;
+        border-color: rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .system-option-card.panel-battery.selected {
+        background: #ffc93c;
+        border-color: #ffc93c;
+    }
+
+    .system-option-card.panel-battery.selected * {
+        color: white !important;
+    }
+
+    .system-option-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .system-option-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #155263;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .tooltip-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #60e1e0;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: help;
+        position: relative;
+    }
+
+    .tooltip-icon:hover .tooltip-content {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 1000;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(21, 82, 99, 0.98);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        text-align: left;
+        padding: 1rem;
+        border-radius: 12px;
+        width: 320px;
+        font-size: 0.875rem;
+        font-weight: normal;
+        line-height: 1.5;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .tooltip-content::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: rgba(21, 82, 99, 0.98) transparent transparent transparent;
+    }
+
+    .tooltip-content ul {
+        margin: 0.5rem 0 0 0;
+        padding-left: 1.25rem;
+    }
+
+    .tooltip-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .tooltip-content li:last-child {
+        margin-bottom: 0;
+    }
+
+    .tooltip-content strong {
+        color: #60e1e0;
+    }
+
+    .system-option-subtitle {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .spec-row:last-child {
+        border-bottom: none;
+    }
+
+    .spec-row > div {
+        text-align: right;
+    }
+
+    .spec-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        flex: 1;
+        text-align: left;
+    }
+
+    .spec-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #155263;
+        text-align: right;
+    }
+
+    .spec-value.highlight {
+        font-size: 1.25rem;
+        color: #155263;
+    }
+
+    .spec-note {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-top: 0.25rem;
+        text-align: right;
+    }
+
     .system-cost-box {
-        background-color: #fffef0;
-        border: 1px solid #ffc93c;
-        border-radius: 8px;
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
     }
 
     .savings-box {
-        background: linear-gradient(to right, #f0f9ff, #fffef0);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(96, 225, 224, 0.1);
     }
 
     .chart-container {
@@ -392,10 +625,13 @@
     }
 
     .assumptions-box {
-        background-color: #f9fafb;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        background: rgba(249, 250, 251, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(209, 213, 219, 0.3);
+        border-radius: 12px;
         padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .assumptions-box p {
@@ -421,27 +657,82 @@
     }
 
     .contact-subtitle {
-        color: #6b7280;
+        color: #374151;
         margin-bottom: 1.5rem;
+    }
+
+    .green-loan-highlight {
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 16px rgba(255, 201, 60, 0.15);
+    }
+
+    .highlight-icon {
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .highlight-text {
+        flex: 1;
+    }
+
+    .highlight-text strong {
+        color: #155263;
+        font-size: 1.125rem;
     }
 
     .submit-btn {
         width: 100%;
-        background-color: #155263;
+        background: rgba(21, 82, 99, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         color: white;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        font-weight: 700;
+        padding: 1rem 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        font-size: 1.125rem;
         cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 24px rgba(21, 82, 99, 0.3);
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+        left: 100%;
     }
 
     .submit-btn:hover {
-        background-color: #0d3a45;
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        background: rgba(26, 101, 119, 0.95);
+        box-shadow: 0 12px 32px rgba(21, 82, 99, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(21, 82, 99, 0.3);
     }
 
     .success-section {
@@ -460,7 +751,7 @@
         width: 4rem;
         height: 4rem;
         margin: 0 auto 1.5rem;
-        color: #96e0b3;
+        color: #60e1e0;
     }
 
     .success-title {
@@ -508,7 +799,9 @@
         width: 100%;
         height: 8px;
         border-radius: 5px;
-        background: #d1d5db;
+        background: rgba(209, 213, 219, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         outline: none;
         -webkit-appearance: none;
     }
@@ -543,11 +836,14 @@
     }
 
     .financing-section {
-        background: linear-gradient(to right, #f0f9ff, #ffffff);
-        border: 2px solid #60e1e0;
-        border-radius: 8px;
+        background: rgba(240, 249, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(96, 225, 224, 0.3);
+        border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(96, 225, 224, 0.1);
     }
 
     .financing-title {
@@ -615,9 +911,27 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Summer kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <input type="text" id="summerKwh" class="form-input" placeholder="500">
+                <span class="error-message" id="error-summerKwh"></span>
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">Typical Winter Power Bill ($NZ/month)</label>
                 <input type="text" id="winterPowerBill" class="form-input" placeholder="400">
                 <span class="error-message" id="error-winterPowerBill"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Winter kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <input type="text" id="winterKwh" class="form-input" placeholder="1100">
+                <span class="error-message" id="error-winterKwh"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Fixed Daily Charge (Add GST to the figure on your bill)</label>
+                <input type="text" id="dailyCharge" class="form-input" placeholder="3.00" step="0.01">
+                <span class="error-message" id="error-dailyCharge"></span>
             </div>
         </div>
 
@@ -632,7 +946,7 @@
                             <label class="form-label">Loan Term</label>
                             <span class="slider-value" id="loanTermValue">Cash</span>
                         </div>
-                        <input type="range" id="loanTerm" class="form-slider" min="0" max="10" value="0" step="1">
+                        <input type="range" id="loanTerm" class="form-slider" min="0" max="20" value="0" step="1">
                     </div>
                 </div>
 
@@ -645,18 +959,46 @@
                         <input type="range" id="interestRate" class="form-slider" min="0" max="30" value="1" step="0.1">
                     </div>
                 </div>
+
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 1.5rem;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                        <input type="checkbox" id="hasQuotes" style="width: auto; margin-right: 0.75rem; transform: scale(1.3);">
+                        Already have quotes? Compare them here
+                    </label>
+                </div>
+
+                <div id="quoteComparison" style="display: none; grid-column: 1 / -1; margin-top: 1rem; padding: 1.5rem; background: rgba(255, 254, 240, 0.4); border-radius: 12px; border: 1px solid rgba(255, 201, 60, 0.3);">
+                    <h4 style="margin: 0 0 1rem 0; color: #155263; font-size: 1.125rem;">Compare Your Quotes</h4>
+                    <p style="margin: 0 0 1.5rem 0; font-size: 0.875rem; color: #6b7280;">Enter the system cost and estimated annual savings for each quote you've received (up to 3 quotes).</p>
+
+                    <div id="quoteFields"></div>
+
+                    <div id="quoteChartContainer" style="display: none; margin-top: 2rem;">
+                        <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote Comparison Over 25 Years</h5>
+                        <div style="height: 400px; position: relative;">
+                            <canvas id="quoteComparisonChart"></canvas>
+                        </div>
+                        <div id="quotePaybackMetrics" style="display: none;"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="tip-box">
-            <p><strong>Tip:</strong> For more accurate solar savings calculations, enter your typical summer and winter power bills. If left blank, we'll estimate based on your household expenses.</p>
+            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including panel-only and panel+battery options.</p>
         </div>
 
         <div id="results" class="results-section"></div>
 
         <div id="contactForm" class="contact-section">
-            <h2 class="contact-title">Speak with a Mortgage Advisor</h2>
-            <p class="contact-subtitle">Enter your details to explore green loan options with an expert</p>
+            <h2 class="contact-title">Unlock Your Solar Financing Options</h2>
+
+            <div class="green-loan-highlight">
+                <div class="highlight-icon">💰</div>
+                <div class="highlight-text">
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">Major banks are offering green loans at <strong>1% or even 0% interest</strong> to help Kiwis go solar. Plus, you may qualify for <strong>cashback incentives</strong> when refinancing your mortgage to include solar. Our financial advisor partners can help guide you through your finance options and make the top-up or refinance process easy.</p>
+                </div>
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
@@ -693,7 +1035,7 @@
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <button type="button" id="submitBtn" class="submit-btn">Contact a Mortgage Advisor</button>
+                    <button type="button" id="submitBtn" class="submit-btn">Request A Callback</button>
                 </div>
             </div>
         </div>
@@ -721,6 +1063,9 @@
     var resultsData = null;
     var chartInstance = null;
     var financingChartInstance = null;
+    var quoteComparisonChartInstance = null;
+    var costBreakdownChartInstance = null;
+    var selectedSystem = 'panel-battery'; // Default to panel-battery
 
     var rawValues = {
         householdIncome: '',
@@ -729,13 +1074,18 @@
         expenseAmount: '',
         summerPowerBill: '',
         winterPowerBill: '',
+        summerKwh: '',
+        winterKwh: '',
+        dailyCharge: '',
         loanTerm: 0,
         interestRate: 1.0
     };
 
     function formatNumber(num) {
         if (!num && num !== 0) return '0';
-        return parseFloat(num).toLocaleString('en-NZ');
+        var parsed = parseFloat(num);
+        if (isNaN(parsed) || !isFinite(parsed)) return '0';
+        return parsed.toLocaleString('en-NZ');
     }
 
     function formatCurrency(value) {
@@ -789,7 +1139,7 @@
     }
 
     function setupInputs() {
-        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill'];
+        var currencyFields = ['householdIncome', 'propertyValue', 'currentLending', 'expenseAmount', 'summerPowerBill', 'winterPowerBill', 'summerKwh', 'winterKwh', 'dailyCharge'];
 
         currencyFields.forEach(function(id) {
             var input = document.getElementById(id);
@@ -836,6 +1186,65 @@
                 scheduleCalculation();
             });
         }
+
+        // Quote comparison checkbox
+        var hasQuotesCheckbox = document.getElementById('hasQuotes');
+        var quoteComparisonDiv = document.getElementById('quoteComparison');
+        var quoteFieldsDiv = document.getElementById('quoteFields');
+
+        if (hasQuotesCheckbox && quoteComparisonDiv && quoteFieldsDiv) {
+            hasQuotesCheckbox.addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    quoteComparisonDiv.style.display = 'block';
+                    generateQuoteFields();
+                } else {
+                    quoteComparisonDiv.style.display = 'none';
+                }
+                scheduleCalculation();
+            });
+        }
+
+        function generateQuoteFields() {
+            var html = '';
+            for (var i = 1; i <= 3; i++) {
+                html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.6); border-radius: 8px; border: 1px solid rgba(0, 0, 0, 0.1);">';
+                html += '  <h5 style="margin: 0 0 1rem 0; color: #155263; font-size: 1rem;">Quote ' + i + '</h5>';
+                html += '  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">';
+                html += '    <div>';
+                html += '      <label class="form-label">System Cost ($)</label>';
+                html += '      <input type="text" id="quote' + i + 'Cost" class="form-input" placeholder="e.g., 25000">';
+                html += '    </div>';
+                html += '    <div>';
+                html += '      <label class="form-label">Annual Savings ($)</label>';
+                html += '      <input type="text" id="quote' + i + 'Savings" class="form-input" placeholder="e.g., 2500">';
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            }
+            quoteFieldsDiv.innerHTML = html;
+
+            // Add event listeners to quote fields
+            for (var i = 1; i <= 3; i++) {
+                (function(quoteNum) {
+                    var costField = document.getElementById('quote' + quoteNum + 'Cost');
+                    var savingsField = document.getElementById('quote' + quoteNum + 'Savings');
+
+                    if (costField) {
+                        costField.addEventListener('input', function(e) {
+                            e.target.value = formatCurrency(e.target.value);
+                            scheduleCalculation();
+                        });
+                    }
+
+                    if (savingsField) {
+                        savingsField.addEventListener('input', function(e) {
+                            e.target.value = formatCurrency(e.target.value);
+                            scheduleCalculation();
+                        });
+                    }
+                })(i);
+            }
+        }
     }
 
     function scheduleCalculation() {
@@ -846,6 +1255,65 @@
                 calculateResults();
             }, 2000);
         }
+    }
+
+    // Function to generate chart data for a specific system
+    function generateSystemChartData(system, annualPowerCost, annualPriceIncrease, isFinanced, loanTerm, interestRate) {
+        var systemCost = system.systemCost;
+        var annualSavings = system.annualSavings;
+
+        // Calculate financing for this system
+        var monthlyLoanPayment = 0;
+        if (isFinanced && loanTerm > 0) {
+            var monthlyRate = interestRate / 100 / 12;
+            var numPayments = loanTerm * 12;
+            monthlyLoanPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        var chartData = [];
+        var financingData = [];
+        var cumulativeSolarSavings = 0;
+        var cumulativePowerCostWithoutSolar = 0;
+        var cumulativePowerCostWithSolar = isFinanced ? 0 : systemCost;
+        var cumulativeFinancingCost = 0;
+
+        // Calculate percentage based on system coverage (110% or 135%)
+        var effectiveCoverage = (system.selfConsumptionPercent / 100) * (system.monthlyGeneration / (annualPowerCost / 12 / (annualPowerCost / (system.monthlyGeneration * 12))));
+
+        for (var year = 0; year <= 25; year++) {
+            var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
+            var yearlySolarSavings = annualSavings * Math.pow(1.025, year); // 2.5% inflation on savings
+
+            // Calculate financing costs for this year
+            var yearlyFinancingCost = 0;
+            if (isFinanced && year > 0 && year <= loanTerm) {
+                yearlyFinancingCost = monthlyLoanPayment * 12;
+            }
+
+            if (year > 0) {
+                cumulativeSolarSavings += yearlySolarSavings;
+                cumulativePowerCostWithoutSolar += yearlyPowerCost;
+                cumulativePowerCostWithSolar += (yearlyPowerCost - yearlySolarSavings);
+                cumulativeFinancingCost += yearlyFinancingCost;
+            }
+
+            chartData.push({
+                year: year,
+                withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
+                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : 0))
+            });
+
+            financingData.push({
+                year: year,
+                solarSavings: Math.round(cumulativeSolarSavings),
+                financingCost: Math.round(cumulativeFinancingCost)
+            });
+        }
+
+        return {
+            chartData: chartData,
+            financingData: financingData
+        };
     }
 
     function calculateResults() {
@@ -913,23 +1381,131 @@
 
         var summerBill = parseFloat(rawValues.summerPowerBill) || 0;
         var winterBill = parseFloat(rawValues.winterPowerBill) || 0;
+        var summerKwh = parseFloat(rawValues.summerKwh) || 0;
+        var winterKwh = parseFloat(rawValues.winterKwh) || 0;
+        var dailyCharge = parseFloat(rawValues.dailyCharge) || 0;
 
         var annualPowerCost;
+        var annualDailyCharges = dailyCharge * 365;
+        var annualUsageCost = 0;
+        var avgMonthlyKwh = 0;
+        var costPerKwh = 0;
         var calculationMethod = 'expenses';
 
         if (summerBill > 0 && winterBill > 0) {
             var avgMonthlyBill = (summerBill + winterBill) / 2;
             annualPowerCost = avgMonthlyBill * 12;
             calculationMethod = 'bills';
+
+            // Calculate kWh-based metrics if kWh data is provided
+            if (summerKwh > 0 && winterKwh > 0) {
+                avgMonthlyKwh = (summerKwh + winterKwh) / 2;
+                var annualKwh = avgMonthlyKwh * 12;
+                annualUsageCost = annualPowerCost - annualDailyCharges;
+
+                // Ensure we have valid data for cost per kWh calculation
+                if (annualKwh > 0 && annualUsageCost > 0) {
+                    costPerKwh = annualUsageCost / annualKwh;
+                    calculationMethod = 'kwh';
+                }
+            }
         } else {
             var monthlyPowerCost = monthlyExpenses * 0.05;
             annualPowerCost = monthlyPowerCost * 12;
         }
 
+        // System sizing based on kWh usage (if available)
+        var panelOnlySystem = null;
+        var panelBatterySystem = null;
+
+        if (avgMonthlyKwh > 0 && costPerKwh > 0) {
+            var annualKwhUsage = avgMonthlyKwh * 12;
+            var panelWattage = 460; // 460W panels
+            var sunHoursPerDay = 3.95; // NZ average sun hours
+            var exportRate = 0.17; // 17c per kWh export rate
+            var annualPriceIncrease = 0.025; // 2.5% inflation
+            var savings25YearMultiplier = 30.82; // Geometric series multiplier for 2.5% over 25 years
+
+            // Panel-only system (110% of annual usage)
+            var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
+            var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
+
+            // Calconic formula: ((monthlyGen/30.416)/3.95)/.460
+            var panelOnlyPanelCount = Math.ceil(((panelOnlyMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
+            var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
+
+            // Calconic cost formula: panels * 675 + 3500
+            var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
+
+            // Calconic savings: 45% self-consumption at retail, 55% export at 17c
+            var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
+            var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
+            var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
+            var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
+            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
+
+            // Calculate 25-year savings using Calconic multiplier
+            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
+
+            panelOnlySystem = {
+                monthlyGeneration: panelOnlyMonthlyGeneration,
+                annualGeneration: panelOnlyAnnualGeneration,
+                panelCount: panelOnlyPanelCount,
+                systemKw: panelOnlySystemKw,
+                systemCost: panelOnlySystemCost,
+                monthlySavings: panelOnlyMonthlySavings,
+                annualSavings: panelOnlyAnnualSavings,
+                paybackYears: panelOnlyPaybackYears,
+                savings25Year: panelOnly25YearSavings,
+                selfConsumptionPercent: 45,
+                exportPercent: 55
+            };
+
+            // Panel + Battery system (135% of annual usage)
+            var panelBatteryMonthlyGeneration = avgMonthlyKwh * 1.35;
+            var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
+
+            // Calconic formula: same as panel-only
+            var panelBatteryPanelCount = Math.ceil(((panelBatteryMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
+            var panelBatterySystemKw = (panelBatteryPanelCount * panelWattage) / 1000;
+
+            // Calconic battery sizing: 0.55 * panel count
+            var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
+
+            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
+            var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
+
+            // Calconic savings: 75% self-consumption at retail, 25% export at 17c
+            var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
+            var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
+            var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
+            var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
+            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
+
+            // Calculate 25-year savings using Calconic multiplier
+            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
+
+            panelBatterySystem = {
+                monthlyGeneration: panelBatteryMonthlyGeneration,
+                annualGeneration: panelBatteryAnnualGeneration,
+                panelCount: panelBatteryPanelCount,
+                systemKw: panelBatterySystemKw,
+                batteryKwh: batteryKwh,
+                systemCost: panelBatterySystemCost,
+                monthlySavings: panelBatteryMonthlySavings,
+                annualSavings: panelBatteryAnnualSavings,
+                paybackYears: panelBatteryPaybackYears,
+                savings25Year: panelBattery25YearSavings,
+                selfConsumptionPercent: 75,
+                exportPercent: 25
+            };
+        }
+
+        // Keep original calculation for backwards compatibility
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = 0.04;
+        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.045;
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -968,8 +1544,8 @@
         var chartData = [];
         var financingChartData = [];
         var cumulativeSolarSavings = 0;
-        var cumulativePowerCostWithoutSolar = annualPowerCost;
-        var cumulativePowerCostWithSolar = annualPowerCost * (1 - solarCoveragePercent);
+        var cumulativePowerCostWithoutSolar = 0;
+        var cumulativePowerCostWithSolar = isFinanced ? 0 : solarSystemCost; // System cost at year 0 for cash
         var cumulativeFinancingCost = 0;
 
         for (var year = 0; year <= 25; year++) {
@@ -978,7 +1554,7 @@
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
-            if (isFinanced && year <= loanTerm) {
+            if (isFinanced && year > 0 && year <= loanTerm) {
                 yearlyFinancingCost = monthlyLoanPayment * 12;
             }
 
@@ -992,13 +1568,13 @@
             chartData.push({
                 year: year,
                 withoutSolar: Math.round(cumulativePowerCostWithoutSolar),
-                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : solarSystemCost))
+                withSolar: Math.round(cumulativePowerCostWithSolar + (isFinanced ? cumulativeFinancingCost : 0))
             });
 
             // Financing chart data: annual solar savings vs financing costs
             financingChartData.push({
                 year: year,
-                solarSavings: year === 0 ? 0 : Math.round(cumulativeSolarSavings),
+                solarSavings: Math.round(cumulativeSolarSavings),
                 financingCost: Math.round(cumulativeFinancingCost)
             });
         }
@@ -1007,6 +1583,74 @@
         var net25YearSavings = isFinanced ?
             (cumulativeSolarSavings - totalLoanPayments) :
             (cumulativeSolarSavings - solarSystemCost);
+
+        // Collect quote comparison data
+        var quotes = [];
+        var hasQuotesChecked = document.getElementById('hasQuotes') && document.getElementById('hasQuotes').checked;
+        if (hasQuotesChecked) {
+            for (var i = 1; i <= 3; i++) {
+                var costEl = document.getElementById('quote' + i + 'Cost');
+                var savingsEl = document.getElementById('quote' + i + 'Savings');
+                var cost = costEl ? parseFloat(costEl.value.replace(/,/g, '')) : 0;
+                var savings = savingsEl ? parseFloat(savingsEl.value.replace(/,/g, '')) : 0;
+
+                if (cost > 0 && savings > 0) {
+                    var quoteData = [];
+                    var cumulativeQuoteSavings = 0;
+                    var cumulativeQuoteCost = isFinanced ? 0 : cost; // If financed, cost starts at 0
+                    var monthlyQuotePayment = 0;
+
+                    if (isFinanced && loanTerm > 0) {
+                        var loanRate = interestRate / 100 / 12;
+                        var numPayments = loanTerm * 12;
+                        monthlyQuotePayment = cost * (loanRate * Math.pow(1 + loanRate, numPayments)) / (Math.pow(1 + loanRate, numPayments) - 1);
+                    }
+
+                    for (var y = 0; y <= 25; y++) {
+                        var yearlyQuoteFinancingCost = 0;
+                        if (isFinanced && y > 0 && y <= loanTerm) {
+                            yearlyQuoteFinancingCost = monthlyQuotePayment * 12;
+                        }
+
+                        if (y > 0) {
+                            // Apply 2.5% inflation to savings
+                            var inflatedSavings = savings * Math.pow(1.025, y - 1);
+                            cumulativeQuoteSavings += inflatedSavings;
+                            cumulativeQuoteCost += yearlyQuoteFinancingCost;
+                        }
+
+                        quoteData.push({
+                            year: y,
+                            savings: Math.round(cumulativeQuoteSavings),
+                            cost: Math.round(cumulativeQuoteCost)
+                        });
+                    }
+
+                    quotes.push({
+                        name: 'Quote ' + i,
+                        cost: cost,
+                        annualSavings: savings,
+                        data: quoteData
+                    });
+                }
+            }
+        }
+
+        // Generate chart data for both systems
+        var panelOnlyChartData = null;
+        var panelOnlyFinancingData = null;
+        var panelBatteryChartData = null;
+        var panelBatteryFinancingData = null;
+
+        if (panelOnlySystem) {
+            panelOnlyChartData = generateSystemChartData(panelOnlySystem, annualPowerCost, annualPriceIncrease, isFinanced, loanTerm, interestRate);
+            panelOnlyFinancingData = panelOnlyChartData.financingData;
+        }
+
+        if (panelBatterySystem) {
+            panelBatteryChartData = generateSystemChartData(panelBatterySystem, annualPowerCost, annualPriceIncrease, isFinanced, loanTerm, interestRate);
+            panelBatteryFinancingData = panelBatteryChartData.financingData;
+        }
 
         resultsData = {
             lvr: lvr.toFixed(2),
@@ -1033,7 +1677,20 @@
             monthlyLoanPayment: monthlyLoanPayment.toFixed(2),
             totalLoanPayments: totalLoanPayments.toFixed(2),
             totalInterestPaid: totalInterestPaid.toFixed(2),
-            paybackPeriod: paybackPeriod
+            paybackPeriod: paybackPeriod,
+            currentLending: currentLending,
+            // New kWh-based metrics
+            annualDailyCharges: annualDailyCharges.toFixed(2),
+            annualUsageCost: annualUsageCost.toFixed(2),
+            avgMonthlyKwh: avgMonthlyKwh.toFixed(0),
+            costPerKwh: costPerKwh.toFixed(4),
+            panelOnlySystem: panelOnlySystem,
+            panelBatterySystem: panelBatterySystem,
+            panelOnlyChartData: panelOnlyChartData,
+            panelOnlyFinancingData: panelOnlyFinancingData,
+            panelBatteryChartData: panelBatteryChartData,
+            panelBatteryFinancingData: panelBatteryFinancingData,
+            quotes: quotes
         };
 
         displayResults(resultsData);
@@ -1075,7 +1732,36 @@
         html += '        <p class="power-text ' + data.borrowingPower + '">' + data.borrowingPowerText + '</p>';
         html += '        <p class="power-subtext">' + data.borrowingPowerDesc + '</p>';
         html += '      </div>';
-        html += '      <div class="power-dot ' + data.borrowingPower + '"></div>';
+        html += '      <div class="power-dot">';
+
+        // Determine color based on borrowing power
+        var dotColor = data.borrowingPower === 'high' ? '#fbbf24' : (data.borrowingPower === 'medium' ? '#fbbf24' : '#60a5fa');
+
+        html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+
+        // Draw sun rays (12 rays around the circle)
+        for (var i = 0; i < 12; i++) {
+            var angle = (i * 30) * Math.PI / 180;
+            var x1 = 50 + Math.cos(angle) * 38;
+            var y1 = 50 + Math.sin(angle) * 38;
+            var x2 = 50 + Math.cos(angle) * 48;
+            var y2 = 50 + Math.sin(angle) * 48;
+            html += '          <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
+        }
+
+        // Draw donut (outer circle)
+        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
+
+        // Draw donut fill based on power level (low=33%, medium=66%, high=100%)
+        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
+        var circumference = 2 * Math.PI * 30;
+        var fillLength = (percentage / 100) * circumference;
+        var dashArray = fillLength + ' ' + circumference;
+
+        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
+
+        html += '        </svg>';
+        html += '      </div>';
         html += '    </div>';
         html += '  </div>';
         html += '  <div class="lvr-card">';
@@ -1112,7 +1798,7 @@
         html += '    <div class="surplus-box">';
         html += '      <div>';
         html += '        <p class="power-subtext">Monthly Surplus</p>';
-        var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#96e0b3' : '#60e1e0';
+        var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#60e1e0' : '#155263';
         html += '        <p class="surplus-amount" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
         html += '      </div>';
         html += '    </div>';
@@ -1122,67 +1808,228 @@
         // ROI Card
         html += '<div class="roi-card">';
         html += '  <h3 class="result-title">Solar Investment Returns (25 Year Projection)</h3>';
-        html += '  <div class="roi-grid">';
-        html += '    <div class="roi-box blue">';
-        html += '      <p class="roi-label">' + (data.calculationMethod === 'bills' ? 'Current Annual Power Cost' : 'Estimated Annual Power Cost') + '</p>';
-        html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
-        if (data.calculationMethod === 'expenses') {
-            html += '      <p class="roi-note">Based on household expenses</p>';
+
+        // Detailed kWh-based outputs (if kWh data is available)
+        if (data.calculationMethod === 'kwh' && parseFloat(data.avgMonthlyKwh) > 0) {
+            html += '<div class="roi-card" style="background: linear-gradient(to right, #fffef0, #ffffff); border: 2px solid #ffc93c;">';
+            html += '  <h3 class="result-title">Your Power Usage Analysis</h3>';
+            html += '  <div class="roi-grid">';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Annual Power Cost</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.estimatedPowerCost) + '</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Annual Daily Charges</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.annualDailyCharges) + '</p>';
+            html += '      <p class="roi-note">Fixed connection fees</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Annual Usage Cost</p>';
+            html += '      <p class="roi-value">$' + formatNumber(data.annualUsageCost) + '</p>';
+            html += '      <p class="roi-note">What you pay for power itself</p>';
+            html += '    </div>';
+            html += '  </div>';
+            html += '  <div class="roi-grid" style="margin-top: 1rem;">';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Average Monthly kWh Usage</p>';
+            html += '      <p class="roi-value">' + data.avgMonthlyKwh + ' kWh</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">Cost Per kWh (GST Inclusive)</p>';
+            html += '      <p class="roi-value">$' + data.costPerKwh + '</p>';
+            html += '    </div>';
+            html += '    <div class="roi-box yellow">';
+            html += '      <p class="roi-label">25-Year Power Cost Projection</p>';
+            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 44.57; // 4.5% inflation over 25 years
+            html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
+            html += '      <p class="roi-note">If you don\'t get solar (4.5% annual inflation)</p>';
+            html += '    </div>';
+            html += '  </div>';
+            html += '</div>';
+
+            // System comparison section
+            if (data.panelOnlySystem || data.panelBatterySystem) {
+                html += '<h3 class="result-title" style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Recommended Solar System Options</h3>';
+                html += '<div class="system-comparison">';
+
+                // Panel-only system
+                if (data.panelOnlySystem) {
+                    var sys = data.panelOnlySystem;
+                    html += '<div class="system-option-card panel-only" data-system="panel-only" style="cursor: pointer;">';
+                    html += '  <div class="system-option-header">';
+                    html += '    <h4 class="system-option-title">';
+                    html += '      <span>Panel-Only System - 110% Coverage</span>';
+                    html += '      <span class="tooltip-icon">?';
+                    html += '        <div class="tooltip-content">';
+                    html += '          <strong>What does 110% coverage mean?</strong>';
+                    html += '          <ul>';
+                    html += '            <li>System generates <strong>110%</strong> of your annual kWh usage</li>';
+                    html += '            <li>Only <strong>45% is self-consumed</strong> (used directly when sun shines)</li>';
+                    html += '            <li><strong>55% is exported</strong> to grid at lower rate (17c/kWh vs ~40-50c retail)</li>';
+                    html += '            <li>Solar only works during daytime - you still buy grid power at night</li>';
+                    html += '            <li><strong>Bill coverage:</strong> ~35% winter, up to 80% summer</li>';
+                    html += '            <li>Best for homes with high daytime power usage</li>';
+                    html += '          </ul>';
+                    html += '        </div>';
+                    html += '      </span>';
+                    html += '    </h4>';
+                    html += '    <p class="system-option-subtitle">Generates 110% of your annual usage, but only 45% is self-consumed (rest exported at lower rate). Best for high daytime power use.</p>';
+                    html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~35% of winter bills, up to 80% of summer bills</p>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Generation Target</span>';
+                    html += '    <div><span class="spec-value highlight">' + Math.round(sys.monthlyGeneration) + ' kWh</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">System Size</span>';
+                    html += '    <div><span class="spec-value">' + sys.panelCount + ' panels (' + sys.systemKw.toFixed(1) + ' kW)</span><div class="spec-note">Using 460W panels</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Estimated System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sys.systemCost.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 17c</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Annual Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sys.annualSavings.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Payback Period</span>';
+                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">25-Year Net Savings</span>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
+                    html += '  </div>';
+
+                    html += '</div>';
+                }
+
+                // Panel + Battery system
+                if (data.panelBatterySystem) {
+                    var sysBatt = data.panelBatterySystem;
+                    html += '<div class="system-option-card panel-battery selected" data-system="panel-battery" style="cursor: pointer;">';
+                    html += '  <div class="system-option-header">';
+                    html += '    <h4 class="system-option-title">';
+                    html += '      <span>Panel + Battery System - 135% Coverage</span>';
+                    html += '      <span class="tooltip-icon">?';
+                    html += '        <div class="tooltip-content">';
+                    html += '          <strong>What does 135% coverage mean?</strong>';
+                    html += '          <ul>';
+                    html += '            <li>System generates <strong>135%</strong> of your annual kWh usage</li>';
+                    html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for nighttime)</li>';
+                    html += '            <li>Only <strong>25% is exported</strong> to grid</li>';
+                    html += '            <li>Extra 25% (vs 110%) accounts for battery charging/discharging efficiency (~10-15% loss)</li>';
+                    html += '            <li>Battery provides power during evening/night when solar stops</li>';
+                    html += '            <li><strong>Bill coverage:</strong> ~50% winter, up to 100% summer</li>';
+                    html += '            <li>Better bill coverage despite needing more generation</li>';
+                    html += '          </ul>';
+                    html += '        </div>';
+                    html += '      </span>';
+                    html += '    </h4>';
+                    html += '    <p class="system-option-subtitle">Generates 135% of your annual usage with 75% self-consumed (battery stores excess for nighttime use). Extra 25% accounts for battery charging efficiency.</p>';
+                    html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~50% of winter bills, up to 100% of summer bills</p>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Generation Target</span>';
+                    html += '    <div><span class="spec-value highlight">' + Math.round(sysBatt.monthlyGeneration) + ' kWh</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">System Size</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.panelCount + ' panels (' + sysBatt.systemKw.toFixed(1) + ' kW)</span><div class="spec-note">Using 460W panels</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Battery Storage</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.batteryKwh + ' kWh</span><div class="spec-note">Recommended capacity</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Estimated System Cost</span>';
+                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sysBatt.systemCost.toFixed(0)) + '</span><div class="spec-note">Including battery</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Monthly Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export @ 17c</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Annual Savings</span>';
+                    html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.annualSavings.toFixed(0)) + '</span></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">Payback Period</span>';
+                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">If power prices stay the same</div></div>';
+                    html += '  </div>';
+
+                    html += '  <div class="spec-row">';
+                    html += '    <span class="spec-label">25-Year Net Savings</span>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sysBatt.savings25Year.toFixed(0)) + '</span><div class="spec-note">Battery replacement not factored</div></div>';
+                    html += '  </div>';
+
+                    html += '</div>';
+                }
+
+                html += '</div>';
+            }
         }
-        html += '    </div>';
-        html += '    <div class="roi-box yellow">';
-        html += '      <p class="roi-label">Annual Solar Savings (80% coverage)</p>';
-        html += '      <p class="roi-value">$' + formatNumber(data.annualSolarSavings) + '</p>';
-        html += '    </div>';
-        html += '    <div class="roi-box green">';
-        html += '      <p class="roi-label">Payback Period</p>';
-        html += '      <p class="roi-value">' + data.paybackPeriod + ' years</p>';
-        if (data.isFinanced) {
-            html += '      <p class="roi-note">Including financing costs</p>';
-        }
-        html += '    </div>';
-        html += '  </div>';
 
         // Financing Details (if loan is used)
         if (data.isFinanced) {
-            html += '  <div class="system-cost-box" style="background-color: #f0f9ff; border-color: #60e1e0;">';
-            html += '    <p class="roi-label">Loan Financing Details</p>';
-            html += '    <div class="roi-grid" style="margin-bottom: 0;">';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(data.monthlyLoanPayment) + '</p>';
-            html += '      </div>';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Loan Term</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">' + data.loanTerm + ' years @ ' + data.interestRate + '%</p>';
-            html += '      </div>';
-            html += '      <div>';
-            html += '        <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
-            html += '        <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(data.totalInterestPaid) + '</p>';
-            html += '      </div>';
-            html += '    </div>';
+            html += '  <div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0;">';
+            html += '    <h3 class="result-title">Loan Financing Details</h3>';
+            html += '    <div id="financingDetailsContent"></div>';
             html += '  </div>';
         }
         html += '  </div>';
 
+        html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Estimated Solar System Cost</h3>';
         html += '  <div class="system-cost-box">';
-        html += '    <p class="roi-label">Estimated Solar System Cost</p>';
-        html += '    <p class="roi-value">$' + formatNumber(data.solarSystemCost) + '</p>';
-        if (data.isFinanced) {
-            html += '    <p class="roi-note">Total financed cost: $' + formatNumber(data.totalLoanPayments) + ' (' + data.loanTerm + ' year loan @ ' + data.interestRate + '%)</p>';
-        } else {
-            html += '    <p class="roi-note">Cash purchase - no financing costs</p>';
-        }
-        html += '  </div>';
+        html += '    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">';
 
-        html += '  <div class="savings-box">';
-        html += '    <p class="roi-label">Total 25-Year Net Savings</p>';
-        html += '    <p class="roi-value">$' + formatNumber(data.total25YearSavings) + '</p>';
-        if (data.isFinanced) {
-            html += '    <p class="roi-note">After deducting all financing costs ($' + formatNumber(data.totalLoanPayments) + ')</p>';
-        } else {
-            html += '    <p class="roi-note">Based on 4% annual power price increase projection</p>';
-        }
+        // System Cost
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(96, 225, 224, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">System Cost</p>';
+        html += '        <p id="dynamicSystemCost" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">$' + formatNumber(data.solarSystemCost) + '</p>';
+        html += '        <p id="dynamicSystemCostNote" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'Total financed: $' + formatNumber(data.totalLoanPayments) : 'Cash purchase') + '</p>';
+        html += '      </div>';
+
+        // 25-Year Net Savings
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(255, 201, 60, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">25-Year Net Savings</p>';
+        html += '        <p id="dynamic25YearSavings" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">$' + formatNumber(data.total25YearSavings) + '</p>';
+        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'After financing costs' : 'Based on 4.5% inflation') + '</p>';
+        html += '      </div>';
+
+        // Solar ROI
+        var solarROI = ((parseFloat(data.total25YearSavings) / parseFloat(data.solarSystemCost)) * 100).toFixed(0);
+        html += '      <div style="text-align: center; padding: 1rem; background: rgba(255, 154, 118, 0.1); border-radius: 8px;">';
+        html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Solar ROI (25 Years)</p>';
+        html += '        <p id="dynamicSolarROI" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">' + solarROI + '%</p>';
+        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">Return on investment</p>';
+        html += '      </div>';
+
+        html += '    </div>';
+
+        // Add cost breakdown donut chart
+        html += '    <div style="margin-top: 1.5rem; max-width: 350px; margin-left: auto; margin-right: auto;">';
+        html += '      <canvas id="costBreakdownChart" style="max-height: 250px;"></canvas>';
+        html += '    </div>';
+        html += '    <div id="costBreakdownDetails" style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;"></div>';
         html += '  </div>';
 
         html += '  <h3 class="result-title" style="margin-top: 2rem;">Power Costs Over Time</h3>';
@@ -1192,14 +2039,15 @@
 
         // Add financing chart if loan is used
         if (data.isFinanced) {
-            html += '  <h3 class="result-title" style="margin-top: 2rem;">Financing Cost vs Solar Savings</h3>';
+            html += '  <h3 class="result-title" style="margin-top: 2rem;">Estimated Financing Cost vs Solar Savings</h3>';
+            html += '  <p class="roi-note" style="text-align: center; margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">This is a high level estimate only, compare real quotes for a better financial estimate</p>';
             html += '  <div class="chart-container">';
             html += '    <canvas id="financingChart"></canvas>';
             html += '  </div>';
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4% annually | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
@@ -1222,6 +2070,12 @@
         }
         if (financingChartInstance) {
             financingChartInstance.destroy();
+        }
+        if (quoteComparisonChartInstance) {
+            quoteComparisonChartInstance.destroy();
+        }
+        if (costBreakdownChartInstance) {
+            costBreakdownChartInstance.destroy();
         }
 
         // Create main savings chart
@@ -1290,28 +2144,170 @@
         if (data.isFinanced) {
             var financingCtx = document.getElementById('financingChart');
             if (financingCtx && typeof Chart !== 'undefined') {
-                financingChartInstance = new Chart(financingCtx, {
+                // Get financing data for selected system
+                var financingData;
+                if (selectedSystem === 'panel-battery' && data.panelBatteryFinancingData) {
+                    financingData = data.panelBatteryFinancingData;
+                } else if (selectedSystem === 'panel-only' && data.panelOnlyFinancingData) {
+                    financingData = data.panelOnlyFinancingData;
+                } else {
+                    financingData = data.financingChartData;
+                }
+
+                // Only create chart if we have financing data
+                if (financingData && financingData.length > 0) {
+                    // Build datasets array - only high-level estimates
+                    var financingDatasets = [
+                        {
+                            label: 'Cumulative Solar Savings',
+                            data: financingData.map(function(d) { return d.solarSavings; }),
+                            borderColor: '#60e1e0',
+                            backgroundColor: 'rgba(96, 225, 224, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Cumulative Financing Cost',
+                            data: financingData.map(function(d) { return d.financingCost; }),
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ];
+
+                    financingChartInstance = new Chart(financingCtx, {
+                        type: 'line',
+                        data: {
+                            labels: financingData.map(function(d) { return d.year; }),
+                            datasets: financingDatasets
+                        },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': $' + formatNumber(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + formatNumber(value);
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years'
+                                }
+                            }
+                        }
+                    }
+                });
+                }
+            }
+        }
+
+        // Create quote comparison chart if quotes are available
+        if (data.quotes && data.quotes.length > 0) {
+            var quoteChartCtx = document.getElementById('quoteComparisonChart');
+            var quoteChartContainer = document.getElementById('quoteChartContainer');
+
+            if (quoteChartCtx && quoteChartContainer && typeof Chart !== 'undefined') {
+                // Show the chart container
+                quoteChartContainer.style.display = 'block';
+
+                var quoteColors = [
+                    { border: '#9333ea', bg: 'rgba(147, 51, 234, 1)', label: 'rgba(147, 51, 234, 0.95)' }, // Purple
+                    { border: '#fb923c', bg: 'rgba(251, 146, 60, 1)', label: 'rgba(251, 146, 60, 0.95)' }, // Orange
+                    { border: '#14b8a6', bg: 'rgba(20, 184, 166, 1)', label: 'rgba(20, 184, 166, 0.95)' }  // Teal
+                ];
+
+                var quoteDatasets = [];
+                var quotePaybackData = [];
+
+                data.quotes.forEach(function(quote, index) {
+                    var color = quoteColors[index % quoteColors.length];
+
+                    // Calculate payback period (where savings >= cost)
+                    var paybackYear = null;
+                    // Start from year 1 since year 0 has both savings and cost at 0
+                    for (var i = 1; i < quote.data.length; i++) {
+                        if (quote.data[i].savings >= quote.data[i].cost) {
+                            // Linear interpolation for more accurate payback
+                            var prevSavings = quote.data[i-1].savings;
+                            var prevCost = quote.data[i-1].cost;
+                            var currSavings = quote.data[i].savings;
+                            var currCost = quote.data[i].cost;
+
+                            // Calculate the fraction of the year where crossover happens
+                            var prevDiff = prevSavings - prevCost;
+                            var currDiff = currSavings - currCost;
+                            var fraction = -prevDiff / (currDiff - prevDiff);
+
+                            paybackYear = (i - 1) + fraction;
+                            break;
+                        }
+                    }
+
+                    // Store payback data for display below chart
+                    if (paybackYear !== null) {
+                        // Calculate 25-year ROI: (total savings - cost) / cost * 100
+                        var total25YearSavings = quote.data[25].savings;
+                        var quoteCost = quote.cost;
+                        var quoteROI = ((total25YearSavings / quoteCost) * 100).toFixed(0);
+
+                        quotePaybackData.push({
+                            name: quote.name,
+                            payback: paybackYear,
+                            color: color.border,
+                            roi: quoteROI,
+                            cost: quoteCost,
+                            annualSavings: quote.annualSavings
+                        });
+                    }
+
+                    // Add savings line for this quote
+                    quoteDatasets.push({
+                        label: quote.name + ' Savings',
+                        data: quote.data.map(function(d) { return d.savings; }),
+                        borderColor: color.border,
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        fill: false,
+                        tension: 0.1,
+                        borderDash: [5, 5],
+                        borderWidth: 2
+                    });
+
+                    // Add cost line for this quote
+                    quoteDatasets.push({
+                        label: quote.name + ' Cost',
+                        data: quote.data.map(function(d) { return d.cost; }),
+                        borderColor: color.border,
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        fill: false,
+                        tension: 0.1,
+                        borderDash: [2, 2],
+                        borderWidth: 2
+                    });
+                });
+
+                quoteComparisonChartInstance = new Chart(quoteChartCtx, {
                     type: 'line',
                     data: {
-                        labels: data.financingChartData.map(function(d) { return d.year; }),
-                        datasets: [
-                            {
-                                label: 'Cumulative Solar Savings',
-                                data: data.financingChartData.map(function(d) { return d.solarSavings; }),
-                                borderColor: '#96e0b3',
-                                backgroundColor: 'rgba(150, 224, 179, 0.2)',
-                                fill: true,
-                                tension: 0.1
-                            },
-                            {
-                                label: 'Cumulative Financing Cost',
-                                data: data.financingChartData.map(function(d) { return d.financingCost; }),
-                                borderColor: '#ff6b6b',
-                                backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                                fill: true,
-                                tension: 0.1
-                            }
-                        ]
+                        labels: data.quotes[0].data.map(function(d) { return d.year; }),
+                        datasets: quoteDatasets
                     },
                     options: {
                         responsive: true,
@@ -1346,7 +2342,356 @@
                         }
                     }
                 });
+
+                // Display payback metrics below the chart
+                var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
+                if (paybackMetricsDiv && quotePaybackData.length > 0) {
+                    // Sort quotes by payback period (shortest first)
+                    quotePaybackData.sort(function(a, b) { return a.payback - b.payback; });
+
+                    var metricsHtml = '<div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">';
+                    metricsHtml += '  <h6 style="margin: 0 0 1rem 0; color: #155263; font-size: 0.95rem; font-weight: 600;">Payback Periods (Ranked)</h6>';
+                    metricsHtml += '  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">';
+
+                    var rankings = ['🥇 1st Place', '🥈 2nd Place', '🥉 3rd Place'];
+                    quotePaybackData.forEach(function(quote, index) {
+                        // Convert payback to years and months
+                        var totalYears = quote.payback;
+                        var years = Math.floor(totalYears);
+                        var fractionalYear = totalYears - years;
+                        var months = Math.round(fractionalYear * 12);
+
+                        // Handle edge case where months round to 12
+                        if (months === 12) {
+                            years += 1;
+                            months = 0;
+                        }
+
+                        var paybackText = years + ' yr' + (years !== 1 ? 's' : '');
+                        if (months > 0) {
+                            paybackText += ' ' + months + ' mo' + (months !== 1 ? 's' : '');
+                        }
+
+                        metricsHtml += '    <div style="text-align: center; padding: 1.25rem; background: white; border-radius: 8px; border: 2px solid ' + quote.color + ';">';
+                        metricsHtml += '      <div style="font-size: 1rem; font-weight: bold; color: #155263; margin-bottom: 0.25rem;">' + rankings[index] + '</div>';
+                        metricsHtml += '      <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">' + quote.name + '</div>';
+
+                        // Payback Period
+                        metricsHtml += '      <div style="margin-bottom: 0.75rem;">';
+                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payback Period</div>';
+                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + paybackText + '</div>';
+                        metricsHtml += '      </div>';
+
+                        // 25-Year ROI
+                        metricsHtml += '      <div>';
+                        metricsHtml += '        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">25-Year ROI</div>';
+                        metricsHtml += '        <div style="font-size: 1.25rem; font-weight: bold; color: ' + quote.color + ';">' + quote.roi + '%</div>';
+                        metricsHtml += '      </div>';
+
+                        metricsHtml += '    </div>';
+                    });
+
+                    metricsHtml += '  </div>';
+                    metricsHtml += '</div>';
+                    paybackMetricsDiv.innerHTML = metricsHtml;
+                    paybackMetricsDiv.style.display = 'block';
+                } else if (paybackMetricsDiv) {
+                    paybackMetricsDiv.style.display = 'none';
+                }
             }
+        } else {
+            // Hide the chart container if no quotes
+            var quoteChartContainer = document.getElementById('quoteChartContainer');
+            if (quoteChartContainer) {
+                quoteChartContainer.style.display = 'none';
+            }
+            var paybackMetricsDiv = document.getElementById('quotePaybackMetrics');
+            if (paybackMetricsDiv) {
+                paybackMetricsDiv.style.display = 'none';
+            }
+        }
+
+        // Create cost breakdown chart based on selected system
+        createCostBreakdownChart(data);
+
+        // Update financing details based on selected system
+        updateFinancingDetails(data);
+
+        // Update system cost metrics based on selected system
+        updateSystemCostMetrics(data);
+
+        // Update main charts based on selected system
+        updateMainCharts(data);
+
+        // Add click handlers for system option cards
+        var systemCards = document.querySelectorAll('.system-option-card');
+        systemCards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                var systemType = this.getAttribute('data-system');
+                selectedSystem = systemType;
+
+                // Update selected state
+                systemCards.forEach(function(c) { c.classList.remove('selected'); });
+                this.classList.add('selected');
+
+                // Update cost breakdown chart
+                createCostBreakdownChart(data);
+
+                // Update financing details
+                updateFinancingDetails(data);
+
+                // Update system cost metrics
+                updateSystemCostMetrics(data);
+
+                // Update main charts
+                updateMainCharts(data);
+            });
+        });
+    }
+
+    // Function to update main charts based on selected system
+    function updateMainCharts(data) {
+        var currentChartData, currentFinancingData;
+
+        // Get data for selected system
+        if (selectedSystem === 'panel-battery' && data.panelBatteryChartData) {
+            currentChartData = data.panelBatteryChartData.chartData;
+            currentFinancingData = data.panelBatteryFinancingData;
+        } else if (selectedSystem === 'panel-only' && data.panelOnlyChartData) {
+            currentChartData = data.panelOnlyChartData.chartData;
+            currentFinancingData = data.panelOnlyFinancingData;
+        } else {
+            // Fallback to generic chart data
+            currentChartData = data.chartData;
+            currentFinancingData = data.financingChartData;
+        }
+
+        // Update main savings chart
+        if (chartInstance && currentChartData) {
+            chartInstance.data.datasets[0].data = currentChartData.map(function(d) { return d.withoutSolar; });
+            chartInstance.data.datasets[1].data = currentChartData.map(function(d) { return d.withSolar; });
+            chartInstance.update();
+        }
+
+        // Update financing chart
+        if (financingChartInstance && currentFinancingData && data.isFinanced) {
+            financingChartInstance.data.datasets[0].data = currentFinancingData.map(function(d) { return d.solarSavings; });
+            financingChartInstance.data.datasets[1].data = currentFinancingData.map(function(d) { return d.financingCost; });
+            financingChartInstance.update();
+        }
+    }
+
+    // Function to update financing details based on selected system
+    function updateFinancingDetails(data) {
+        var financingDetailsDiv = document.getElementById('financingDetailsContent');
+        if (!financingDetailsDiv || !data.isFinanced) return;
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate financing for selected system
+        var systemCost = systemData.systemCost;
+        var loanTerm = parseInt(data.loanTerm) || 0;
+        var interestRate = parseFloat(data.interestRate) || 0;
+
+        if (loanTerm <= 0) return;
+
+        var monthlyRate = interestRate / 100 / 12;
+        var numPayments = loanTerm * 12;
+        var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        var totalPayments = monthlyPayment * numPayments;
+        var totalInterest = totalPayments - systemCost;
+
+        // Calculate bank cashback at 1% of current lending/mortgage
+        var currentLending = parseFloat(data.currentLending) || 0;
+        var bankCashback = currentLending * 0.01;
+
+        var html = '';
+        html += '<div class="roi-grid" style="margin-bottom: 0;">';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(monthlyPayment.toFixed(2)) + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Loan Term</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + loanTerm + ' years @ ' + interestRate.toFixed(1) + '%</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(totalInterest.toFixed(2)) + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #16a34a;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
+        html += '  </div>';
+        html += '</div>';
+
+        financingDetailsDiv.innerHTML = html;
+    }
+
+    // Function to update system cost metrics based on selected system
+    function updateSystemCostMetrics(data) {
+        var systemCostEl = document.getElementById('dynamicSystemCost');
+        var systemCostNoteEl = document.getElementById('dynamicSystemCostNote');
+        var savings25YearEl = document.getElementById('dynamic25YearSavings');
+        var solarROIEl = document.getElementById('dynamicSolarROI');
+
+        if (!systemCostEl || !data) return;
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        var systemCost = systemData.systemCost;
+        var savings25Year = systemData.savings25Year;
+
+        // Calculate financing if applicable
+        var totalFinancedCost = systemCost;
+        if (data.isFinanced) {
+            var loanTerm = data.loanTerm;
+            var interestRate = data.interestRate;
+            var monthlyRate = interestRate / 100 / 12;
+            var numPayments = loanTerm * 12;
+            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            totalFinancedCost = monthlyPayment * numPayments;
+        }
+
+        // Calculate Solar ROI
+        var solarROI = ((savings25Year / systemCost) * 100).toFixed(0);
+
+        // Update the display
+        systemCostEl.textContent = '$' + formatNumber(systemCost.toFixed(0));
+        if (systemCostNoteEl) {
+            systemCostNoteEl.textContent = data.isFinanced ? 'Total financed: $' + formatNumber(totalFinancedCost.toFixed(0)) : 'Cash purchase';
+        }
+
+        if (savings25YearEl) {
+            savings25YearEl.textContent = '$' + formatNumber(savings25Year.toFixed(0));
+        }
+
+        if (solarROIEl) {
+            solarROIEl.textContent = solarROI + '%';
+        }
+    }
+
+    // Function to create cost breakdown donut chart
+    function createCostBreakdownChart(data) {
+        var costCtx = document.getElementById('costBreakdownChart');
+        var costDetailsDiv = document.getElementById('costBreakdownDetails');
+
+        if (!costCtx || !data) return;
+
+        // Destroy existing chart
+        if (costBreakdownChartInstance) {
+            costBreakdownChartInstance.destroy();
+        }
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate cost breakdown
+        var panelCost, installCost, batteryCost, interestCost;
+
+        if (selectedSystem === 'panel-battery') {
+            // Panel+Battery: (panels * 670) + (battery kWh * 850) + 6250
+            panelCost = systemData.panelCount * 670;
+            batteryCost = systemData.batteryKwh * 850;
+            installCost = 6250;
+        } else {
+            // Panel-only: panels * 675 + 3500
+            panelCost = systemData.panelCount * 675;
+            batteryCost = 0;
+            installCost = 3500;
+        }
+
+        // Calculate interest if financed
+        interestCost = 0;
+        if (data.isFinanced) {
+            var systemCost = systemData.systemCost;
+            var loanTerm = data.loanTerm;
+            var interestRate = data.interestRate;
+            var monthlyRate = interestRate / 100 / 12;
+            var numPayments = loanTerm * 12;
+            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            var totalPayments = monthlyPayment * numPayments;
+            interestCost = totalPayments - systemCost;
+        }
+
+        var labels = [];
+        var values = [];
+        var colors = [];
+
+        labels.push('Solar Panels');
+        values.push(panelCost);
+        colors.push('#60e1e0');
+
+        labels.push('Installation & Project Costs');
+        values.push(installCost);
+        colors.push('#ffc93c');
+
+        if (batteryCost > 0) {
+            labels.push('Battery Storage');
+            values.push(batteryCost);
+            colors.push('#ff9a76');
+        }
+
+        if (interestCost > 0) {
+            labels.push('Finance Interest');
+            values.push(interestCost);
+            colors.push('#9ca3af');
+        }
+
+        // Create donut chart
+        costBreakdownChartInstance = new Chart(costCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                var value = context.parsed || 0;
+                                var total = context.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                var percentage = ((value / total) * 100).toFixed(1);
+                                return label + ': $' + formatNumber(value) + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Display breakdown details
+        if (costDetailsDiv) {
+            var detailsHtml = '<div style="text-align: center;">';
+            detailsHtml += '<strong>Cost Breakdown:</strong><br>';
+            for (var i = 0; i < labels.length; i++) {
+                detailsHtml += labels[i] + ': $' + formatNumber(values[i]) + '<br>';
+            }
+            detailsHtml += '</div>';
+            costDetailsDiv.innerHTML = detailsHtml;
         }
     }
 
@@ -1379,22 +2724,28 @@
 
         var errors = {};
 
+        // Validate required fields
         if (!firstName) errors.firstName = "We'd love to know your name!";
         if (!lastName) errors.lastName = "Last name too, please!";
 
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            errors.email = "We'll need your email to get in touch!";
+            errors.email = "Email is required to submit your request";
         } else if (!emailRegex.test(email)) {
-            errors.email = "Hmm, that email looks a bit odd. Check for typos?";
+            errors.email = "Please enter a valid email address";
         }
 
         var nzPhoneRegex = /^(\+64|0)[2-9]\d{7,9}$/;
         var cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
         if (!phone) {
-            errors.phone = "How can we call you?";
+            errors.phone = "Phone number is required";
         } else if (!nzPhoneRegex.test(cleanPhone)) {
-            errors.phone = "We need a valid NZ phone number (e.g., 021 234 5678)";
+            errors.phone = "Please enter a valid NZ phone number (e.g., 021 234 5678)";
+        }
+
+        // Validate that results exist before submission
+        if (!resultsData) {
+            errors.firstName = "Please complete the calculator above before submitting";
         }
 
         if (Object.keys(errors).length > 0) {
@@ -1414,38 +2765,140 @@
             return;
         }
 
+        // Build webhook data - only include customer-provided values
         var webhookData = {
             firstName: firstName,
             lastName: lastName,
             email: email,
             phone: phone,
-            householdIncome: rawValues.householdIncome,
-            propertyValue: rawValues.propertyValue,
-            currentLending: rawValues.currentLending,
-            currentBank: document.getElementById('currentBank').value,
-            expenseAmount: rawValues.expenseAmount,
-            expenseFrequency: document.getElementById('expenseFrequency').value,
-            summerPowerBill: rawValues.summerPowerBill,
-            winterPowerBill: rawValues.winterPowerBill,
             submittedAt: new Date().toISOString()
         };
 
+        // Add customer input data (not assumptions)
+        if (rawValues.householdIncome) webhookData.householdIncome = rawValues.householdIncome;
+        if (rawValues.propertyValue) webhookData.propertyValue = rawValues.propertyValue;
+        if (rawValues.currentLending) webhookData.currentLending = rawValues.currentLending;
+
+        var currentBank = document.getElementById('currentBank').value;
+        if (currentBank) webhookData.currentBank = currentBank;
+
+        if (rawValues.expenseAmount) webhookData.expenseAmount = rawValues.expenseAmount;
+
+        var expenseFrequency = document.getElementById('expenseFrequency').value;
+        if (expenseFrequency) webhookData.expenseFrequency = expenseFrequency;
+
+        // Only include power bill data if customer actually provided it
+        var hasCustomerPowerData = false;
+        if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
+            webhookData.summerPowerBill = rawValues.summerPowerBill;
+            hasCustomerPowerData = true;
+        }
+        if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
+            webhookData.winterPowerBill = rawValues.winterPowerBill;
+            hasCustomerPowerData = true;
+        }
+
+        // Only include kWh data if customer provided it
+        var hasCustomerKwhData = false;
+        if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
+            webhookData.summerKwh = rawValues.summerKwh;
+            hasCustomerKwhData = true;
+        }
+        if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
+            webhookData.winterKwh = rawValues.winterKwh;
+            hasCustomerKwhData = true;
+        }
+        if (rawValues.dailyCharge && parseFloat(rawValues.dailyCharge) > 0) {
+            webhookData.dailyCharge = rawValues.dailyCharge;
+        }
+
+        // Helper function to safely add numeric values to webhook
+        function safeAddValue(obj, key, value) {
+            if (value !== null && value !== undefined && !isNaN(value) && isFinite(value)) {
+                obj[key] = value;
+            }
+        }
+
         if (resultsData) {
-            webhookData.lvr = resultsData.lvr;
-            webhookData.borrowingPower = resultsData.borrowingPowerText;
-            webhookData.solarReady = resultsData.solarReady;
-            webhookData.estimatedSolarSystemCost = resultsData.solarSystemCost;
-            webhookData.annualSolarSavings = resultsData.annualSolarSavings;
-            webhookData.total25YearSavings = resultsData.total25YearSavings;
-            webhookData.monthlySurplus = resultsData.monthlySurplus;
-            webhookData.isFinanced = resultsData.isFinanced;
+            // Always include these - they're based on customer financial data
+            safeAddValue(webhookData, 'lvr', resultsData.lvr);
+            webhookData.borrowingPower = resultsData.borrowingPowerText || '';
+            webhookData.solarReady = resultsData.solarReady || false;
+            safeAddValue(webhookData, 'monthlySurplus', resultsData.monthlySurplus);
+            webhookData.calculationMethod = resultsData.calculationMethod || 'expenses';
+
+            // Include power cost estimates (these use customer data even if partly estimated)
+            if (hasCustomerPowerData) {
+                safeAddValue(webhookData, 'estimatedPowerCost', resultsData.estimatedPowerCost);
+            }
+
+            // Include solar savings calculations (based on customer data)
+            if (resultsData.annualSolarSavings && parseFloat(resultsData.annualSolarSavings) > 0) {
+                safeAddValue(webhookData, 'estimatedSolarSystemCost', resultsData.solarSystemCost);
+                safeAddValue(webhookData, 'annualSolarSavings', resultsData.annualSolarSavings);
+                safeAddValue(webhookData, 'total25YearSavings', resultsData.total25YearSavings);
+            }
+
+            // kWh-based metrics - ONLY if customer provided actual kWh data
+            if (hasCustomerKwhData && resultsData.calculationMethod === 'kwh') {
+                safeAddValue(webhookData, 'avgMonthlyKwh', resultsData.avgMonthlyKwh);
+                safeAddValue(webhookData, 'costPerKwh', resultsData.costPerKwh);
+                safeAddValue(webhookData, 'annualUsageCost', resultsData.annualUsageCost);
+
+                // Only include daily charges if customer provided it
+                if (webhookData.dailyCharge) {
+                    safeAddValue(webhookData, 'annualDailyCharges', resultsData.annualDailyCharges);
+                }
+            }
+
+            // Financing data (based on customer selections)
+            webhookData.isFinanced = resultsData.isFinanced || false;
             if (resultsData.isFinanced) {
-                webhookData.loanTerm = resultsData.loanTerm;
-                webhookData.interestRate = resultsData.interestRate;
-                webhookData.monthlyLoanPayment = resultsData.monthlyLoanPayment;
-                webhookData.totalLoanPayments = resultsData.totalLoanPayments;
-                webhookData.totalInterestPaid = resultsData.totalInterestPaid;
-                webhookData.paybackPeriod = resultsData.paybackPeriod;
+                safeAddValue(webhookData, 'loanTerm', resultsData.loanTerm);
+                safeAddValue(webhookData, 'interestRate', resultsData.interestRate);
+                safeAddValue(webhookData, 'monthlyLoanPayment', resultsData.monthlyLoanPayment);
+                safeAddValue(webhookData, 'totalLoanPayments', resultsData.totalLoanPayments);
+                safeAddValue(webhookData, 'totalInterestPaid', resultsData.totalInterestPaid);
+                safeAddValue(webhookData, 'paybackPeriod', resultsData.paybackPeriod);
+            }
+
+            // Panel system data - ONLY if based on real customer kWh data
+            if (hasCustomerKwhData && resultsData.calculationMethod === 'kwh') {
+                // Panel-only system data
+                if (resultsData.panelOnlySystem) {
+                    var panelOnly = resultsData.panelOnlySystem;
+                    safeAddValue(webhookData, 'panelOnly_monthlyGeneration', panelOnly.monthlyGeneration ? panelOnly.monthlyGeneration.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelOnly_panelCount', panelOnly.panelCount);
+                    safeAddValue(webhookData, 'panelOnly_systemKw', panelOnly.systemKw ? panelOnly.systemKw.toFixed(1) : null);
+                    safeAddValue(webhookData, 'panelOnly_systemCost', panelOnly.systemCost ? panelOnly.systemCost.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelOnly_monthlySavings', panelOnly.monthlySavings ? panelOnly.monthlySavings.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelOnly_annualSavings', panelOnly.annualSavings ? panelOnly.annualSavings.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelOnly_paybackYears', panelOnly.paybackYears ? panelOnly.paybackYears.toFixed(2) : null);
+                    safeAddValue(webhookData, 'panelOnly_25YearSavings', panelOnly.savings25Year ? panelOnly.savings25Year.toFixed(0) : null);
+                }
+
+                // Panel + battery system data
+                if (resultsData.panelBatterySystem) {
+                    var panelBattery = resultsData.panelBatterySystem;
+                    safeAddValue(webhookData, 'panelBattery_monthlyGeneration', panelBattery.monthlyGeneration ? panelBattery.monthlyGeneration.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelBattery_panelCount', panelBattery.panelCount);
+                    safeAddValue(webhookData, 'panelBattery_systemKw', panelBattery.systemKw ? panelBattery.systemKw.toFixed(1) : null);
+                    safeAddValue(webhookData, 'panelBattery_batteryKwh', panelBattery.batteryKwh);
+                    safeAddValue(webhookData, 'panelBattery_systemCost', panelBattery.systemCost ? panelBattery.systemCost.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelBattery_monthlySavings', panelBattery.monthlySavings ? panelBattery.monthlySavings.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelBattery_annualSavings', panelBattery.annualSavings ? panelBattery.annualSavings.toFixed(0) : null);
+                    safeAddValue(webhookData, 'panelBattery_paybackYears', panelBattery.paybackYears ? panelBattery.paybackYears.toFixed(2) : null);
+                    safeAddValue(webhookData, 'panelBattery_25YearSavings', panelBattery.savings25Year ? panelBattery.savings25Year.toFixed(0) : null);
+                }
+            }
+
+            // Add quotes if provided (quotes are optional customer input)
+            if (resultsData.quotes && resultsData.quotes.length > 0) {
+                resultsData.quotes.forEach(function(quote, index) {
+                    var prefix = 'quote' + (index + 1) + '_';
+                    safeAddValue(webhookData, prefix + 'cost', quote.cost);
+                    safeAddValue(webhookData, prefix + 'annualSavings', quote.annualSavings);
+                });
             }
         }
 
