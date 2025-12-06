@@ -1465,7 +1465,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             // Apply panel efficiency degradation (0.5% per year)
             var panelDegradation = Math.pow(0.995, year); // 0.5% degradation per year
-            var yearlySolarSavings = annualSavings * Math.pow(1.025, year) * panelDegradation;
+            var yearlySolarSavings = annualSavings * Math.pow(1 + annualPriceIncrease, year) * panelDegradation;
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
@@ -1608,8 +1608,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var panelWattage = 460; // 460W panels
             var sunHoursPerDay = 3.95; // NZ average sun hours
             var exportRate = 0.17; // 17c per kWh export rate
-            var annualPriceIncrease = 0.025; // 2.5% inflation
-            var savings25YearMultiplier = 30.82; // Geometric series multiplier for 2.5% over 25 years
+            var savings25YearMultiplier = 44.57; // Geometric series multiplier for 4.5% annual price increase over 25 years
 
             // Panel-only system (110% of annual usage)
             var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
@@ -1721,7 +1720,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = avgMonthlyKwh > 0 ? 0.025 : 0.045;
+        var annualPriceIncrease = 0.045; // 4.5% annual power price increase
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -1834,7 +1833,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                         // Calculate yearly savings with inflation and degradation (matching main solar calculation)
                         var panelDegradation = Math.pow(0.995, y); // 0.5% degradation per year
-                        var inflatedSavings = savings * Math.pow(1.025, y) * panelDegradation;
+                        var inflatedSavings = savings * Math.pow(1 + annualPriceIncrease, y) * panelDegradation;
 
                         if (y > 0) {
                             cumulativeQuoteSavings += inflatedSavings;
@@ -2131,7 +2130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">25-Year Net Savings</span>';
-                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 2.5% inflation</div></div>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 4.5% annual price increase</div></div>';
                     html += '  </div>';
 
                     html += '</div>';
