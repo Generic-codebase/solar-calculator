@@ -1462,7 +1462,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         for (var year = 0; year <= 25; year++) {
             var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
-            var yearlySolarSavings = annualSavings * Math.pow(1.025, year); // 2.5% inflation on savings
+
+            // Apply panel efficiency degradation (0.5% per year)
+            var panelDegradation = Math.pow(0.995, year); // 0.5% degradation per year
+            var yearlySolarSavings = annualSavings * Math.pow(1.025, year) * panelDegradation;
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
@@ -1763,7 +1766,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         for (var year = 0; year <= 25; year++) {
             var yearlyPowerCost = annualPowerCost * Math.pow(1 + annualPriceIncrease, year);
-            var yearlySolarSavings = yearlyPowerCost * solarCoveragePercent;
+
+            // Apply panel efficiency degradation (0.5% per year)
+            var panelDegradation = Math.pow(0.995, year); // 0.5% degradation per year
+            var adjustedCoverage = solarCoveragePercent * panelDegradation;
+            var yearlySolarSavings = yearlyPowerCost * adjustedCoverage;
 
             // Calculate financing costs for this year
             var yearlyFinancingCost = 0;
@@ -1774,7 +1781,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (year > 0) {
                 cumulativeSolarSavings += yearlySolarSavings;
                 cumulativePowerCostWithoutSolar += yearlyPowerCost;
-                cumulativePowerCostWithSolar += yearlyPowerCost * (1 - solarCoveragePercent);
+                cumulativePowerCostWithSolar += yearlyPowerCost * (1 - adjustedCoverage);
                 cumulativeFinancingCost += yearlyFinancingCost;
             }
 
@@ -2260,7 +2267,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
