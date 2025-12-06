@@ -1417,8 +1417,6 @@
         // System sizing based on kWh usage (if available)
         var panelOnlySystem = null;
         var panelBatterySystem = null;
-        var cashbackRate = 0.015; // 1.5% cashback rate on current lending
-        var bankCashback = currentLending * cashbackRate; // Cashback based on current mortgage
 
         if (avgMonthlyKwh > 0 && costPerKwh > 0) {
             var annualKwhUsage = avgMonthlyKwh * 12;
@@ -1438,17 +1436,16 @@
 
             // Calconic cost formula: panels * 675 + 3500
             var panelOnlySystemCost = (panelOnlyPanelCount * 675) + 3500;
-            var panelOnlyNetCost = panelOnlySystemCost - bankCashback;
 
             // Calconic savings: 45% self-consumption at retail, 55% export at 17c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
             var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
-            var panelOnlyPaybackYears = panelOnlyNetCost / panelOnlyAnnualSavings;
+            var panelOnlyPaybackYears = panelOnlySystemCost / panelOnlyAnnualSavings;
 
-            // Calculate 25-year savings using Calconic multiplier (including cashback)
-            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlyNetCost;
+            // Calculate 25-year savings using Calconic multiplier
+            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
 
             panelOnlySystem = {
                 monthlyGeneration: panelOnlyMonthlyGeneration,
@@ -1456,8 +1453,6 @@
                 panelCount: panelOnlyPanelCount,
                 systemKw: panelOnlySystemKw,
                 systemCost: panelOnlySystemCost,
-                cashback: bankCashback,
-                netCost: panelOnlyNetCost,
                 monthlySavings: panelOnlyMonthlySavings,
                 annualSavings: panelOnlyAnnualSavings,
                 paybackYears: panelOnlyPaybackYears,
@@ -1479,17 +1474,16 @@
 
             // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250
             var panelBatterySystemCost = (panelBatteryPanelCount * 670) + (batteryKwh * 850) + 6250;
-            var panelBatteryNetCost = panelBatterySystemCost - bankCashback;
 
             // Calconic savings: 75% self-consumption at retail, 25% export at 17c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
             var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
-            var panelBatteryPaybackYears = panelBatteryNetCost / panelBatteryAnnualSavings;
+            var panelBatteryPaybackYears = panelBatterySystemCost / panelBatteryAnnualSavings;
 
-            // Calculate 25-year savings using Calconic multiplier (including cashback)
-            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatteryNetCost;
+            // Calculate 25-year savings using Calconic multiplier
+            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
 
             panelBatterySystem = {
                 monthlyGeneration: panelBatteryMonthlyGeneration,
@@ -1900,16 +1894,6 @@
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Bank Cashback (1.5% of Current Lending)</span>';
-                    html += '    <div><span class="spec-value">-$' + formatNumber(sys.cashback.toFixed(0)) + '</span></div>';
-                    html += '  </div>';
-
-                    html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Net System Cost</span>';
-                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sys.netCost.toFixed(0)) + '</span><div class="spec-note">After cashback</div></div>';
-                    html += '  </div>';
-
-                    html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Monthly Savings</span>';
                     html += '    <div><span class="spec-value">$' + formatNumber(sys.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sys.selfConsumptionPercent + '% self-use, ' + sys.exportPercent + '% export @ 17c</div></div>';
                     html += '  </div>';
@@ -1979,16 +1963,6 @@
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Bank Cashback (1.5% of Current Lending)</span>';
-                    html += '    <div><span class="spec-value">-$' + formatNumber(sysBatt.cashback.toFixed(0)) + '</span></div>';
-                    html += '  </div>';
-
-                    html += '  <div class="spec-row">';
-                    html += '    <span class="spec-label">Net System Cost</span>';
-                    html += '    <div><span class="spec-value highlight">$' + formatNumber(sysBatt.netCost.toFixed(0)) + '</span><div class="spec-note">After cashback</div></div>';
-                    html += '  </div>';
-
-                    html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Monthly Savings</span>';
                     html += '    <div><span class="spec-value">$' + formatNumber(sysBatt.monthlySavings.toFixed(0)) + '</span><div class="spec-note">' + sysBatt.selfConsumptionPercent + '% self-use, ' + sysBatt.exportPercent + '% export @ 17c</div></div>';
                     html += '  </div>';
@@ -2018,7 +1992,7 @@
         // Financing Details (if loan is used)
         if (data.isFinanced) {
             html += '  <div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0;">';
-            html += '    <p class="roi-label">Loan Financing Details</p>';
+            html += '    <h3 class="result-title">Loan Financing Details</h3>';
             html += '    <div id="financingDetailsContent"></div>';
             html += '  </div>';
         }
@@ -2074,7 +2048,7 @@
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years | Bank cashback: 1.5% of current lending/mortgage';
+        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
@@ -2515,6 +2489,9 @@
         var totalPayments = monthlyPayment * numPayments;
         var totalInterest = totalPayments - systemCost;
 
+        // Calculate bank cashback at 1% of loan value
+        var bankCashback = systemCost * 0.01;
+
         var html = '';
         html += '<div class="roi-grid" style="margin-bottom: 0;">';
         html += '  <div>';
@@ -2528,6 +2505,10 @@
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Total Interest Paid</p>';
         html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(totalInterest.toFixed(2)) + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Loan)</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #16a34a;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
 
