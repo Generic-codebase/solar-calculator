@@ -2098,7 +2098,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Solar system sized for ' + (data.isFinanced ? data.paybackPeriod : '8') + '-year payback | Coverage: 80% of power usage | Projected power price increase: 4.5% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Projected power price increase: 4.5% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
@@ -2109,7 +2109,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } else {
             html += ' | Power costs estimated from household expenses';
         }
-        html += '    </p>';
+        html += '</p>';
+        html += '    <p style="margin-top: 0.5rem; font-style: italic;">Book a consultation to collaborate on the best solar options for your home</p>';
         html += '  </div>';
         html += '</div>';
 
