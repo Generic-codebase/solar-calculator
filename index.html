@@ -925,49 +925,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="solar-calculator">
     <div class="calc-card">
         <div class="calc-header">
-            <h1 class="calc-title">Solar System Financing Calculator</h1>
+            <h1 class="calc-title">All in one Solar System & Financing Calculator</h1>
             <p class="calc-subtitle">Find out what solar system you can afford through green lending</p>
         </div>
 
         <div class="form-grid">
             <div class="form-group">
-                <label class="form-label">Annual Household Income ($NZ)</label>
-                <input type="text" id="householdIncome" class="form-input" placeholder="120,000">
-                <span class="error-message" id="error-householdIncome"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Property Value ($NZ)</label>
-                <input type="text" id="propertyValue" class="form-input" placeholder="800,000">
-                <span class="error-message" id="error-propertyValue"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Lending/Mortgage ($NZ)</label>
-                <input type="text" id="currentLending" class="form-input" placeholder="500,000">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Bank</label>
-                <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Household Expenses ($NZ)</label>
-                <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Expense Frequency</label>
-                <select id="expenseFrequency" class="form-input">
-                    <option value="weekly">Weekly</option>
-                    <option value="fortnightly">Fortnightly</option>
-                    <option value="monthly" selected>Monthly</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Typical Summer Power Bill ($NZ/month)</label>
+                <label class="form-label">Typical Summer Power Bill ($NZ/month) *</label>
                 <input type="text" id="summerPowerBill" class="form-input" placeholder="300">
                 <span class="error-message" id="error-summerPowerBill"></span>
             </div>
@@ -979,7 +943,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Typical Winter Power Bill ($NZ/month)</label>
+                <label class="form-label">Typical Winter Power Bill ($NZ/month) *</label>
                 <input type="text" id="winterPowerBill" class="form-input" placeholder="400">
                 <span class="error-message" id="error-winterPowerBill"></span>
             </div>
@@ -995,17 +959,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <input type="text" id="dailyCharge" class="form-input" placeholder="3.00" step="0.01">
                 <span class="error-message" id="error-dailyCharge"></span>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Annual Household Income ($NZ) *</label>
+                <input type="text" id="householdIncome" class="form-input" placeholder="120,000">
+                <span class="error-message" id="error-householdIncome"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Property Value ($NZ) *</label>
+                <input type="text" id="propertyValue" class="form-input" placeholder="800,000">
+                <span class="error-message" id="error-propertyValue"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Lending/Mortgage ($NZ) *</label>
+                <input type="text" id="currentLending" class="form-input" placeholder="500,000">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Bank</label>
+                <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Household Expenses ($NZ) *</label>
+                <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Expense Frequency *</label>
+                <select id="expenseFrequency" class="form-input">
+                    <option value="weekly">Weekly</option>
+                    <option value="fortnightly">Fortnightly</option>
+                    <option value="monthly" selected>Monthly</option>
+                </select>
+            </div>
         </div>
 
         <div class="financing-section">
-            <h3 class="financing-title">Loan Financing Options</h3>
+            <h3 class="financing-title">Loan Financing Options (optional)</h3>
             <p class="financing-subtitle">Set loan term to 0 (Cash) if you plan to pay in full. Otherwise, specify your loan terms below.</p>
 
             <div class="form-grid">
                 <div class="form-group">
                     <div class="slider-container">
                         <div class="slider-header">
-                            <label class="form-label">Loan Term</label>
+                            <label class="form-label">Loan Term (optional)</label>
                             <span class="slider-value" id="loanTermValue">Cash</span>
                         </div>
                         <input type="range" id="loanTerm" class="form-slider" min="0" max="20" value="0" step="1">
@@ -1015,7 +1015,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="form-group">
                     <div class="slider-container">
                         <div class="slider-header">
-                            <label class="form-label">Annual Interest Rate</label>
+                            <label class="form-label">Annual Interest Rate (optional)</label>
                             <span class="slider-value" id="interestRateValue">1.0%</span>
                         </div>
                         <input type="range" id="interestRate" class="form-slider" min="0" max="30" value="1" step="0.1">
@@ -2852,6 +2852,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     safeAddValue(webhookData, 'panelBattery_25YearSavings', panelBattery.savings25Year ? panelBattery.savings25Year.toFixed(0) : null);
                 }
             }
+
+            // Add final system selection (panel-only or panel-battery)
+            webhookData.finalSystemSelection = finalSystemSelection;
         }
 
         // Convert to form data to avoid CORS preflight issues
