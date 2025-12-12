@@ -925,49 +925,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="solar-calculator">
     <div class="calc-card">
         <div class="calc-header">
-            <h1 class="calc-title">Solar System Financing Calculator</h1>
+            <h1 class="calc-title">All in one Solar System & Financing Calculator</h1>
             <p class="calc-subtitle">Find out what solar system you can afford through green lending</p>
         </div>
 
         <div class="form-grid">
             <div class="form-group">
-                <label class="form-label">Annual Household Income ($NZ)</label>
-                <input type="text" id="householdIncome" class="form-input" placeholder="120,000">
-                <span class="error-message" id="error-householdIncome"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Property Value ($NZ)</label>
-                <input type="text" id="propertyValue" class="form-input" placeholder="800,000">
-                <span class="error-message" id="error-propertyValue"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Lending/Mortgage ($NZ)</label>
-                <input type="text" id="currentLending" class="form-input" placeholder="500,000">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Current Bank</label>
-                <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Household Expenses ($NZ)</label>
-                <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Expense Frequency</label>
-                <select id="expenseFrequency" class="form-input">
-                    <option value="weekly">Weekly</option>
-                    <option value="fortnightly">Fortnightly</option>
-                    <option value="monthly" selected>Monthly</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Typical Summer Power Bill ($NZ/month)</label>
+                <label class="form-label">Typical Summer Power Bill ($NZ/month) *</label>
                 <input type="text" id="summerPowerBill" class="form-input" placeholder="300">
                 <span class="error-message" id="error-summerPowerBill"></span>
             </div>
@@ -979,7 +943,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Typical Winter Power Bill ($NZ/month)</label>
+                <label class="form-label">Typical Winter Power Bill ($NZ/month) *</label>
                 <input type="text" id="winterPowerBill" class="form-input" placeholder="400">
                 <span class="error-message" id="error-winterPowerBill"></span>
             </div>
@@ -998,14 +962,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="financing-section">
-            <h3 class="financing-title">Loan Financing Options</h3>
-            <p class="financing-subtitle">Set loan term to 0 (Cash) if you plan to pay in full. Otherwise, specify your loan terms below.</p>
+            <h3 class="financing-title">Financial Information (optional)</h3>
+            <p class="financing-subtitle">Provide your financial details to see your borrowing power and solar financing options, using formulas provided by our financial advisor partners. If left blank, we'll focus on solar savings calculations.</p>
 
             <div class="form-grid">
                 <div class="form-group">
+                    <label class="form-label">Annual Household Income ($NZ) (optional)</label>
+                    <input type="text" id="householdIncome" class="form-input" placeholder="120,000">
+                    <span class="error-message" id="error-householdIncome"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current Property Value ($NZ) (optional)</label>
+                    <input type="text" id="propertyValue" class="form-input" placeholder="800,000">
+                    <span class="error-message" id="error-propertyValue"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current Lending/Mortgage ($NZ) (optional)</label>
+                    <input type="text" id="currentLending" class="form-input" placeholder="500,000">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current Bank (optional)</label>
+                    <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Household Expenses ($NZ) (optional)</label>
+                    <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Expense Frequency (optional)</label>
+                    <select id="expenseFrequency" class="form-input">
+                        <option value="weekly">Weekly</option>
+                        <option value="fortnightly">Fortnightly</option>
+                        <option value="monthly" selected>Monthly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <div class="slider-container">
                         <div class="slider-header">
-                            <label class="form-label">Loan Term</label>
+                            <label class="form-label">Loan Term (optional)</label>
                             <span class="slider-value" id="loanTermValue">Cash</span>
                         </div>
                         <input type="range" id="loanTerm" class="form-slider" min="0" max="20" value="0" step="1">
@@ -1015,7 +1015,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="form-group">
                     <div class="slider-container">
                         <div class="slider-header">
-                            <label class="form-label">Annual Interest Rate</label>
+                            <label class="form-label">Annual Interest Rate (optional)</label>
                             <span class="slider-value" id="interestRateValue">1.0%</span>
                         </div>
                         <input type="range" id="interestRate" class="form-slider" min="0" max="30" value="1" step="0.1">
@@ -1315,7 +1315,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function scheduleCalculation() {
         clearTimeout(calculationTimer);
 
-        if (rawValues.householdIncome && rawValues.propertyValue && rawValues.currentLending && rawValues.expenseAmount) {
+        // Trigger calculations if power bill data is provided (minimum required)
+        if (rawValues.summerPowerBill && rawValues.winterPowerBill) {
             calculationTimer = setTimeout(function() {
                 calculateResults();
             }, 2000);
@@ -1387,66 +1388,80 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function calculateResults() {
+        // Parse financial inputs (use 0 as default if not provided)
         var income = parseFloat(rawValues.householdIncome) || 0;
         var propertyValue = parseFloat(rawValues.propertyValue) || 0;
         var currentLending = parseFloat(rawValues.currentLending) || 0;
         var expenseAmount = parseFloat(rawValues.expenseAmount) || 0;
 
-        if (!income || !propertyValue || !currentLending || !expenseAmount) {
-            return;
-        }
+        // Check if user provided financial data
+        var hasFinancialData = income > 0 && propertyValue > 0 && expenseAmount > 0;
 
-        var expenseFreq = document.getElementById('expenseFrequency').value;
-        var monthlyExpenses = expenseAmount;
-        if (expenseFreq === 'weekly') {
-            monthlyExpenses = expenseAmount * 52 / 12;
-        } else if (expenseFreq === 'fortnightly') {
-            monthlyExpenses = expenseAmount * 26 / 12;
-        }
-
-        var monthlyIncome = income / 12;
-        var testRate = 0.068;
-        var monthlyRate = testRate / 12;
-        var numPayments = 30 * 12;
-
+        // Initialize financial metrics with defaults
+        var monthlyExpenses = 0;
+        var monthlyIncome = 0;
         var currentMonthlyPayment = 0;
-        if (currentLending > 0) {
-            currentMonthlyPayment = currentLending * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
-                                    (Math.pow(1 + monthlyRate, numPayments) - 1);
-        }
-
-        var monthlySurplus = monthlyIncome - monthlyExpenses - currentMonthlyPayment;
-        var lvr = propertyValue > 0 ? (currentLending / propertyValue) * 100 : 0;
-        var maxLending = propertyValue * 0.80;
-        var availableEquity = maxLending - currentLending;
-        var hasSufficientSurplus = monthlySurplus > 500;
-
+        var monthlySurplus = 0;
+        var lvr = 0;
+        var availableEquity = 0;
+        var hasSufficientSurplus = false;
         var solarReady = false;
-        var solarReadyMessage = '';
+        var solarReadyMessage = 'Provide financial information to see your borrowing power and financing options.';
+        var borrowingPower = 'unknown';
+        var borrowingPowerText = 'Not Provided';
+        var borrowingPowerDesc = 'Enter financial details to calculate';
 
-        if (availableEquity >= 20000 && hasSufficientSurplus) {
-            solarReady = true;
-            solarReadyMessage = 'Great news! You have sufficient equity and monthly surplus to proceed with solar financing.';
-        } else if (availableEquity < 20000) {
-            solarReady = false;
-            solarReadyMessage = 'Additional equity needed to qualify for solar financing. You need at least $20,000 in available equity.';
-        } else if (!hasSufficientSurplus) {
-            solarReady = false;
-            solarReadyMessage = 'Your equity looks good, but your monthly surplus may restrict financing options. A healthy surplus is needed after refinancing to ensure serviceability.';
-        }
+        // Only calculate financial metrics if user provided the data
+        if (hasFinancialData) {
+            var expenseFreq = document.getElementById('expenseFrequency').value;
+            monthlyExpenses = expenseAmount;
+            if (expenseFreq === 'weekly') {
+                monthlyExpenses = expenseAmount * 52 / 12;
+            } else if (expenseFreq === 'fortnightly') {
+                monthlyExpenses = expenseAmount * 26 / 12;
+            }
 
-        var borrowingPower = 'low';
-        var borrowingPowerText = 'Low';
-        var borrowingPowerDesc = 'Less than $20,000 available';
+            var monthlyIncome = income / 12;
+            var testRate = 0.068;
+            var monthlyRate = testRate / 12;
+            var numPayments = 30 * 12;
 
-        if (availableEquity >= 50000) {
-            borrowingPower = 'high';
-            borrowingPowerText = 'High';
-            borrowingPowerDesc = 'Over $50,000 available';
-        } else if (availableEquity >= 20000) {
-            borrowingPower = 'medium';
-            borrowingPowerText = 'Medium';
-            borrowingPowerDesc = '$20,000 - $50,000 available';
+            var currentMonthlyPayment = 0;
+            if (currentLending > 0) {
+                currentMonthlyPayment = currentLending * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                                        (Math.pow(1 + monthlyRate, numPayments) - 1);
+            }
+
+            monthlySurplus = monthlyIncome - monthlyExpenses - currentMonthlyPayment;
+            lvr = propertyValue > 0 ? (currentLending / propertyValue) * 100 : 0;
+            var maxLending = propertyValue * 0.80;
+            availableEquity = maxLending - currentLending;
+            var hasSufficientSurplus = monthlySurplus > 500;
+
+            if (availableEquity >= 20000 && hasSufficientSurplus) {
+                solarReady = true;
+                solarReadyMessage = 'Great news! You have sufficient equity and monthly surplus to proceed with solar financing.';
+            } else if (availableEquity < 20000) {
+                solarReady = false;
+                solarReadyMessage = 'Additional equity needed to qualify for solar financing. You need at least $20,000 in available equity.';
+            } else if (!hasSufficientSurplus) {
+                solarReady = false;
+                solarReadyMessage = 'Your equity looks good, but your monthly surplus may restrict financing options. A healthy surplus is needed after refinancing to ensure serviceability.';
+            }
+
+            borrowingPower = 'low';
+            borrowingPowerText = 'Low';
+            borrowingPowerDesc = 'Less than $20,000 available';
+
+            if (availableEquity >= 50000) {
+                borrowingPower = 'high';
+                borrowingPowerText = 'High';
+                borrowingPowerDesc = 'Over $50,000 available';
+            } else if (availableEquity >= 20000) {
+                borrowingPower = 'medium';
+                borrowingPowerText = 'Medium';
+                borrowingPowerDesc = '$20,000 - $50,000 available';
+            }
         }
 
         var summerBill = parseFloat(rawValues.summerPowerBill) || 0;
@@ -1479,9 +1494,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     calculationMethod = 'kwh';
                 }
             }
-        } else {
+        } else if (monthlyExpenses > 0) {
+            // Fallback to expense-based estimation if financial data provided but no power bills
             var monthlyPowerCost = monthlyExpenses * 0.05;
             annualPowerCost = monthlyPowerCost * 12;
+        } else {
+            // Default placeholder if no power bills or financial data
+            annualPowerCost = 4200; // Placeholder: $350/month average
         }
 
         // System sizing based on kWh usage (if available)
@@ -1705,6 +1724,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         resultsData = {
+            hasFinancialData: hasFinancialData,
             lvr: lvr.toFixed(2),
             solarReady: solarReady,
             solarReadyMessage: solarReadyMessage,
@@ -2781,11 +2801,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         if (resultsData) {
-            // Always include these - they're based on customer financial data
-            safeAddValue(webhookData, 'lvr', resultsData.lvr);
-            webhookData.borrowingPower = resultsData.borrowingPowerText || '';
-            webhookData.solarReady = resultsData.solarReady || false;
-            safeAddValue(webhookData, 'monthlySurplus', resultsData.monthlySurplus);
+            // Financial metrics - only if customer provided financial data
+            if (resultsData.hasFinancialData) {
+                safeAddValue(webhookData, 'lvr', resultsData.lvr);
+                webhookData.borrowingPower = resultsData.borrowingPowerText || '';
+                webhookData.solarReady = resultsData.solarReady || false;
+                safeAddValue(webhookData, 'monthlySurplus', resultsData.monthlySurplus);
+            }
             webhookData.calculationMethod = resultsData.calculationMethod || 'expenses';
 
             // Include power cost estimates (these use customer data even if partly estimated)
@@ -2852,6 +2874,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     safeAddValue(webhookData, 'panelBattery_25YearSavings', panelBattery.savings25Year ? panelBattery.savings25Year.toFixed(0) : null);
                 }
             }
+
+            // Add final system selection (panel-only or panel-battery)
+            webhookData.finalSystemSelection = finalSystemSelection;
         }
 
         // Convert to form data to avoid CORS preflight issues
