@@ -34,7 +34,6 @@ The solar calculator pushes a `calculator_results_generated` event to the dataLa
 ### Power Usage Data
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `calculation_method` | string | "bills" or "kwh" |
 | `annual_power_cost_estimate` | number | Estimated annual power cost ($) |
 | `avg_monthly_kwh` | number | Average monthly kWh usage |
 | `power_bill_summer` | number | Summer power bill ($) |
@@ -104,7 +103,6 @@ In GTM, create a **DataLayer Variable** for each parameter you want to track:
 - `battery_annual_savings`
 - `battery_payback_years`
 - `battery_25year_net_savings`
-- `calculation_method`
 - `avg_monthly_kwh`
 
 ### Step 2: Create Custom Event Trigger
@@ -141,7 +139,6 @@ In GTM, create a **DataLayer Variable** for each parameter you want to track:
 | `battery_cost` | `{{DLV - Battery System Cost}}` |
 | `battery_savings` | `{{DLV - Battery Annual Savings}}` |
 | `battery_payback` | `{{DLV - Battery Payback Years}}` |
-| `calculation_method` | `{{DLV - Calculation Method}}` |
 
 **Note:** GA4 has a limit of 25 event parameters per event. Select the most important parameters for your analysis.
 
@@ -182,7 +179,6 @@ To make this data available in GA4 reports, create custom dimensions:
 |----------------|----------------|-------|
 | System Selected | `system_selected` | Event |
 | Is Financed | `is_financed` | Event |
-| Calculation Method | `calculation_method` | Event |
 | Panel Only System Size | `panel_only_kw` | Event |
 | Battery System Size | `battery_kw` | Event |
 
