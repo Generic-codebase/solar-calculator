@@ -1512,7 +1512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var panelWattage = 460; // 460W panels
             var sunHoursPerDay = 3.95; // NZ average sun hours
             var exportRate = 0.17; // 17c per kWh export rate
-            var savings25YearMultiplier = 44.57; // Geometric series multiplier for 4.5% annual price increase over 25 years
+            var savings25YearMultiplier = 38.55; // Geometric series multiplier for 3% annual price increase over 25 years
 
             // Panel-only system (110% of annual usage)
             var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
@@ -1531,8 +1531,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
 
-            // Calculate payback period with 4.5% annual price inflation
-            var inflationRate = 0.045;
+            // Calculate payback period with 3% annual price inflation
+            var inflationRate = 0.03;
             var cumulativeSavings = 0;
             var panelOnlyPaybackYears = 0;
             for (var year = 1; year <= 30; year++) {
@@ -1585,7 +1585,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
 
-            // Calculate payback period with 4.5% annual price inflation
+            // Calculate payback period with 3% annual price inflation
             var cumulativeSavingsBattery = 0;
             var panelBatteryPaybackYears = 0;
             for (var year = 1; year <= 30; year++) {
@@ -1624,7 +1624,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var solarCoveragePercent = 0.80;
         var annualSolarSavings = annualPowerCost * solarCoveragePercent;
         var solarSystemCost = annualSolarSavings * 9;
-        var annualPriceIncrease = 0.045; // 4.5% annual power price increase
+        var annualPriceIncrease = 0.03; // 3% annual power price increase
 
         // Loan financing calculations
         var loanTerm = rawValues.loanTerm;
@@ -1911,9 +1911,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             html += '    </div>';
             html += '    <div class="roi-box yellow">';
             html += '      <p class="roi-label">Your bills without solar (over 25 years)</p>';
-            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 44.57; // 4.5% inflation over 25 years
+            var projected25YearCost = parseFloat(data.estimatedPowerCost) * 38.55; // 3% inflation over 25 years
             html += '      <p class="roi-value">$' + formatNumber(projected25YearCost.toFixed(0)) + '</p>';
-            html += '      <p class="roi-note">25-Year Power Cost Projection Without Solar System Install (4.5% Annual Price Inflation)</p>';
+            html += '      <p class="roi-note">25-Year Power Cost Projection Without Solar System Install (3% Annual Price Inflation)</p>';
             html += '    </div>';
             html += '  </div>';
             html += '</div>';
@@ -1975,12 +1975,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
+                    html += '    <div><span class="spec-value">' + sys.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 3% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">25-Year Net Savings</span>';
-                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 4.5% annual price increase</div></div>';
+                    html += '    <div><span class="spec-value highlight" style="color: #155263;">$' + formatNumber(sys.savings25Year.toFixed(0)) + '</span><div class="spec-note">Assuming 3% annual price increase</div></div>';
                     html += '  </div>';
 
                     html += '</div>';
@@ -2044,7 +2044,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     html += '  <div class="spec-row">';
                     html += '    <span class="spec-label">Payback Period</span>';
-                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 4.5% Annual Price Inflation</div></div>';
+                    html += '    <div><span class="spec-value">' + sysBatt.paybackYears.toFixed(2) + ' years</span><div class="spec-note">With 3% Annual Price Inflation</div></div>';
                     html += '  </div>';
 
                     html += '  <div class="spec-row">';
@@ -2083,7 +2083,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '      <div style="text-align: center; padding: 1rem; background: rgba(255, 201, 60, 0.1); border-radius: 8px;">';
         html += '        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">25-Year Net Savings</p>';
         html += '        <p id="dynamic25YearSavings" style="font-size: 1.75rem; font-weight: bold; color: #155263; margin: 0;">$' + formatNumber(data.total25YearSavings) + '</p>';
-        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'After financing costs' : 'Based on 4.5% inflation') + '</p>';
+        html += '        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">' + (data.isFinanced ? 'After financing costs' : 'Based on 3% inflation') + '</p>';
         html += '      </div>';
 
         // Solar ROI
@@ -2118,7 +2118,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         html += '  <div class="assumptions-box">';
-        html += '    <p><strong>Key Assumptions:</strong> Projected power price increase: 4.5% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
+        html += '    <p><strong>Key Assumptions:</strong> Projected power price increase: 3% annually | Panel efficiency degradation: 0.5% per year | System lifespan: 25 years';
         if (data.isFinanced) {
             html += ' | Financing: ' + data.loanTerm + ' year loan @ ' + data.interestRate + '% interest';
         } else {
