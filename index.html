@@ -2136,32 +2136,63 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             'event': 'calculator_results_generated',
             'calculator_name': CALCULATOR_NAME,
             'calculator_version': CALCULATOR_VERSION,
-            'solar_ready': data.solarReady,
-            'borrowing_power': data.borrowingPowerText,
             'is_financed': data.isFinanced,
             'loan_term': data.isFinanced ? data.loanTerm : null,
-            'estimated_system_cost': data.solarSystemCost,
-            'annual_savings': data.annualSolarSavings,
+            'interest_rate': data.isFinanced ? data.interestRate : null,
             'has_panel_only': !!data.panelOnlySystem,
             'has_panel_battery': !!data.panelBatterySystem,
             'system_selected': finalSystemSelection,
+            'calculation_method': data.calculationMethod,
+            'annual_power_cost_estimate': parseFloat(data.estimatedPowerCost),
+            'avg_monthly_kwh': data.avgMonthlyKwh ? parseFloat(data.avgMonthlyKwh) : null,
             'timestamp': new Date().toISOString()
         };
 
         // Add power bill data if available
         if (rawValues.summerPowerBill && parseFloat(rawValues.summerPowerBill) > 0) {
-            eventData.power_bill_summer = rawValues.summerPowerBill;
+            eventData.power_bill_summer = parseFloat(rawValues.summerPowerBill);
         }
         if (rawValues.winterPowerBill && parseFloat(rawValues.winterPowerBill) > 0) {
-            eventData.power_bill_winter = rawValues.winterPowerBill;
+            eventData.power_bill_winter = parseFloat(rawValues.winterPowerBill);
         }
 
         // Add kWh data if available
         if (rawValues.summerKwh && parseFloat(rawValues.summerKwh) > 0) {
-            eventData.summer_kwh = rawValues.summerKwh;
+            eventData.summer_kwh = parseFloat(rawValues.summerKwh);
         }
         if (rawValues.winterKwh && parseFloat(rawValues.winterKwh) > 0) {
-            eventData.winter_kwh = rawValues.winterKwh;
+            eventData.winter_kwh = parseFloat(rawValues.winterKwh);
+        }
+
+        // Add panel-only system data if available
+        if (data.panelOnlySystem) {
+            eventData.panel_only_system_kw = parseFloat(data.panelOnlySystem.systemKw.toFixed(1));
+            eventData.panel_only_panel_count = data.panelOnlySystem.panelCount;
+            eventData.panel_only_system_cost = parseFloat(data.panelOnlySystem.systemCost.toFixed(0));
+            eventData.panel_only_monthly_generation_kwh = parseFloat(data.panelOnlySystem.monthlyGeneration.toFixed(0));
+            eventData.panel_only_annual_generation_kwh = parseFloat(data.panelOnlySystem.annualGeneration.toFixed(0));
+            eventData.panel_only_monthly_savings = parseFloat(data.panelOnlySystem.monthlySavings.toFixed(0));
+            eventData.panel_only_annual_savings = parseFloat(data.panelOnlySystem.annualSavings.toFixed(0));
+            eventData.panel_only_payback_years = parseFloat(data.panelOnlySystem.paybackYears.toFixed(2));
+            eventData.panel_only_25year_net_savings = parseFloat(data.panelOnlySystem.savings25Year.toFixed(0));
+            eventData.panel_only_self_consumption_percent = data.panelOnlySystem.selfConsumptionPercent;
+            eventData.panel_only_export_percent = data.panelOnlySystem.exportPercent;
+        }
+
+        // Add battery system data if available
+        if (data.panelBatterySystem) {
+            eventData.battery_system_kw = parseFloat(data.panelBatterySystem.systemKw.toFixed(1));
+            eventData.battery_panel_count = data.panelBatterySystem.panelCount;
+            eventData.battery_kwh_capacity = data.panelBatterySystem.batteryKwh;
+            eventData.battery_system_cost = parseFloat(data.panelBatterySystem.systemCost.toFixed(0));
+            eventData.battery_monthly_generation_kwh = parseFloat(data.panelBatterySystem.monthlyGeneration.toFixed(0));
+            eventData.battery_annual_generation_kwh = parseFloat(data.panelBatterySystem.annualGeneration.toFixed(0));
+            eventData.battery_monthly_savings = parseFloat(data.panelBatterySystem.monthlySavings.toFixed(0));
+            eventData.battery_annual_savings = parseFloat(data.panelBatterySystem.annualSavings.toFixed(0));
+            eventData.battery_payback_years = parseFloat(data.panelBatterySystem.paybackYears.toFixed(2));
+            eventData.battery_25year_net_savings = parseFloat(data.panelBatterySystem.savings25Year.toFixed(0));
+            eventData.battery_self_consumption_percent = data.panelBatterySystem.selfConsumptionPercent;
+            eventData.battery_export_percent = data.panelBatterySystem.exportPercent;
         }
 
         window.dataLayer.push(eventData);
