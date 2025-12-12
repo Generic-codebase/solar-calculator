@@ -984,11 +984,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Current Bank (optional)</label>
-                    <input type="text" id="currentBank" class="form-input" placeholder="ANZ, ASB, Westpac, etc.">
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">Household Expenses ($NZ) (optional)</label>
                     <input type="text" id="expenseAmount" class="form-input" placeholder="3,000">
                 </div>
@@ -2759,9 +2754,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (rawValues.householdIncome) webhookData.householdIncome = rawValues.householdIncome;
         if (rawValues.propertyValue) webhookData.propertyValue = rawValues.propertyValue;
         if (rawValues.currentLending) webhookData.currentLending = rawValues.currentLending;
-
-        var currentBank = document.getElementById('currentBank').value;
-        if (currentBank) webhookData.currentBank = currentBank;
 
         if (rawValues.expenseAmount) webhookData.expenseAmount = rawValues.expenseAmount;
 
