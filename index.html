@@ -1505,17 +1505,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (avgMonthlyKwh > 0 && costPerKwh > 0) {
             var annualKwhUsage = avgMonthlyKwh * 12;
             var panelWattage = 460; // 460W panels
-            var sunHoursPerDay = 3.95; // NZ average sun hours
+            var dailyGenerationPerKw = 3.7; // kWh per day per kW of system size
+            var daysPerMonth = 30.416; // Average days per month
             var exportRate = 0.17; // 17c per kWh export rate
             var savings25YearMultiplier = 38.55; // Geometric series multiplier for 3% annual price increase over 25 years
 
             // Panel-only system (110% of annual usage)
-            var panelOnlyMonthlyGeneration = avgMonthlyKwh * 1.10;
-            var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
+            var panelOnlyTargetMonthlyGeneration = avgMonthlyKwh * 1.10;
 
-            // Calconic formula: ((monthlyGen/30.416)/3.95)/.460
-            var panelOnlyPanelCount = Math.ceil(((panelOnlyMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
+            // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
+            var panelOnlyRequiredKw = panelOnlyTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
+
+            // Calculate panel count needed (round up)
+            var panelOnlyPanelCount = Math.ceil(panelOnlyRequiredKw / (panelWattage / 1000));
+
+            // Recalculate actual system kW based on rounded panel count
             var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
+
+            // Recalculate actual generation based on final system size
+            var panelOnlyMonthlyGeneration = panelOnlySystemKw * dailyGenerationPerKw * daysPerMonth;
+            var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
 
             // Calconic cost formula: panels * 675 + 3500 (increased by 5%)
             var panelOnlySystemCost = (panelOnlyPanelCount * 708.75) + 3675;
@@ -1561,12 +1570,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             };
 
             // Panel + Battery system (135% of annual usage)
-            var panelBatteryMonthlyGeneration = avgMonthlyKwh * 1.35;
-            var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
+            var panelBatteryTargetMonthlyGeneration = avgMonthlyKwh * 1.35;
 
-            // Calconic formula: same as panel-only
-            var panelBatteryPanelCount = Math.ceil(((panelBatteryMonthlyGeneration / 30.416) / sunHoursPerDay) / (panelWattage / 1000));
+            // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
+            var panelBatteryRequiredKw = panelBatteryTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
+
+            // Calculate panel count needed (round up)
+            var panelBatteryPanelCount = Math.ceil(panelBatteryRequiredKw / (panelWattage / 1000));
+
+            // Recalculate actual system kW based on rounded panel count
             var panelBatterySystemKw = (panelBatteryPanelCount * panelWattage) / 1000;
+
+            // Recalculate actual generation based on final system size
+            var panelBatteryMonthlyGeneration = panelBatterySystemKw * dailyGenerationPerKw * daysPerMonth;
+            var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
 
             // Calconic battery sizing: 0.55 * panel count
             var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
