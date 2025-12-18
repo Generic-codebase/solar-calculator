@@ -1338,7 +1338,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var cumulativePowerCostWithSolar = isFinanced ? 0 : systemCost;
         var cumulativeFinancingCost = 0;
 
-        // Calculate percentage based on system coverage (110% or 135%)
+        // Calculate percentage based on system coverage (110% or 120%)
         var effectiveCoverage = (system.selfConsumptionPercent / 100) * (system.monthlyGeneration / (annualPowerCost / 12 / (annualPowerCost / (system.monthlyGeneration * 12))));
 
         for (var year = 0; year <= 25; year++) {
@@ -1569,8 +1569,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 exportPercent: 55
             };
 
-            // Panel + Battery system (135% of annual usage)
-            var panelBatteryTargetMonthlyGeneration = avgMonthlyKwh * 1.35;
+            // Panel + Battery system (120% of annual usage)
+            var panelBatteryTargetMonthlyGeneration = avgMonthlyKwh * 1.20;
 
             // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
             var panelBatteryRequiredKw = panelBatteryTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
@@ -2007,12 +2007,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     html += '      <span>Solar + Battery System</span>';
                     html += '      <span class="tooltip-icon">?';
                     html += '        <div class="tooltip-content">';
-                    html += '          <strong>What does 135% coverage mean?</strong>';
+                    html += '          <strong>What does 120% coverage mean?</strong>';
                     html += '          <ul>';
-                    html += '            <li>System generates <strong>135%</strong> of your annual kWh usage</li>';
+                    html += '            <li>System generates <strong>120%</strong> of your annual kWh usage</li>';
                     html += '            <li><strong>75% is self-consumed</strong> (battery stores excess for night time)</li>';
                     html += '            <li>Only <strong>25% is exported</strong> to grid</li>';
-                    html += '            <li>Extra 25% (vs 110%) accounts for battery charging/discharging efficiency (~10-15% loss)</li>';
+                    html += '            <li>Extra 10% (vs 110%) accounts for battery charging/discharging efficiency (~10% loss)</li>';
                     html += '            <li>Battery provides power during evening/night when solar stops</li>';
                     html += '            <li><strong>Bill coverage:</strong> ~50% winter, up to 100% summer</li>';
                     html += '            <li>Better bill coverage despite needing more generation</li>';
@@ -2020,7 +2020,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     html += '        </div>';
                     html += '      </span>';
                     html += '    </h4>';
-                    html += '    <p class="system-option-subtitle">Generates ~135% of annual use, providing enough winter generation to charge the battery for evening use.</p>';
+                    html += '    <p class="system-option-subtitle">Generates ~120% of annual use, providing enough winter generation to charge the battery for evening use.</p>';
                     html += '    <p class="system-option-subtitle" style="margin-top: 0.5rem; font-weight: 600; color: #155263;">Bill Impact: ~50% of winter bills; potential for below-zero summer bills (subject to export limits)</p>';
                     html += '  </div>';
 
