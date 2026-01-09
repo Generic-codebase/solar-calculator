@@ -266,18 +266,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .power-card.low {
-        background: rgba(239, 246, 255, 0.6);
-        border-color: rgba(147, 197, 253, 0.4);
+        background: rgba(255, 154, 118, 0.15);
+        border-color: rgba(255, 154, 118, 0.4);
     }
 
     .power-card.medium {
-        background: rgba(255, 254, 240, 0.6);
+        background: rgba(255, 201, 60, 0.15);
         border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-card.high {
-        background: rgba(255, 254, 240, 0.6);
-        border-color: rgba(255, 201, 60, 0.4);
+        background: rgba(96, 225, 224, 0.15);
+        border-color: rgba(96, 225, 224, 0.4);
     }
 
     .power-header {
@@ -299,15 +299,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .power-text.low {
-        color: #1e40af;
+        color: #ff9a76;
     }
 
     .power-text.medium {
-        color: #92400e;
+        color: #ffc93c;
     }
 
     .power-text.high {
-        color: #92400e;
+        color: #60e1e0;
     }
 
     .power-subtext {
@@ -1835,7 +1835,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '      <div class="power-dot">';
 
         // Determine color based on borrowing power
-        var dotColor = data.borrowingPower === 'high' ? '#fbbf24' : (data.borrowingPower === 'medium' ? '#fbbf24' : '#60a5fa');
+        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
 
         html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
 
