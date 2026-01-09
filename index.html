@@ -937,7 +937,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Summer kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <label class="form-label">Summer Monthly kWh Usage (Look for kWh on page 2 of your power bill)</label>
                 <input type="text" id="summerKwh" class="form-input" placeholder="500">
                 <span class="error-message" id="error-summerKwh"></span>
             </div>
@@ -949,7 +949,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Winter kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <label class="form-label">Winter Monthly kWh Usage (Look for kWh on page 2 of your power bill)</label>
                 <input type="text" id="winterKwh" class="form-input" placeholder="1100">
                 <span class="error-message" id="error-winterKwh"></span>
             </div>
@@ -1020,7 +1020,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="tip-box">
-            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including panel-only and panel+battery options.</p>
+            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your monthly kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including Solar-Only and Solar + Battery options.</p>
         </div>
 
         <div id="results" class="results-section"></div>
@@ -1328,7 +1328,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (isFinanced && loanTerm > 0) {
             var monthlyRate = interestRate / 100 / 12;
             var numPayments = loanTerm * 12;
-            monthlyLoanPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+            if (monthlyRate > 0) {
+                // Standard amortization formula with interest
+                monthlyLoanPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            } else {
+                // If 0% interest, just divide by months
+                monthlyLoanPayment = systemCost / numPayments;
+            }
         }
 
         var chartData = [];
@@ -2560,7 +2567,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var interestRate = data.interestRate;
             var monthlyRate = interestRate / 100 / 12;
             var numPayments = loanTerm * 12;
-            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+            var monthlyPayment;
+            if (monthlyRate > 0) {
+                monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            } else {
+                monthlyPayment = systemCost / numPayments;
+            }
             totalFinancedCost = monthlyPayment * numPayments;
         }
 
