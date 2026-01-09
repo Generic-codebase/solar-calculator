@@ -683,7 +683,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .chart-container {
         position: relative;
         height: 400px;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
     }
 
     .assumptions-box {
@@ -2123,14 +2130,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '    <div id="costBreakdownDetails" style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;"></div>';
         html += '  </div>';
 
-        html += '  <h3 class="result-title" style="margin-top: 2rem;">Power Costs Over Time</h3>';
+        html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Power Costs Over Time</h3>';
         html += '  <div class="chart-container">';
         html += '    <canvas id="solarChart"></canvas>';
         html += '  </div>';
 
         // Add financing chart if loan is used
         if (data.isFinanced) {
-            html += '  <h3 class="result-title" style="margin-top: 2rem;">Estimated Financing Cost vs Solar Savings</h3>';
+            html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Estimated Financing Cost vs Solar Savings</h3>';
             html += '  <p class="roi-note" style="text-align: center; margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">This is a high level estimate only, compare real quotes for a better financial estimate</p>';
             html += '  <div class="chart-container">';
             html += '    <canvas id="financingChart"></canvas>';
