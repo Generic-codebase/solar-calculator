@@ -266,18 +266,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .power-card.low {
-        background: rgba(239, 246, 255, 0.6);
-        border-color: rgba(147, 197, 253, 0.4);
+        background: rgba(255, 154, 118, 0.15);
+        border-color: rgba(255, 154, 118, 0.4);
     }
 
     .power-card.medium {
-        background: rgba(255, 254, 240, 0.6);
+        background: rgba(255, 201, 60, 0.15);
         border-color: rgba(255, 201, 60, 0.4);
     }
 
     .power-card.high {
-        background: rgba(255, 254, 240, 0.6);
-        border-color: rgba(255, 201, 60, 0.4);
+        background: rgba(96, 225, 224, 0.15);
+        border-color: rgba(96, 225, 224, 0.4);
     }
 
     .power-header {
@@ -299,15 +299,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .power-text.low {
-        color: #1e40af;
+        color: #ff9a76;
     }
 
     .power-text.medium {
-        color: #92400e;
+        color: #ffc93c;
     }
 
     .power-text.high {
-        color: #92400e;
+        color: #60e1e0;
     }
 
     .power-subtext {
@@ -683,7 +683,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .chart-container {
         position: relative;
         height: 400px;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        background: rgba(255, 254, 240, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
     }
 
     .assumptions-box {
@@ -937,7 +944,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Summer kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <label class="form-label">Summer Monthly kWh Usage (Look for kWh on page 2 of your power bill)</label>
                 <input type="text" id="summerKwh" class="form-input" placeholder="500">
                 <span class="error-message" id="error-summerKwh"></span>
             </div>
@@ -949,7 +956,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Winter kWh Usage (Look for kWh on page 2 of your power bill)</label>
+                <label class="form-label">Winter Monthly kWh Usage (Look for kWh on page 2 of your power bill)</label>
                 <input type="text" id="winterKwh" class="form-input" placeholder="1100">
                 <span class="error-message" id="error-winterKwh"></span>
             </div>
@@ -1020,7 +1027,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="tip-box">
-            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including panel-only and panel+battery options.</p>
+            <p><strong>Tip:</strong> For the most accurate solar system sizing and savings calculations, please provide your monthly kWh usage from your power bills (typically found on page 2). If you also enter your fixed daily charge, we can calculate your exact cost per kWh and provide detailed system recommendations including Solar-Only and Solar + Battery options.</p>
         </div>
 
         <div id="results" class="results-section"></div>
@@ -1328,7 +1335,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (isFinanced && loanTerm > 0) {
             var monthlyRate = interestRate / 100 / 12;
             var numPayments = loanTerm * 12;
-            monthlyLoanPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+            if (monthlyRate > 0) {
+                // Standard amortization formula with interest
+                monthlyLoanPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            } else {
+                // If 0% interest, just divide by months
+                monthlyLoanPayment = systemCost / numPayments;
+            }
         }
 
         var chartData = [];
@@ -1651,17 +1665,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var monthlyInterestRate = (interestRate / 100) / 12;
             var numLoanPayments = loanTerm * 12;
 
+            // Use battery system cost by default for initial calculation (matches default selectedSystem)
+            var defaultSystemCost = panelBatterySystem ? panelBatterySystem.systemCost : solarSystemCost;
+
             if (monthlyInterestRate > 0) {
                 // Calculate monthly payment using amortization formula
-                monthlyLoanPayment = solarSystemCost * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numLoanPayments)) /
+                monthlyLoanPayment = defaultSystemCost * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numLoanPayments)) /
                                     (Math.pow(1 + monthlyInterestRate, numLoanPayments) - 1);
             } else {
                 // If 0% interest, just divide by months
-                monthlyLoanPayment = solarSystemCost / numLoanPayments;
+                monthlyLoanPayment = defaultSystemCost / numLoanPayments;
             }
 
             totalLoanPayments = monthlyLoanPayment * numLoanPayments;
-            totalInterestPaid = totalLoanPayments - solarSystemCost;
+            totalInterestPaid = totalLoanPayments - defaultSystemCost;
 
             // Recalculate payback period considering financing costs
             var effectiveCost = totalLoanPayments;
@@ -1818,7 +1835,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '      <div class="power-dot">';
 
         // Determine color based on borrowing power
-        var dotColor = data.borrowingPower === 'high' ? '#fbbf24' : (data.borrowingPower === 'medium' ? '#fbbf24' : '#60a5fa');
+        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
 
         html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
 
@@ -1856,7 +1873,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Serviceability Card
         html += '<div class="serviceability-card">';
-        html += '  <h3 class="power-header">Monthly Serviceability (at 6.8% test rate)</h3>';
+        html += '  <h3 class="power-header">Monthly Serviceability (mortgage at 6.8% test rate)</h3>';
         html += '  <div class="service-grid">';
         html += '    <div>';
         html += '      <div class="service-row">';
@@ -1871,18 +1888,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '        <span class="service-label">Current Mortgage Payment:</span>';
         html += '        <span class="service-value">$' + formatNumber(data.currentMonthlyPayment) + '</span>';
         html += '      </div>';
-        if (data.isFinanced) {
-            html += '      <div class="service-row">';
-            html += '        <span class="service-label">Solar Loan Payment:</span>';
-            html += '        <span class="service-value">$' + formatNumber(data.monthlyLoanPayment) + '</span>';
-            html += '      </div>';
-        }
+        html += '      <div class="service-row" id="solarLoanPaymentRow" style="display: ' + (data.isFinanced ? 'flex' : 'none') + ';">';
+        html += '        <span class="service-label">Solar Loan Payment:</span>';
+        html += '        <span class="service-value" id="solarLoanPaymentValue">$' + formatNumber(data.monthlyLoanPayment) + '</span>';
+        html += '      </div>';
         html += '    </div>';
         html += '    <div class="surplus-box">';
         html += '      <div>';
         html += '        <p class="power-subtext">Monthly Surplus</p>';
         var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#60e1e0' : '#155263';
-        html += '        <p class="surplus-amount" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
+        html += '        <p class="surplus-amount" id="monthlySurplusValue" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
         html += '      </div>';
         html += '    </div>';
         html += '  </div>';
@@ -2115,14 +2130,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '    <div id="costBreakdownDetails" style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;"></div>';
         html += '  </div>';
 
-        html += '  <h3 class="result-title" style="margin-top: 2rem;">Power Costs Over Time</h3>';
+        html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Power Costs Over Time</h3>';
         html += '  <div class="chart-container">';
         html += '    <canvas id="solarChart"></canvas>';
         html += '  </div>';
 
         // Add financing chart if loan is used
         if (data.isFinanced) {
-            html += '  <h3 class="result-title" style="margin-top: 2rem;">Estimated Financing Cost vs Solar Savings</h3>';
+            html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Estimated Financing Cost vs Solar Savings</h3>';
             html += '  <p class="roi-note" style="text-align: center; margin-bottom: 1rem; color: #6b7280; font-size: 0.875rem;">This is a high level estimate only, compare real quotes for a better financial estimate</p>';
             html += '  <div class="chart-container">';
             html += '    <canvas id="financingChart"></canvas>';
@@ -2237,17 +2252,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             label: 'Without Solar',
                             data: data.chartData.map(function(d) { return d.withoutSolar; }),
                             borderColor: '#60e1e0',
-                            backgroundColor: 'rgba(96, 225, 224, 0.2)',
-                            fill: true,
-                            tension: 0.1
+                            backgroundColor: '#60e1e0',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
                         },
                         {
                             label: chartLabel,
                             data: data.chartData.map(function(d) { return d.withSolar; }),
                             borderColor: '#ffc93c',
-                            backgroundColor: 'rgba(255, 201, 60, 0.2)',
-                            fill: true,
-                            tension: 0.1
+                            backgroundColor: '#ffc93c',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
                         }
                     ]
                 },
@@ -2308,17 +2327,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             label: 'Cumulative Solar Savings',
                             data: financingData.map(function(d) { return d.solarSavings; }),
                             borderColor: '#60e1e0',
-                            backgroundColor: 'rgba(96, 225, 224, 0.2)',
-                            fill: true,
-                            tension: 0.1
+                            backgroundColor: '#60e1e0',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
                         },
                         {
                             label: 'Cumulative Financing Cost',
                             data: financingData.map(function(d) { return d.financingCost; }),
-                            borderColor: '#ff6b6b',
-                            backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                            fill: true,
-                            tension: 0.1
+                            borderColor: '#ff9a76',
+                            backgroundColor: '#ff9a76',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
                         }
                     ];
 
@@ -2373,6 +2396,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Update system cost metrics based on selected system
         updateSystemCostMetrics(data);
+
+        // Update monthly serviceability based on selected system
+        updateMonthlyServiceability(data);
 
         // Update main charts based on selected system
         updateMainCharts(data);
@@ -2442,6 +2468,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 // Update system cost metrics
                 updateSystemCostMetrics(data);
+
+                // Update monthly serviceability
+                updateMonthlyServiceability(data);
 
                 // Update main charts
                 updateMainCharts(data);
@@ -2523,7 +2552,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
-        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #16a34a;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #ffc93c;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
 
@@ -2553,7 +2582,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var interestRate = data.interestRate;
             var monthlyRate = interestRate / 100 / 12;
             var numPayments = loanTerm * 12;
-            var monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+            var monthlyPayment;
+            if (monthlyRate > 0) {
+                monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            } else {
+                monthlyPayment = systemCost / numPayments;
+            }
             totalFinancedCost = monthlyPayment * numPayments;
         }
 
@@ -2572,6 +2607,60 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         if (solarROIEl) {
             solarROIEl.textContent = solarROI + '%';
+        }
+    }
+
+    // Function to update monthly serviceability based on selected system
+    function updateMonthlyServiceability(data) {
+        var solarLoanPaymentEl = document.getElementById('solarLoanPaymentValue');
+        var monthlySurplusEl = document.getElementById('monthlySurplusValue');
+        var solarLoanPaymentRow = document.getElementById('solarLoanPaymentRow');
+
+        if (!data || !data.isFinanced) {
+            if (solarLoanPaymentRow) {
+                solarLoanPaymentRow.style.display = 'none';
+            }
+            return;
+        }
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate financing for selected system using actual interest rate
+        var systemCost = systemData.systemCost;
+        var loanTerm = parseInt(data.loanTerm) || 0;
+        var interestRate = parseFloat(data.interestRate) || 0;
+
+        if (loanTerm <= 0) return;
+
+        var monthlyRate = interestRate / 100 / 12;
+        var numPayments = loanTerm * 12;
+        var monthlyPayment = 0;
+
+        if (monthlyRate > 0) {
+            monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        } else {
+            monthlyPayment = systemCost / numPayments;
+        }
+
+        // Calculate monthly surplus
+        var baseSurplus = parseFloat(data.monthlyIncome) - parseFloat(data.monthlyExpenses) - parseFloat(data.currentMonthlyPayment);
+        var monthlySurplus = baseSurplus - monthlyPayment;
+
+        // Update the display
+        if (solarLoanPaymentEl) {
+            solarLoanPaymentEl.textContent = '$' + formatNumber(monthlyPayment.toFixed(2));
+        }
+
+        if (monthlySurplusEl) {
+            var surplusColor = monthlySurplus > 0 ? '#60e1e0' : '#155263';
+            monthlySurplusEl.textContent = '$' + formatNumber(monthlySurplus.toFixed(2));
+            monthlySurplusEl.style.color = surplusColor;
+        }
+
+        if (solarLoanPaymentRow) {
+            solarLoanPaymentRow.style.display = 'flex';
         }
     }
 
