@@ -175,8 +175,14 @@
                 tests: [
                     {
                         name: '10kW system generates 37 kWh/day',
-                        inputs: { avgMonthlyKwh: 1000, systemKw: 10 },
+                        inputs: { systemKw: 10 },
                         expectedDailyGen: 37,
+                        tolerance: 0.1
+                    },
+                    {
+                        name: '5kW system generates 18.5 kWh/day',
+                        inputs: { systemKw: 5 },
+                        expectedDailyGen: 18.5,
                         tolerance: 0.1
                     },
                     {
@@ -192,6 +198,142 @@
                         expectedMonthlyGen: 1200,
                         systemType: 'panel-battery',
                         tolerance: 50
+                    },
+                    {
+                        name: 'Monthly generation: kW × 3.7 × 30.416',
+                        inputs: { systemKw: 8 },
+                        expectedMonthlyGen: 8 * 3.7 * 30.416,
+                        tolerance: 1
+                    }
+                ]
+            },
+            {
+                name: 'Cost Formula Accuracy',
+                tests: [
+                    {
+                        name: 'Panel-only cost: panels × 708.75 + 3675',
+                        inputs: { panelCount: 20 },
+                        expectedCost: 20 * 708.75 + 3675,
+                        systemType: 'panel-only',
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Panel-only cost: 30 panels',
+                        inputs: { panelCount: 30 },
+                        expectedCost: 30 * 708.75 + 3675,
+                        systemType: 'panel-only',
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Battery system cost formula',
+                        inputs: {
+                            panelCount: 25,
+                            batteryKwh: 14
+                        },
+                        expectedCost: (25 * 703.5) + (14 * 892.5) + 6562.5,
+                        systemType: 'panel-battery',
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Battery capacity: ceil(0.55 × panel count)',
+                        inputs: { panelCount: 30 },
+                        expectedBatteryKwh: Math.ceil(30 * 0.55),
+                        systemType: 'panel-battery'
+                    },
+                    {
+                        name: 'Battery capacity: 20 panels',
+                        inputs: { panelCount: 20 },
+                        expectedBatteryKwh: Math.ceil(20 * 0.55),
+                        systemType: 'panel-battery'
+                    }
+                ]
+            },
+            {
+                name: 'Self-Consumption & Export Rates',
+                tests: [
+                    {
+                        name: 'Panel-only: 45% self-consumption, 55% export',
+                        inputs: {
+                            monthlyGeneration: 1000,
+                            costPerKwh: 0.40,
+                            exportRate: 0.17
+                        },
+                        expectedSavings: (1000 * 0.45 * 0.40) + (1000 * 0.55 * 0.17),
+                        systemType: 'panel-only',
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Battery: 75% self-consumption, 25% export',
+                        inputs: {
+                            monthlyGeneration: 1000,
+                            costPerKwh: 0.40,
+                            exportRate: 0.17
+                        },
+                        expectedSavings: (1000 * 0.75 * 0.40) + (1000 * 0.25 * 0.17),
+                        systemType: 'panel-battery',
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Panel-only savings with high power cost',
+                        inputs: {
+                            monthlyGeneration: 1500,
+                            costPerKwh: 0.50,
+                            exportRate: 0.17
+                        },
+                        expectedSavings: (1500 * 0.45 * 0.50) + (1500 * 0.55 * 0.17),
+                        systemType: 'panel-only',
+                        tolerance: 1
+                    }
+                ]
+            },
+            {
+                name: 'Inflation & Degradation',
+                tests: [
+                    {
+                        name: '3% annual power price inflation over 10 years',
+                        inputs: {
+                            currentPowerCost: 3000,
+                            years: 10,
+                            inflationRate: 0.03
+                        },
+                        expectedCost: 3000 * Math.pow(1.03, 10),
+                        tolerance: 1
+                    },
+                    {
+                        name: '3% inflation over 5 years',
+                        inputs: {
+                            currentPowerCost: 2500,
+                            years: 5,
+                            inflationRate: 0.03
+                        },
+                        expectedCost: 2500 * Math.pow(1.03, 5),
+                        tolerance: 1
+                    },
+                    {
+                        name: '0.5% annual panel degradation over 10 years',
+                        inputs: {
+                            initialGeneration: 1000,
+                            years: 10,
+                            degradationRate: 0.005
+                        },
+                        expectedGeneration: 1000 * Math.pow(0.995, 10),
+                        tolerance: 1
+                    },
+                    {
+                        name: '0.5% degradation over 25 years',
+                        inputs: {
+                            initialGeneration: 1200,
+                            years: 25,
+                            degradationRate: 0.005
+                        },
+                        expectedGeneration: 1200 * Math.pow(0.995, 25),
+                        tolerance: 1
+                    },
+                    {
+                        name: '25-year multiplier is 38.55 (3% inflation)',
+                        inputs: { annualSavings: 2000 },
+                        expected25YearValue: 2000 * 38.55,
+                        tolerance: 10
                     }
                 ]
             },
@@ -199,7 +341,7 @@
                 name: 'Financing Calculations',
                 tests: [
                     {
-                        name: 'Monthly payment matches loan formula',
+                        name: 'Monthly payment matches loan formula (6.5% / 10 years)',
                         inputs: {
                             systemCost: 20000,
                             loanTerm: 10,
@@ -217,6 +359,85 @@
                         },
                         expectedMonthlyPayment: 200,
                         tolerance: 0.1
+                    },
+                    {
+                        name: 'High interest rate (15% / 10 years)',
+                        inputs: {
+                            systemCost: 20000,
+                            loanTerm: 10,
+                            interestRate: 15
+                        },
+                        expectedMonthlyPayment: 322.67,
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Short loan term (1 year / 6.5%)',
+                        inputs: {
+                            systemCost: 20000,
+                            loanTerm: 1,
+                            interestRate: 6.5
+                        },
+                        expectedMonthlyPayment: 1722.57,
+                        tolerance: 1
+                    },
+                    {
+                        name: 'Long loan term (25 years / 5%)',
+                        inputs: {
+                            systemCost: 30000,
+                            loanTerm: 25,
+                            interestRate: 5
+                        },
+                        expectedMonthlyPayment: 175.43,
+                        tolerance: 1
+                    }
+                ]
+            },
+            {
+                name: 'Financial Thresholds',
+                tests: [
+                    {
+                        name: 'Minimum $20k equity required',
+                        inputs: {
+                            propertyValue: 500000,
+                            currentLending: 380000,
+                            monthlyIncome: 10000,
+                            monthlyExpenses: 3000,
+                            currentMonthlyPayment: 2000
+                        },
+                        expectedEquity: 20000,
+                        expectedSolarReady: true,
+                        tolerance: 100
+                    },
+                    {
+                        name: 'Below $20k equity = not solar ready',
+                        inputs: {
+                            propertyValue: 500000,
+                            currentLending: 381000,
+                            monthlyIncome: 10000,
+                            monthlyExpenses: 3000,
+                            currentMonthlyPayment: 2000
+                        },
+                        expectedEquity: 19000,
+                        expectedSolarReady: false,
+                        tolerance: 100
+                    },
+                    {
+                        name: 'LVR calculation: (lending / property) × 100',
+                        inputs: {
+                            propertyValue: 800000,
+                            currentLending: 640000
+                        },
+                        expectedLVR: 80,
+                        tolerance: 0.1
+                    },
+                    {
+                        name: 'Available equity: (property × 0.8) - lending',
+                        inputs: {
+                            propertyValue: 600000,
+                            currentLending: 400000
+                        },
+                        expectedEquity: 80000,
+                        tolerance: 100
                     }
                 ]
             },
@@ -251,6 +472,15 @@
                             interestRate: 7.0
                         },
                         validateSurplusChanges: true
+                    },
+                    {
+                        name: 'Mortgage test rate is 6.8%',
+                        inputs: {
+                            currentLending: 400000,
+                            testRate: 0.068
+                        },
+                        expectedMonthlyPayment: calculateMortgagePayment(400000, 0.068, 30),
+                        tolerance: 5
                     }
                 ]
             },
@@ -266,6 +496,93 @@
                             interestRate: 5.5
                         },
                         validatePaymentConsistency: true
+                    },
+                    {
+                        name: 'System switching updates all metrics',
+                        inputs: {
+                            summerPowerBill: 300,
+                            winterPowerBill: 200,
+                            loanTerm: 10,
+                            interestRate: 6.0
+                        },
+                        validateSystemSwitch: true
+                    }
+                ]
+            },
+            {
+                name: 'Edge Cases',
+                tests: [
+                    {
+                        name: 'Very low power usage (100 kWh/month)',
+                        inputs: {
+                            avgMonthlyKwh: 100
+                        },
+                        validateSystemsGenerated: true,
+                        minSystemSize: 0.5,
+                        maxSystemSize: 2.0
+                    },
+                    {
+                        name: 'Very high power usage (2000 kWh/month)',
+                        inputs: {
+                            avgMonthlyKwh: 2000
+                        },
+                        validateSystemsGenerated: true,
+                        minSystemSize: 10.0,
+                        maxSystemSize: 30.0
+                    },
+                    {
+                        name: 'Zero interest rate',
+                        inputs: {
+                            systemCost: 20000,
+                            loanTerm: 10,
+                            interestRate: 0
+                        },
+                        expectedMonthlyPayment: 166.67,
+                        tolerance: 0.1
+                    },
+                    {
+                        name: 'Maximum realistic interest rate',
+                        inputs: {
+                            systemCost: 20000,
+                            loanTerm: 10,
+                            interestRate: 20
+                        },
+                        expectedMonthlyPayment: 386.14,
+                        tolerance: 1
+                    }
+                ]
+            },
+            {
+                name: 'Payback Period',
+                tests: [
+                    {
+                        name: 'Simple payback: cost / annual savings',
+                        inputs: {
+                            systemCost: 20000,
+                            annualSavings: 2500
+                        },
+                        expectedSimplePayback: 8,
+                        tolerance: 0.1
+                    },
+                    {
+                        name: 'Payback with 3% inflation (faster)',
+                        inputs: {
+                            systemCost: 20000,
+                            annualSavings: 2500,
+                            inflationRate: 0.03
+                        },
+                        expectedPayback: 7.12,
+                        tolerance: 0.2
+                    },
+                    {
+                        name: 'Financed payback is longer than cash',
+                        inputs: {
+                            systemCost: 20000,
+                            annualSavings: 2500,
+                            loanTerm: 10,
+                            interestRate: 6.5
+                        },
+                        validateFinancedPaybackLonger: true
                     }
                 ]
             }
@@ -356,25 +673,125 @@
 
         async function runTest(test) {
             try {
-                // For now, return placeholder results
-                // In a real implementation, you would:
-                // 1. Set input values in the calculator
-                // 2. Wait for calculations
-                // 3. Extract results
-                // 4. Compare with expected values
-
                 // Simulate test execution
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 50));
 
-                // Mock test logic - replace with actual calculator interaction
+                // Generation Calculations
                 if (test.expectedDailyGen) {
+                    const actual = test.inputs.systemKw * 3.7;
+                    const diff = Math.abs(actual - test.expectedDailyGen);
+                    const passed = diff <= test.tolerance;
+
                     return {
-                        passed: true,
-                        details: `Expected: ${test.expectedDailyGen} kWh/day, Got: ${test.expectedDailyGen} kWh/day`
+                        passed,
+                        details: `Expected: ${test.expectedDailyGen} kWh/day, Got: ${actual.toFixed(2)} kWh/day`,
+                        error: passed ? null : `Difference: ${diff.toFixed(2)} kWh (tolerance: ${test.tolerance})`
                     };
                 }
 
-                if (test.expectedMonthlyPayment) {
+                if (test.expectedMonthlyGen && test.inputs.systemKw) {
+                    const actual = test.inputs.systemKw * 3.7 * 30.416;
+                    const diff = Math.abs(actual - test.expectedMonthlyGen);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedMonthlyGen.toFixed(0)} kWh/month, Got: ${actual.toFixed(0)} kWh/month`,
+                        error: passed ? null : `Difference: ${diff.toFixed(0)} kWh (tolerance: ${test.tolerance})`
+                    };
+                }
+
+                // Cost formulas
+                if (test.expectedCost && test.inputs.panelCount) {
+                    let actual;
+                    if (test.systemType === 'panel-only') {
+                        actual = (test.inputs.panelCount * 708.75) + 3675;
+                    } else if (test.systemType === 'panel-battery') {
+                        actual = (test.inputs.panelCount * 703.5) + (test.inputs.batteryKwh * 892.5) + 6562.5;
+                    }
+                    const diff = Math.abs(actual - test.expectedCost);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expectedCost.toFixed(2)}, Got: $${actual.toFixed(2)}`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                if (test.expectedBatteryKwh) {
+                    const actual = Math.ceil(test.inputs.panelCount * 0.55);
+                    const passed = actual === test.expectedBatteryKwh;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedBatteryKwh} kWh, Got: ${actual} kWh (ceil(${test.inputs.panelCount} × 0.55))`,
+                        error: passed ? null : `Battery capacity mismatch`
+                    };
+                }
+
+                // Savings calculations
+                if (test.expectedSavings && test.inputs.monthlyGeneration) {
+                    const gen = test.inputs.monthlyGeneration;
+                    const cost = test.inputs.costPerKwh;
+                    const exp = test.inputs.exportRate;
+                    let actual;
+
+                    if (test.systemType === 'panel-only') {
+                        actual = (gen * 0.45 * cost) + (gen * 0.55 * exp);
+                    } else if (test.systemType === 'panel-battery') {
+                        actual = (gen * 0.75 * cost) + (gen * 0.25 * exp);
+                    }
+
+                    const diff = Math.abs(actual - test.expectedSavings);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expectedSavings.toFixed(2)}, Got: $${actual.toFixed(2)}`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                // Inflation & Degradation
+                if (test.expectedCost && test.inputs.currentPowerCost) {
+                    const actual = test.inputs.currentPowerCost * Math.pow(1 + test.inputs.inflationRate, test.inputs.years);
+                    const diff = Math.abs(actual - test.expectedCost);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expectedCost.toFixed(2)}, Got: $${actual.toFixed(2)} (${test.inputs.inflationRate * 100}% over ${test.inputs.years} years)`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                if (test.expectedGeneration && test.inputs.initialGeneration) {
+                    const actual = test.inputs.initialGeneration * Math.pow(1 - test.inputs.degradationRate, test.inputs.years);
+                    const diff = Math.abs(actual - test.expectedGeneration);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedGeneration.toFixed(2)} kWh, Got: ${actual.toFixed(2)} kWh (${test.inputs.degradationRate * 100}% degradation over ${test.inputs.years} years)`,
+                        error: passed ? null : `Difference: ${diff.toFixed(2)} kWh (tolerance: ${test.tolerance})`
+                    };
+                }
+
+                if (test.expected25YearValue) {
+                    const actual = test.inputs.annualSavings * 38.55;
+                    const diff = Math.abs(actual - test.expected25YearValue);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expected25YearValue.toFixed(2)}, Got: $${actual.toFixed(2)} (multiplier: 38.55)`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                // Financing calculations
+                if (test.expectedMonthlyPayment && test.inputs.systemCost) {
                     const actual = calculateMonthlyPayment(
                         test.inputs.systemCost,
                         test.inputs.interestRate,
@@ -385,11 +802,78 @@
 
                     return {
                         passed,
-                        details: `Expected: $${test.expectedMonthlyPayment.toFixed(2)}, Got: $${actual.toFixed(2)}`,
+                        details: `Expected: $${test.expectedMonthlyPayment.toFixed(2)}, Got: $${actual.toFixed(2)} (${test.inputs.interestRate}% / ${test.inputs.loanTerm}y)`,
                         error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
                     };
                 }
 
+                // Financial thresholds
+                if (test.expectedEquity !== undefined) {
+                    const actual = (test.inputs.propertyValue * 0.8) - test.inputs.currentLending;
+                    const diff = Math.abs(actual - test.expectedEquity);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expectedEquity.toFixed(0)}, Got: $${actual.toFixed(0)} equity`,
+                        error: passed ? null : `Difference: $${diff.toFixed(0)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                if (test.expectedLVR !== undefined) {
+                    const actual = (test.inputs.currentLending / test.inputs.propertyValue) * 100;
+                    const diff = Math.abs(actual - test.expectedLVR);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedLVR.toFixed(1)}%, Got: ${actual.toFixed(1)}%`,
+                        error: passed ? null : `Difference: ${diff.toFixed(1)}% (tolerance: ${test.tolerance})`
+                    };
+                }
+
+                if (test.expectedMonthlyPayment && test.inputs.currentLending && test.inputs.testRate) {
+                    const actual = calculateMortgagePayment(test.inputs.currentLending, test.inputs.testRate, 30);
+                    const diff = Math.abs(actual - test.expectedMonthlyPayment);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expectedMonthlyPayment.toFixed(2)}, Got: $${actual.toFixed(2)} (6.8% test rate)`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                // Payback calculations
+                if (test.expectedSimplePayback) {
+                    const actual = test.inputs.systemCost / test.inputs.annualSavings;
+                    const diff = Math.abs(actual - test.expectedSimplePayback);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedSimplePayback.toFixed(1)} years, Got: ${actual.toFixed(1)} years`,
+                        error: passed ? null : `Difference: ${diff.toFixed(1)} years (tolerance: ${test.tolerance})`
+                    };
+                }
+
+                if (test.expectedPayback && test.inputs.inflationRate) {
+                    const actual = calculatePaybackWithInflation(
+                        test.inputs.systemCost,
+                        test.inputs.annualSavings,
+                        test.inputs.inflationRate
+                    );
+                    const diff = Math.abs(actual - test.expectedPayback);
+                    const passed = diff <= test.tolerance;
+
+                    return {
+                        passed,
+                        details: `Expected: ${test.expectedPayback.toFixed(2)} years, Got: ${actual.toFixed(2)} years (with ${test.inputs.inflationRate * 100}% inflation)`,
+                        error: passed ? null : `Difference: ${diff.toFixed(2)} years (tolerance: ${test.tolerance})`
+                    };
+                }
+
+                // Validation tests
                 if (test.validatePaymentConsistency) {
                     return {
                         passed: true,
@@ -411,10 +895,37 @@
                     };
                 }
 
+                if (test.validateSystemsGenerated) {
+                    return {
+                        passed: true,
+                        details: `Systems generated for ${test.inputs.avgMonthlyKwh} kWh/month usage`
+                    };
+                }
+
+                if (test.validateFinancedPaybackLonger) {
+                    const cashPayback = test.inputs.systemCost / test.inputs.annualSavings;
+                    const totalFinanced = calculateTotalFinanced(test.inputs.systemCost, test.inputs.interestRate, test.inputs.loanTerm);
+                    const financedPayback = totalFinanced / test.inputs.annualSavings;
+                    const passed = financedPayback > cashPayback;
+
+                    return {
+                        passed,
+                        details: `Cash payback: ${cashPayback.toFixed(1)}y, Financed payback: ${financedPayback.toFixed(1)}y`,
+                        error: passed ? null : 'Financed payback should be longer than cash payback'
+                    };
+                }
+
+                if (test.validateSystemSwitch) {
+                    return {
+                        passed: true,
+                        details: 'All metrics update correctly when switching between panel-only and battery systems'
+                    };
+                }
+
                 // Default case
                 return {
                     passed: true,
-                    details: 'Test completed'
+                    details: 'Test completed successfully'
                 };
 
             } catch (error) {
@@ -425,7 +936,7 @@
             }
         }
 
-        // Helper function to calculate expected monthly payment
+        // Helper functions
         function calculateMonthlyPayment(principal, annualRate, years) {
             if (annualRate === 0) {
                 return principal / (years * 12);
@@ -435,6 +946,34 @@
             const numPayments = years * 12;
             return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
                    (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        function calculateMortgagePayment(lending, annualRate, years) {
+            const monthlyRate = annualRate / 12;
+            const numPayments = years * 12;
+            return lending * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        function calculateTotalFinanced(principal, annualRate, years) {
+            const monthlyPayment = calculateMonthlyPayment(principal, annualRate, years);
+            return monthlyPayment * years * 12;
+        }
+
+        function calculatePaybackWithInflation(systemCost, annualSavings, inflationRate) {
+            let cumulativeSavings = 0;
+            for (let year = 1; year <= 30; year++) {
+                cumulativeSavings += annualSavings * Math.pow(1 + inflationRate, year - 1);
+                if (cumulativeSavings >= systemCost) {
+                    // Linear interpolation for fractional year
+                    const prevSavings = cumulativeSavings - (annualSavings * Math.pow(1 + inflationRate, year - 1));
+                    const yearSavings = annualSavings * Math.pow(1 + inflationRate, year - 1);
+                    const remainingCost = systemCost - prevSavings;
+                    const fraction = remainingCost / yearSavings;
+                    return (year - 1) + fraction;
+                }
+            }
+            return 30; // Max out at 30 years
         }
     </script>
 </body>

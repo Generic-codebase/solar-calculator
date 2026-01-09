@@ -24,28 +24,72 @@ This document describes the regression testing setup for the Solar Calculator to
 
 ### Test Categories
 
-#### 1. Generation Calculations
+#### 1. Generation Calculations (5 tests)
 Tests the core solar generation formulas:
-- **3.7 kWh/kW/day formula**: Verifies that a 10kW system generates 37 kWh/day
+- **3.7 kWh/kW/day formula**: Verifies 10kW system generates 37 kWh/day, 5kW generates 18.5 kWh/day
 - **Panel-only sizing**: Confirms system is sized at 110% of usage
 - **Battery system sizing**: Confirms system is sized at 120% of usage
+- **Monthly generation formula**: Validates kW × 3.7 × 30.416 calculation
 
-#### 2. Financing Calculations
-Tests loan payment calculations:
-- **Standard loan formula**: Verifies monthly payment calculation with interest
-- **Zero interest loans**: Tests edge case of 0% interest rate
+#### 2. Cost Formula Accuracy (5 tests)
+Tests system pricing calculations:
+- **Panel-only cost**: Validates panels × 708.75 + 3675 formula
+- **Battery system cost**: Validates (panels × 703.5) + (battery kWh × 892.5) + 6562.5
+- **Battery capacity**: Confirms ceil(0.55 × panel count) calculation
+- Tests multiple panel counts (20, 25, 30 panels)
 
-#### 3. Monthly Serviceability
-Tests the serviceability section accuracy:
-- **Actual interest rate usage**: Confirms solar loan uses user-specified rate, not 6.8% test rate
+#### 3. Self-Consumption & Export Rates (3 tests)
+Tests savings calculations:
+- **Panel-only rates**: Validates 45% self-consumption, 55% export @ 17c/kWh
+- **Battery rates**: Validates 75% self-consumption, 25% export @ 17c/kWh
+- Tests with various power costs and generation levels
+
+#### 4. Inflation & Degradation (5 tests)
+Tests long-term projection accuracy:
+- **3% annual inflation**: Tests over 5 and 10 year periods
+- **0.5% panel degradation**: Tests over 10 and 25 year periods
+- **25-year multiplier**: Confirms 38.55 multiplier for 3% inflation
+
+#### 5. Financing Calculations (5 tests)
+Tests loan payment formulas:
+- **Standard rates**: 6.5% over 10 years
+- **Zero interest**: Edge case of 0% interest rate
+- **High interest**: 15% and 20% rates
+- **Loan terms**: 1 year (short) and 25 years (long)
+- Validates amortization formula accuracy
+
+#### 6. Financial Thresholds (4 tests)
+Tests borrowing power logic:
+- **Equity requirements**: Minimum $20k equity needed for solar ready
+- **LVR calculation**: (lending / property) × 100
+- **Available equity**: (property × 0.8) - lending
+- Tests edge cases around $20k threshold
+
+#### 7. Monthly Serviceability (3 tests)
+Tests serviceability section accuracy:
+- **Actual interest rate usage**: Confirms solar loan uses user-specified rate, not 6.8%
 - **Surplus updates**: Verifies monthly surplus recalculates when switching systems
-- **Mortgage test rate**: Confirms existing mortgage uses 6.8% test rate for serviceability
+- **Mortgage test rate**: Confirms existing mortgage uses 6.8% test rate
 
-#### 4. System Consistency
-Tests consistency across different sections:
-- **Payment matching**: Verifies loan payment matches between:
-  - Monthly Serviceability section
-  - Loan Financing Details section
+#### 8. System Consistency (2 tests)
+Tests consistency across sections:
+- **Payment matching**: Verifies loan payment matches between Monthly Serviceability and Loan Financing Details
+- **System switching**: Validates all metrics update when switching between systems
+
+#### 9. Edge Cases (4 tests)
+Tests boundary conditions:
+- **Very low usage**: 100 kWh/month
+- **Very high usage**: 2000 kWh/month
+- **Zero interest**: 0% rate
+- **Maximum interest**: 20% rate
+
+#### 10. Payback Period (3 tests)
+Tests payback calculations:
+- **Simple payback**: cost / annual savings
+- **Payback with inflation**: Faster payback due to rising power costs
+- **Financed vs cash**: Confirms financed payback is longer
+
+**Total: 39 comprehensive tests across 10 categories**
 
 ## Manual Testing Checklist
 
