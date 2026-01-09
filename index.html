@@ -2252,19 +2252,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             label: 'Without Solar',
                             data: data.chartData.map(function(d) { return d.withoutSolar; }),
                             borderColor: '#60e1e0',
-                            backgroundColor: 'rgba(96, 225, 224, 0.35)',
+                            backgroundColor: '#60e1e0',
                             fill: true,
-                            tension: 0.1,
-                            borderWidth: 2
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
                         },
                         {
                             label: chartLabel,
                             data: data.chartData.map(function(d) { return d.withSolar; }),
                             borderColor: '#ffc93c',
-                            backgroundColor: 'rgba(255, 201, 60, 0.35)',
+                            backgroundColor: '#ffc93c',
                             fill: true,
-                            tension: 0.1,
-                            borderWidth: 2
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
                         }
                     ]
                 },
@@ -2325,19 +2327,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             label: 'Cumulative Solar Savings',
                             data: financingData.map(function(d) { return d.solarSavings; }),
                             borderColor: '#60e1e0',
-                            backgroundColor: 'rgba(96, 225, 224, 0.35)',
+                            backgroundColor: '#60e1e0',
                             fill: true,
-                            tension: 0.1,
-                            borderWidth: 2
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
                         },
                         {
                             label: 'Cumulative Financing Cost',
                             data: financingData.map(function(d) { return d.financingCost; }),
                             borderColor: '#ff9a76',
-                            backgroundColor: 'rgba(255, 154, 118, 0.35)',
+                            backgroundColor: '#ff9a76',
                             fill: true,
-                            tension: 0.1,
-                            borderWidth: 2
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
                         }
                     ];
 
