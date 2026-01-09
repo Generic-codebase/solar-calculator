@@ -1651,17 +1651,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var monthlyInterestRate = (interestRate / 100) / 12;
             var numLoanPayments = loanTerm * 12;
 
+            // Use battery system cost by default for initial calculation (matches default selectedSystem)
+            var defaultSystemCost = panelBatterySystem ? panelBatterySystem.systemCost : solarSystemCost;
+
             if (monthlyInterestRate > 0) {
                 // Calculate monthly payment using amortization formula
-                monthlyLoanPayment = solarSystemCost * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numLoanPayments)) /
+                monthlyLoanPayment = defaultSystemCost * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numLoanPayments)) /
                                     (Math.pow(1 + monthlyInterestRate, numLoanPayments) - 1);
             } else {
                 // If 0% interest, just divide by months
-                monthlyLoanPayment = solarSystemCost / numLoanPayments;
+                monthlyLoanPayment = defaultSystemCost / numLoanPayments;
             }
 
             totalLoanPayments = monthlyLoanPayment * numLoanPayments;
-            totalInterestPaid = totalLoanPayments - solarSystemCost;
+            totalInterestPaid = totalLoanPayments - defaultSystemCost;
 
             // Recalculate payback period considering financing costs
             var effectiveCost = totalLoanPayments;
@@ -1856,7 +1859,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Serviceability Card
         html += '<div class="serviceability-card">';
-        html += '  <h3 class="power-header">Monthly Serviceability (at 6.8% test rate)</h3>';
+        html += '  <h3 class="power-header">Monthly Serviceability (mortgage at 6.8% test rate)</h3>';
         html += '  <div class="service-grid">';
         html += '    <div>';
         html += '      <div class="service-row">';
@@ -1871,18 +1874,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '        <span class="service-label">Current Mortgage Payment:</span>';
         html += '        <span class="service-value">$' + formatNumber(data.currentMonthlyPayment) + '</span>';
         html += '      </div>';
-        if (data.isFinanced) {
-            html += '      <div class="service-row">';
-            html += '        <span class="service-label">Solar Loan Payment:</span>';
-            html += '        <span class="service-value">$' + formatNumber(data.monthlyLoanPayment) + '</span>';
-            html += '      </div>';
-        }
+        html += '      <div class="service-row" id="solarLoanPaymentRow" style="display: ' + (data.isFinanced ? 'flex' : 'none') + ';">';
+        html += '        <span class="service-label">Solar Loan Payment:</span>';
+        html += '        <span class="service-value" id="solarLoanPaymentValue">$' + formatNumber(data.monthlyLoanPayment) + '</span>';
+        html += '      </div>';
         html += '    </div>';
         html += '    <div class="surplus-box">';
         html += '      <div>';
         html += '        <p class="power-subtext">Monthly Surplus</p>';
         var surplusColor = parseFloat(data.monthlySurplus) > 0 ? '#60e1e0' : '#155263';
-        html += '        <p class="surplus-amount" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
+        html += '        <p class="surplus-amount" id="monthlySurplusValue" style="color: ' + surplusColor + '">$' + formatNumber(data.monthlySurplus) + '</p>';
         html += '      </div>';
         html += '    </div>';
         html += '  </div>';
@@ -2374,6 +2375,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Update system cost metrics based on selected system
         updateSystemCostMetrics(data);
 
+        // Update monthly serviceability based on selected system
+        updateMonthlyServiceability(data);
+
         // Update main charts based on selected system
         updateMainCharts(data);
 
@@ -2442,6 +2446,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 // Update system cost metrics
                 updateSystemCostMetrics(data);
+
+                // Update monthly serviceability
+                updateMonthlyServiceability(data);
 
                 // Update main charts
                 updateMainCharts(data);
@@ -2572,6 +2579,60 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         if (solarROIEl) {
             solarROIEl.textContent = solarROI + '%';
+        }
+    }
+
+    // Function to update monthly serviceability based on selected system
+    function updateMonthlyServiceability(data) {
+        var solarLoanPaymentEl = document.getElementById('solarLoanPaymentValue');
+        var monthlySurplusEl = document.getElementById('monthlySurplusValue');
+        var solarLoanPaymentRow = document.getElementById('solarLoanPaymentRow');
+
+        if (!data || !data.isFinanced) {
+            if (solarLoanPaymentRow) {
+                solarLoanPaymentRow.style.display = 'none';
+            }
+            return;
+        }
+
+        // Get the selected system data
+        var systemData = selectedSystem === 'panel-battery' ? data.panelBatterySystem : data.panelOnlySystem;
+        if (!systemData) return;
+
+        // Calculate financing for selected system using actual interest rate
+        var systemCost = systemData.systemCost;
+        var loanTerm = parseInt(data.loanTerm) || 0;
+        var interestRate = parseFloat(data.interestRate) || 0;
+
+        if (loanTerm <= 0) return;
+
+        var monthlyRate = interestRate / 100 / 12;
+        var numPayments = loanTerm * 12;
+        var monthlyPayment = 0;
+
+        if (monthlyRate > 0) {
+            monthlyPayment = systemCost * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        } else {
+            monthlyPayment = systemCost / numPayments;
+        }
+
+        // Calculate monthly surplus
+        var baseSurplus = parseFloat(data.monthlyIncome) - parseFloat(data.monthlyExpenses) - parseFloat(data.currentMonthlyPayment);
+        var monthlySurplus = baseSurplus - monthlyPayment;
+
+        // Update the display
+        if (solarLoanPaymentEl) {
+            solarLoanPaymentEl.textContent = '$' + formatNumber(monthlyPayment.toFixed(2));
+        }
+
+        if (monthlySurplusEl) {
+            var surplusColor = monthlySurplus > 0 ? '#60e1e0' : '#155263';
+            monthlySurplusEl.textContent = '$' + formatNumber(monthlySurplus.toFixed(2));
+            monthlySurplusEl.style.color = surplusColor;
+        }
+
+        if (solarLoanPaymentRow) {
+            solarLoanPaymentRow.style.display = 'flex';
         }
     }
 
