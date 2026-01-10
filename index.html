@@ -124,14 +124,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .form-input {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1rem;
         background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid #9ca3af;
         border-radius: 12px;
-        font-size: 1rem;
+        font-size: 16px; /* Prevents iOS zoom on focus */
         transition: all 0.3s ease;
+        min-height: 44px; /* Better touch target */
     }
 
     .form-input:focus {
@@ -142,11 +143,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .form-input.error {
-        border-color: #ef4444;
+        border-color: #ffc93c;
     }
 
     .error-message {
-        color: #ef4444;
+        color: #d9a11c;
         font-size: 0.75rem;
         margin-top: 0.25rem;
         display: none;
@@ -207,16 +208,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .result-title {
-        font-size: 1.25rem;
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
         font-weight: bold;
         color: #155263;
         margin-bottom: 0.5rem;
-    }
-
-    @media (min-width: 768px) {
-        .result-title {
-            font-size: 1.5rem;
-        }
     }
 
     .result-text {
@@ -457,7 +452,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .roi-value {
-        font-size: 1.5rem;
+        font-size: clamp(1.25rem, 5vw, 2rem);
         font-weight: bold;
         color: #155263;
     }
@@ -682,7 +677,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .chart-container {
         position: relative;
-        height: 400px;
+        height: 300px;
         margin-bottom: 1.5rem;
         background: rgba(255, 254, 240, 0.6);
         backdrop-filter: blur(10px);
@@ -691,6 +686,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         border-radius: 12px;
         padding: 1rem;
         box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
+    }
+
+    @media (min-width: 768px) {
+        .chart-container {
+            height: 400px;
+        }
     }
 
     .assumptions-box {
@@ -927,6 +928,292 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         font-size: 0.875rem;
         margin-bottom: 1.5rem;
     }
+
+    /* Export Buttons */
+    .export-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+
+    .export-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .export-btn-email {
+        background: #60e1e0;
+        color: #155263;
+    }
+
+    .export-btn-pdf {
+        background: #ffc93c;
+        color: #155263;
+    }
+
+    /* Sliding Drawer */
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .drawer-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    .drawer {
+        position: fixed;
+        top: 10vh;
+        left: 50%;
+        transform: translate(-50%, 0) scale(0.9);
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        background: white;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        z-index: 9999;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        visibility: hidden;
+        opacity: 0;
+        border-radius: 12px;
+    }
+
+    .drawer.show {
+        transform: translate(-50%, 0) scale(1);
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .drawer-header {
+        padding: 1.5rem;
+        background: #155263;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .drawer-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .drawer-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drawer-close:hover {
+        opacity: 0.8;
+    }
+
+    .drawer-content {
+        padding: 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .drawer-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .drawer-form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #155263;
+    }
+
+    .drawer-form-group input,
+    .drawer-form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .drawer-form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .drawer-form-group input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        min-height: 22px;
+        cursor: pointer;
+        accent-color: #ffc93c;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    .drawer-form-group input[type="checkbox"]:checked {
+        background-color: #ffc93c;
+        border-color: #ffc93c;
+    }
+
+    .drawer-form-group input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #155263;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .drawer-form-group input[type="checkbox"]:focus {
+        outline: 2px solid #ffc93c;
+        outline-offset: 2px;
+    }
+
+    .drawer-form-group input[type="checkbox"]:hover {
+        border-color: #ffc93c;
+    }
+
+    .drawer-submit {
+        width: 100%;
+        padding: 1rem;
+        background: #60e1e0;
+        color: #155263;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .drawer-submit:hover {
+        background: #50d1d0;
+    }
+
+    .drawer-submit:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .drawer-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 6px;
+        display: none;
+    }
+
+    .drawer-message.success {
+        background: #d1fae5;
+        color: #065f46;
+        display: block;
+    }
+
+    .drawer-message.error {
+        background: #fff9e6;
+        color: #d9a11c;
+        display: block;
+    }
+
+    /* Gold shimmer effect for financing section */
+    @keyframes goldShimmer {
+        0% {
+            background-position: -200% center;
+        }
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    .gold-shimmer {
+        background: linear-gradient(
+            90deg,
+            #d4af37 0%,
+            #f4e7c3 25%,
+            #fff9e6 50%,
+            #f4e7c3 75%,
+            #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: all 0.3s ease;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .gold-shimmer:hover {
+        animation: goldShimmer 2s linear infinite;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
+    }
+
+    #loanFinancingDetails .roi-value {
+        color: #155263;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    #loanFinancingDetails:hover .roi-value {
+        background: linear-gradient(
+            90deg,
+            #d4af37 0%,
+            #f4e7c3 25%,
+            #fff9e6 50%,
+            #f4e7c3 75%,
+            #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: goldShimmer 2s ease-in-out infinite;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
+    }
 </style>
 
 <div class="solar-calculator">
@@ -1031,6 +1318,74 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div id="results" class="results-section"></div>
+
+        <!-- Export Buttons -->
+        <div id="exportButtons" class="export-buttons" style="display: none;">
+            <button type="button" class="export-btn export-btn-email" onclick="openEmailDrawer()">
+                <span>📧</span> Email This Report
+            </button>
+            <button type="button" class="export-btn export-btn-pdf" onclick="openPDFDrawer()">
+                <span>📄</span> Print to PDF
+            </button>
+        </div>
+
+        <!-- Email Drawer -->
+        <div id="emailDrawerOverlay" class="drawer-overlay" onclick="closeEmailDrawer()"></div>
+        <div id="emailDrawer" class="drawer">
+            <div class="drawer-header">
+                <h3>Email Solar Report</h3>
+                <button type="button" class="drawer-close" onclick="closeEmailDrawer()">×</button>
+            </div>
+            <div class="drawer-content">
+                <div class="drawer-form-wrapper">
+                    <div class="drawer-form-group">
+                        <label for="emailRecipient">Email Address *</label>
+                        <input type="email" id="emailRecipient" placeholder="your@email.com" required>
+                    </div>
+                    <div class="drawer-form-group">
+                        <label for="emailName">Your Name (Optional)</label>
+                        <input type="text" id="emailName" placeholder="John Smith">
+                    </div>
+                    <div class="drawer-form-group">
+                        <label for="emailMessage">Additional Message (Optional)</label>
+                        <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
+                    </div>
+                </div>
+                <button type="button" class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
+                <div id="emailMessageStatus" class="drawer-message"></div>
+            </div>
+        </div>
+
+        <!-- PDF Drawer -->
+        <div id="pdfDrawerOverlay" class="drawer-overlay" onclick="closePDFDrawer()"></div>
+        <div id="pdfDrawer" class="drawer">
+            <div class="drawer-header">
+                <h3>Print to PDF</h3>
+                <button type="button" class="drawer-close" onclick="closePDFDrawer()">×</button>
+            </div>
+            <div class="drawer-content">
+                <div class="drawer-form-wrapper">
+                    <p style="margin-bottom: 1.5rem; color: #6b7280;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
+                    <div class="drawer-form-group">
+                        <label for="pdfTitle">Report Title (Optional)</label>
+                        <input type="text" id="pdfTitle" placeholder="My Solar Quote - [Date]">
+                    </div>
+                    <div class="drawer-form-group">
+                        <label>
+                            <input type="checkbox" id="pdfIncludeFinancing" checked style="width: auto; margin-right: 0.5rem;">
+                            Include financing details
+                        </label>
+                    </div>
+                    <div class="drawer-form-group">
+                        <label>
+                            <input type="checkbox" id="pdfIncludeCharts" checked style="width: auto; margin-right: 0.5rem;">
+                            Include charts and graphs
+                        </label>
+                    </div>
+                </div>
+                <button type="button" class="drawer-submit" onclick="generatePDF()" style="margin-top: auto;">Generate PDF</button>
+            </div>
+        </div>
 
         <div id="contactForm" class="contact-section">
             <h2 class="contact-title">Unlock Your Solar Financing Options</h2>
@@ -1567,7 +1922,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             // Calculate 25-year savings using Calconic multiplier
-            var panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
+            // Account for financing costs if loan is used
+            var panelOnly25YearSavings;
+            if (isFinanced && loanTerm > 0) {
+                var monthlyInterestRate = (interestRate / 100) / 12;
+                var numLoanPayments = loanTerm * 12;
+                var panelOnlyMonthlyPayment;
+
+                if (monthlyInterestRate > 0) {
+                    panelOnlyMonthlyPayment = panelOnlySystemCost * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numLoanPayments)) /
+                                             (Math.pow(1 + monthlyInterestRate, numLoanPayments) - 1);
+                } else {
+                    panelOnlyMonthlyPayment = panelOnlySystemCost / numLoanPayments;
+                }
+
+                var panelOnlyTotalLoanPayments = panelOnlyMonthlyPayment * numLoanPayments;
+                panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlyTotalLoanPayments;
+            } else {
+                panelOnly25YearSavings = (panelOnlyAnnualSavings * savings25YearMultiplier) - panelOnlySystemCost;
+            }
 
             panelOnlySystem = {
                 monthlyGeneration: panelOnlyMonthlyGeneration,
@@ -1628,7 +2001,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             // Calculate 25-year savings using Calconic multiplier
-            var panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
+            // Account for financing costs if loan is used
+            var panelBattery25YearSavings;
+            if (isFinanced && loanTerm > 0) {
+                var monthlyInterestRateBatt = (interestRate / 100) / 12;
+                var numLoanPaymentsBatt = loanTerm * 12;
+                var panelBatteryMonthlyPayment;
+
+                if (monthlyInterestRateBatt > 0) {
+                    panelBatteryMonthlyPayment = panelBatterySystemCost * (monthlyInterestRateBatt * Math.pow(1 + monthlyInterestRateBatt, numLoanPaymentsBatt)) /
+                                                (Math.pow(1 + monthlyInterestRateBatt, numLoanPaymentsBatt) - 1);
+                } else {
+                    panelBatteryMonthlyPayment = panelBatterySystemCost / numLoanPaymentsBatt;
+                }
+
+                var panelBatteryTotalLoanPayments = panelBatteryMonthlyPayment * numLoanPaymentsBatt;
+                panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatteryTotalLoanPayments;
+            } else {
+                panelBattery25YearSavings = (panelBatteryAnnualSavings * savings25YearMultiplier) - panelBatterySystemCost;
+            }
 
             panelBatterySystem = {
                 monthlyGeneration: panelBatteryMonthlyGeneration,
@@ -1823,53 +2214,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '</div>';
 
-        // Power Grid
-        html += '<div class="power-grid">';
-        html += '  <div class="power-card ' + data.borrowingPower + '">';
-        html += '    <h3 class="power-header">Borrowing Power</h3>';
-        html += '    <div class="power-content">';
-        html += '      <div>';
-        html += '        <p class="power-text ' + data.borrowingPower + '">' + data.borrowingPowerText + '</p>';
-        html += '        <p class="power-subtext">' + data.borrowingPowerDesc + '</p>';
-        html += '      </div>';
-        html += '      <div class="power-dot">';
-
-        // Determine color based on borrowing power
-        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
-
-        html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
-
-        // Draw sun rays (12 rays around the circle)
-        for (var i = 0; i < 12; i++) {
-            var angle = (i * 30) * Math.PI / 180;
-            var x1 = 50 + Math.cos(angle) * 38;
-            var y1 = 50 + Math.sin(angle) * 38;
-            var x2 = 50 + Math.cos(angle) * 48;
-            var y2 = 50 + Math.sin(angle) * 48;
-            html += '          <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
-        }
-
-        // Draw donut (outer circle)
-        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
-
-        // Draw donut fill based on power level (low=33%, medium=66%, high=100%)
-        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
-        var circumference = 2 * Math.PI * 30;
-        var fillLength = (percentage / 100) * circumference;
-        var dashArray = fillLength + ' ' + circumference;
-
-        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
-
-        html += '        </svg>';
-        html += '      </div>';
-        html += '    </div>';
-        html += '  </div>';
-        html += '  <div class="lvr-card">';
-        html += '    <h3 class="power-header">Current LVR</h3>';
-        html += '    <p class="power-text" style="color: #155263;">' + data.lvr + '%</p>';
-        html += '    <p class="power-subtext">Based on 80% lending threshold</p>';
-        html += '  </div>';
-        html += '</div>';
+        // Power Grid - Now hidden as Borrowing Power and LVR moved to Loan Financing Details
+        // html += '<div class="power-grid">';
+        // ... (commented out to avoid duplication)
 
         // Serviceability Card
         html += '<div class="serviceability-card">';
@@ -1902,6 +2249,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '    </div>';
         html += '  </div>';
         html += '</div>';
+
+        // Financing Details (if loan is used) - moved here to be under serviceability
+        if (data.isFinanced) {
+            html += '<div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0; margin-top: 1.5rem;">';
+            html += '  <h3 class="result-title">Loan Financing Details</h3>';
+            html += '  <div id="financingDetailsContent"></div>';
+            html += '</div>';
+        }
 
         // ROI Card
         html += '<div class="roi-card">';
@@ -2101,14 +2456,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 html += '</div>';
             }
         }
-
-        // Financing Details (if loan is used)
-        if (data.isFinanced) {
-            html += '  <div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0;">';
-            html += '    <h3 class="result-title">Loan Financing Details</h3>';
-            html += '    <div id="financingDetailsContent"></div>';
-            html += '  </div>';
-        }
         html += '  </div>';
 
         html += '  <h3 class="result-title" style="margin-top: 2rem; text-align: center;">Estimated Solar System Cost</h3>';
@@ -2178,6 +2525,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '</div>';
 
         resultsDiv.innerHTML = html;
+
+        // Show export buttons
+        showExportButtons();
 
         // Track calculation completion in DataLayer
         var eventData = {
@@ -2560,8 +2910,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var currentLending = parseFloat(data.currentLending) || 0;
         var bankCashback = currentLending * 0.01;
 
+        // Determine borrowing power color for sun icon
+        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
+
+        // Format borrowing power text with available cash
+        var borrowingPowerDisplay = data.borrowingPowerText;
+        if (data.borrowingPower === 'high') {
+            borrowingPowerDisplay = 'High: $50K+ Available';
+        } else if (data.borrowingPower === 'medium') {
+            borrowingPowerDisplay = 'Medium: $20K-$50K Available';
+        } else if (data.borrowingPower === 'low') {
+            borrowingPowerDisplay = 'Low: Under $20K Available';
+        } else {
+            borrowingPowerDisplay = 'Not Provided';
+        }
+
         var html = '';
+
+        // Add sun icon and borrowing power section at the top
+        html += '<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(96, 225, 224, 0.2);">';
+        html += '  <div style="flex-shrink: 0; width: 40px; height: 40px;">';
+        html += '    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+
+        // Draw sun rays
+        for (var i = 0; i < 12; i++) {
+            var angle = (i * 30) * Math.PI / 180;
+            var x1 = 50 + Math.cos(angle) * 38;
+            var y1 = 50 + Math.sin(angle) * 38;
+            var x2 = 50 + Math.cos(angle) * 48;
+            var y2 = 50 + Math.sin(angle) * 48;
+            html += '      <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
+        }
+
+        // Draw donut circles
+        html += '      <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
+        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
+        var circumference = 2 * Math.PI * 30;
+        var fillLength = (percentage / 100) * circumference;
+        var dashArray = fillLength + ' ' + circumference;
+        html += '      <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
+        html += '    </svg>';
+        html += '  </div>';
+        html += '  <div style="flex: 1;">';
+        html += '    <h4 style="margin: 0; color: #155263; font-size: 1rem; line-height: 1.4;">Overview Of Your borrowing capacity and current position</h4>';
+        html += '  </div>';
+        html += '</div>';
+
         html += '<div class="roi-grid" style="margin-bottom: 0;">';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Borrowing Power</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: ' + dotColor + ';">' + borrowingPowerDisplay + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Current LVR (80% threshold)</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + data.lvr + '%</p>';
+        html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
         html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(monthlyPayment.toFixed(2)) + '</p>';
@@ -2576,7 +2979,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
-        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #ffc93c;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
 
@@ -3069,6 +3472,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         window.dataLayer.push(submissionEventData);
 
+        // Domain whitelist validation
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var currentDomain = window.location.hostname;
+        var isAllowedDomain = allowedDomains.some(function(domain) {
+            return currentDomain === domain || currentDomain.endsWith('.' + domain);
+        });
+
+        if (!isAllowedDomain) {
+            console.warn('Webhook submission blocked: domain not whitelisted');
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+            return;
+        }
+
+        // Email validation - ensure email exists and is valid
+        if (!email || !emailRegex.test(email)) {
+            console.error('Invalid email - webhook not sent');
+            return;
+        }
+
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
             method: 'POST',
             body: formData
@@ -3132,13 +3555,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!document.getElementById('engagementBanner')) {
             var banner = document.createElement('div');
             banner.id = 'engagementBanner';
-            banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 500;';
+            banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 400; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;';
 
             var text = document.createElement('a');
             text.href = addUTMParams('https://www.equitysolar.co.nz/contact');
             text.target = '_blank';
-            text.textContent = 'Have any solar questions? Get in touch with us here';
-            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600;';
+            text.textContent = 'Have any solar questions? Get in touch with Equity Solar Brokers here';
+            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 400; text-align: center; flex: 1; font-family: inherit;';
             text.onmouseover = function() { this.style.textDecoration = 'underline'; };
             text.onmouseout = function() { this.style.textDecoration = 'none'; };
 
@@ -3202,6 +3625,258 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         document.body.appendChild(overlay);
     }
+
+    // ===== EXPORT FUNCTIONALITY =====
+
+    // Show export buttons when results are displayed
+    window.showExportButtons = function() {
+        document.getElementById('exportButtons').style.display = 'flex';
+    };
+
+    // Email Drawer Functions
+    window.openEmailDrawer = function() {
+        var drawer = document.getElementById('emailDrawer');
+        var exportButtons = document.getElementById('exportButtons');
+
+        // Position drawer relative to export buttons
+        if (exportButtons) {
+            var rect = exportButtons.getBoundingClientRect();
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
+
+            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
+        }
+
+        document.getElementById('emailDrawerOverlay').classList.add('show');
+        drawer.classList.add('show');
+    };
+
+    window.closeEmailDrawer = function() {
+        document.getElementById('emailDrawerOverlay').classList.remove('show');
+        document.getElementById('emailDrawer').classList.remove('show');
+    };
+
+    window.sendEmailReport = function() {
+        var email = document.getElementById('emailRecipient').value.trim();
+        var name = document.getElementById('emailName').value.trim();
+        var message = document.getElementById('emailMessage').value.trim();
+        var messageDiv = document.getElementById('emailMessageStatus');
+
+        // Email validation
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter your email address';
+            return;
+        }
+        if (!emailRegex.test(email)) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter a valid email address';
+            return;
+        }
+
+        // Domain whitelist validation
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var currentDomain = window.location.hostname;
+        var isAllowedDomain = allowedDomains.some(function(domain) {
+            return currentDomain === domain || currentDomain.endsWith('.' + domain);
+        });
+
+        if (!isAllowedDomain) {
+            console.warn('Webhook submission blocked: domain not whitelisted');
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Service unavailable. Please contact us directly.';
+            return;
+        }
+
+        var submitBtn = document.querySelector('#emailDrawer .drawer-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        // Prepare report data
+        var reportData = {
+            email: email,
+            name: name,
+            message: message,
+            calculatorData: resultsData,
+            timestamp: new Date().toISOString(),
+            referrerDomain: window.location.hostname
+        };
+
+        // Send to Active Campaign via Zapier webhook (same as contact form)
+        var activeCampaignWebhook = 'https://hooks.zapier.com/hooks/catch/25081790/urfarah/';
+
+        // Convert to FormData to match existing webhook format
+        var formData = new FormData();
+        formData.append('email', email);
+        formData.append('name', name);
+        formData.append('message', message);
+        formData.append('type', 'email_report');
+        formData.append('calculatorData', JSON.stringify(reportData.calculatorData));
+        formData.append('timestamp', reportData.timestamp);
+        formData.append('referrerDomain', reportData.referrerDomain);
+
+        fetch(activeCampaignWebhook, {
+            method: 'POST',
+            body: formData
+        }).then(function() {
+            messageDiv.className = 'drawer-message success';
+            messageDiv.textContent = 'Report sent successfully! Check your email.';
+            submitBtn.textContent = 'Sent!';
+
+            setTimeout(function() {
+                closeEmailDrawer();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Report';
+                messageDiv.className = 'drawer-message';
+                messageDiv.textContent = '';
+                document.getElementById('emailRecipient').value = '';
+                document.getElementById('emailName').value = '';
+                document.getElementById('emailMessage').value = '';
+            }, 2000);
+        }).catch(function(error) {
+            console.error('Error:', error);
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Failed to send. Please try again or contact us directly.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Report';
+        });
+    };
+
+    // PDF Drawer Functions
+    window.openPDFDrawer = function() {
+        var drawer = document.getElementById('pdfDrawer');
+        var exportButtons = document.getElementById('exportButtons');
+
+        // Position drawer relative to export buttons
+        if (exportButtons) {
+            var rect = exportButtons.getBoundingClientRect();
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
+
+            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
+        }
+
+        document.getElementById('pdfDrawerOverlay').classList.add('show');
+        drawer.classList.add('show');
+
+        // Hide decorative icons for printing
+        var statusIcons = document.querySelectorAll('.status-icon');
+        var powerDots = document.querySelectorAll('.power-dot');
+        statusIcons.forEach(function(icon) {
+            icon.style.display = 'none';
+        });
+        powerDots.forEach(function(dot) {
+            dot.style.display = 'none';
+        });
+
+        // Pre-fill title with current date
+        var pdfTitleInput = document.getElementById('pdfTitle');
+        if (!pdfTitleInput.value) {
+            var today = new Date().toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
+            pdfTitleInput.value = 'My Solar Quote - ' + today;
+        }
+    };
+
+    window.closePDFDrawer = function() {
+        document.getElementById('pdfDrawerOverlay').classList.remove('show');
+        document.getElementById('pdfDrawer').classList.remove('show');
+
+        // Restore decorative icons
+        var statusIcons = document.querySelectorAll('.status-icon');
+        var powerDots = document.querySelectorAll('.power-dot');
+        statusIcons.forEach(function(icon) {
+            icon.style.display = '';
+        });
+        powerDots.forEach(function(dot) {
+            dot.style.display = '';
+        });
+    };
+
+    window.generatePDF = function() {
+        var title = document.getElementById('pdfTitle').value || 'Solar Calculator Report';
+        var includeFinancing = document.getElementById('pdfIncludeFinancing').checked;
+        var includeCharts = document.getElementById('pdfIncludeCharts').checked;
+
+        // Clone the results section
+        var resultsDiv = document.getElementById('results');
+        if (!resultsDiv) return;
+
+        // Clone the results div so we can modify it without affecting the original
+        var resultsClone = resultsDiv.cloneNode(true);
+
+        // Convert charts to images if charts are included
+        if (includeCharts) {
+            // Map of canvas IDs to their chart instances
+            var chartMap = {
+                'solarChart': chartInstance,
+                'financingChart': financingChartInstance,
+                'costBreakdownChart': costBreakdownChartInstance
+            };
+
+            // Replace each canvas with an image
+            Object.keys(chartMap).forEach(function(canvasId) {
+                var chartInstanceObj = chartMap[canvasId];
+                if (chartInstanceObj) {
+                    // Get the base64 image from the chart
+                    var imageData = chartInstanceObj.toBase64Image();
+
+                    // Find the canvas in the clone
+                    var canvas = resultsClone.querySelector('#' + canvasId);
+                    if (canvas) {
+                        // Create an img element
+                        var img = document.createElement('img');
+                        img.src = imageData;
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+                        img.style.maxWidth = '800px';
+
+                        // Replace the canvas with the image
+                        canvas.parentNode.replaceChild(img, canvas);
+                    }
+                }
+            });
+        }
+
+        // Create print window
+        var printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head>');
+        printWindow.document.write('<title>' + title + '</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 2rem; max-width: 900px; margin: 0 auto; }');
+        printWindow.document.write('h1 { color: #155263; border-bottom: 3px solid #60e1e0; padding-bottom: 0.5rem; }');
+        printWindow.document.write('h2, h3 { color: #155263; }');
+        printWindow.document.write('.system-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }');
+        printWindow.document.write('.system-option-card { border: 2px solid #60e1e0; border-radius: 8px; padding: 1rem; }');
+        printWindow.document.write('.spec-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb; }');
+        printWindow.document.write('.chart-container { page-break-inside: avoid; margin: 1rem 0; }');
+        printWindow.document.write('img { max-width: 100%; height: auto; }');
+        printWindow.document.write('#loanFinancingDetails { margin-top: 3rem; padding-top: 3rem; page-break-before: always; }');
+        if (!includeFinancing) {
+            printWindow.document.write('#loanFinancingDetails { display: none !important; }');
+            printWindow.document.write('.serviceability-card { display: none !important; }');
+        }
+        if (!includeCharts) {
+            printWindow.document.write('.chart-container { display: none !important; }');
+        }
+        printWindow.document.write('@media print { body { padding: 0; } }');
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write('<h1>' + title + '</h1>');
+        printWindow.document.write('<p style="color: #6b7280; margin-bottom: 2rem;">Generated on ' + new Date().toLocaleString('en-NZ') + '</p>');
+        printWindow.document.write(resultsClone.innerHTML);
+        printWindow.document.write('<div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">');
+        printWindow.document.write('<p style="font-size: 0.875rem; color: #6b7280; margin: 0;">This report is for informational purposes only. For detailed quotes and professional advice, contact Equity Solar Brokers</p>');
+        printWindow.document.write('</div>');
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        // Auto-print after a short delay to ensure content is loaded
+        setTimeout(function() {
+            printWindow.print();
+            closePDFDrawer();
+        }, 500);
+    };
 })();
 </script>
 
