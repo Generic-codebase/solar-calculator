@@ -3556,8 +3556,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var text = document.createElement('a');
             text.href = addUTMParams('https://www.equitysolar.co.nz/contact');
             text.target = '_blank';
-            text.textContent = 'Have any solar questions? Get in touch with us here';
-            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600;';
+            text.textContent = 'Have any solar questions? Get in touch with Equity Solar Brokers here';
+            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600; text-align: center;';
             text.onmouseover = function() { this.style.textDecoration = 'underline'; };
             text.onmouseout = function() { this.style.textDecoration = 'none'; };
 
@@ -3760,7 +3760,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (includeCharts) {
             // Map of canvas IDs to their chart instances
             var chartMap = {
-                'powerCostsChart': chartInstance,
+                'solarChart': chartInstance,
                 'financingChart': financingChartInstance,
                 'costBreakdownChart': costBreakdownChartInstance
             };
@@ -3805,6 +3805,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printWindow.document.write('#loanFinancingDetails { margin-top: 3rem; padding-top: 3rem; page-break-before: always; }');
         if (!includeFinancing) {
             printWindow.document.write('#loanFinancingDetails { display: none !important; }');
+            printWindow.document.write('.serviceability-card { display: none !important; }');
         }
         if (!includeCharts) {
             printWindow.document.write('.chart-container { display: none !important; }');
