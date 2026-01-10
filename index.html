@@ -3482,9 +3482,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         window.dataLayer.push(submissionEventData);
 
         // Domain whitelist validation
-        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost', '127.0.0.1'];
         var currentDomain = window.location.hostname;
-        var isAllowedDomain = allowedDomains.some(function(domain) {
+
+        // Allow file:// protocol for local testing (empty hostname)
+        var isAllowedDomain = !currentDomain || allowedDomains.some(function(domain) {
             return currentDomain === domain || currentDomain.endsWith('.' + domain);
         });
 
@@ -3704,9 +3706,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         // Domain whitelist validation
-        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost', '127.0.0.1'];
         var currentDomain = window.location.hostname;
-        var isAllowedDomain = allowedDomains.some(function(domain) {
+
+        // Allow file:// protocol for local testing (empty hostname)
+        var isAllowedDomain = !currentDomain || allowedDomains.some(function(domain) {
             return currentDomain === domain || currentDomain.endsWith('.' + domain);
         });
 
