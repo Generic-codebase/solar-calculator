@@ -1070,6 +1070,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         min-height: 100px;
     }
 
+    .drawer-form-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #ffc93c;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    .drawer-form-group input[type="checkbox"]:checked {
+        background-color: #ffc93c;
+        border-color: #ffc93c;
+    }
+
+    .drawer-form-group input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #155263;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .drawer-form-group input[type="checkbox"]:focus {
+        outline: 2px solid #ffc93c;
+        outline-offset: 2px;
+    }
+
+    .drawer-form-group input[type="checkbox"]:hover {
+        border-color: #ffc93c;
+    }
+
     .drawer-submit {
         width: 100%;
         padding: 1rem;
