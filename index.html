@@ -3570,6 +3570,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('pdfDrawerOverlay').classList.add('show');
         document.getElementById('pdfDrawer').classList.add('show');
 
+        // Hide decorative icons for printing
+        var statusIcons = document.querySelectorAll('.status-icon');
+        var powerDots = document.querySelectorAll('.power-dot');
+        statusIcons.forEach(function(icon) {
+            icon.style.display = 'none';
+        });
+        powerDots.forEach(function(dot) {
+            dot.style.display = 'none';
+        });
+
         // Pre-fill title with current date
         var pdfTitleInput = document.getElementById('pdfTitle');
         if (!pdfTitleInput.value) {
@@ -3581,6 +3591,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.closePDFDrawer = function() {
         document.getElementById('pdfDrawerOverlay').classList.remove('show');
         document.getElementById('pdfDrawer').classList.remove('show');
+
+        // Restore decorative icons
+        var statusIcons = document.querySelectorAll('.status-icon');
+        var powerDots = document.querySelectorAll('.power-dot');
+        statusIcons.forEach(function(icon) {
+            icon.style.display = '';
+        });
+        powerDots.forEach(function(dot) {
+            dot.style.display = '';
+        });
     };
 
     window.generatePDF = function() {
@@ -3591,6 +3611,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Clone the results section
         var resultsDiv = document.getElementById('results');
         if (!resultsDiv) return;
+
+        // Clone the results div so we can modify it without affecting the original
+        var resultsClone = resultsDiv.cloneNode(true);
+
+        // Convert charts to images if charts are included
+        if (includeCharts) {
+            // Map of canvas IDs to their chart instances
+            var chartMap = {
+                'powerCostsChart': chartInstance,
+                'financingChart': financingChartInstance,
+                'costBreakdownChart': costBreakdownChartInstance
+            };
+
+            // Replace each canvas with an image
+            Object.keys(chartMap).forEach(function(canvasId) {
+                var chartInstanceObj = chartMap[canvasId];
+                if (chartInstanceObj) {
+                    // Get the base64 image from the chart
+                    var imageData = chartInstanceObj.toBase64Image();
+
+                    // Find the canvas in the clone
+                    var canvas = resultsClone.querySelector('#' + canvasId);
+                    if (canvas) {
+                        // Create an img element
+                        var img = document.createElement('img');
+                        img.src = imageData;
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+                        img.style.maxWidth = '800px';
+
+                        // Replace the canvas with the image
+                        canvas.parentNode.replaceChild(img, canvas);
+                    }
+                }
+            });
+        }
 
         // Create print window
         var printWindow = window.open('', '_blank');
@@ -3604,6 +3660,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printWindow.document.write('.system-option-card { border: 2px solid #60e1e0; border-radius: 8px; padding: 1rem; }');
         printWindow.document.write('.spec-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb; }');
         printWindow.document.write('.chart-container { page-break-inside: avoid; margin: 1rem 0; }');
+        printWindow.document.write('img { max-width: 100%; height: auto; }');
         if (!includeFinancing) {
             printWindow.document.write('#loanFinancingDetails { display: none !important; }');
         }
@@ -3615,7 +3672,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printWindow.document.write('</head><body>');
         printWindow.document.write('<h1>' + title + '</h1>');
         printWindow.document.write('<p style="color: #6b7280; margin-bottom: 2rem;">Generated on ' + new Date().toLocaleString('en-NZ') + '</p>');
-        printWindow.document.write(resultsDiv.innerHTML);
+        printWindow.document.write(resultsClone.innerHTML);
         printWindow.document.write('<div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">');
         printWindow.document.write('<p style="font-size: 0.875rem; color: #6b7280; margin: 0;">This report is for informational purposes only. For detailed quotes and professional advice, contact Equity Solar at <strong>www.equitysolar.co.nz</strong></p>');
         printWindow.document.write('</div>');
