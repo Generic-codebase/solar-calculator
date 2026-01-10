@@ -1191,19 +1191,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
     }
 
-    #loanFinancingDetails .roi-note,
-    #loanFinancingDetails .roi-value,
-    #loanFinancingDetails h4,
-    #loanFinancingDetails p {
+    #loanFinancingDetails .roi-value {
         color: #155263;
         transition: all 0.3s ease;
         cursor: pointer;
     }
 
-    #loanFinancingDetails:hover .roi-note,
-    #loanFinancingDetails:hover .roi-value,
-    #loanFinancingDetails:hover h4,
-    #loanFinancingDetails:hover p {
+    #loanFinancingDetails:hover .roi-value {
         background: linear-gradient(
             90deg,
             #d4af37 0%,
@@ -2985,7 +2979,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
-        html += '    <p class="roi-value gold-shimmer" style="font-size: 1.25rem;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
 
