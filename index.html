@@ -1171,6 +1171,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         color: #d9a11c;
         display: block;
     }
+
+    /* Gold shimmer effect for bank cashback */
+    @keyframes goldShimmer {
+        0% {
+            background-position: -200% center;
+        }
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    .gold-shimmer {
+        background: linear-gradient(
+            90deg,
+            #d4af37 0%,
+            #f4e7c3 25%,
+            #fff9e6 50%,
+            #f4e7c3 75%,
+            #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: goldShimmer 3s linear infinite;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
+    }
 </style>
 
 <div class="solar-calculator">
@@ -2171,53 +2200,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '</div>';
 
-        // Power Grid
-        html += '<div class="power-grid">';
-        html += '  <div class="power-card ' + data.borrowingPower + '">';
-        html += '    <h3 class="power-header">Borrowing Power</h3>';
-        html += '    <div class="power-content">';
-        html += '      <div>';
-        html += '        <p class="power-text ' + data.borrowingPower + '">' + data.borrowingPowerText + '</p>';
-        html += '        <p class="power-subtext">' + data.borrowingPowerDesc + '</p>';
-        html += '      </div>';
-        html += '      <div class="power-dot">';
-
-        // Determine color based on borrowing power
-        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
-
-        html += '        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
-
-        // Draw sun rays (12 rays around the circle)
-        for (var i = 0; i < 12; i++) {
-            var angle = (i * 30) * Math.PI / 180;
-            var x1 = 50 + Math.cos(angle) * 38;
-            var y1 = 50 + Math.sin(angle) * 38;
-            var x2 = 50 + Math.cos(angle) * 48;
-            var y2 = 50 + Math.sin(angle) * 48;
-            html += '          <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
-        }
-
-        // Draw donut (outer circle)
-        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
-
-        // Draw donut fill based on power level (low=33%, medium=66%, high=100%)
-        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
-        var circumference = 2 * Math.PI * 30;
-        var fillLength = (percentage / 100) * circumference;
-        var dashArray = fillLength + ' ' + circumference;
-
-        html += '          <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
-
-        html += '        </svg>';
-        html += '      </div>';
-        html += '    </div>';
-        html += '  </div>';
-        html += '  <div class="lvr-card">';
-        html += '    <h3 class="power-header">Current LVR</h3>';
-        html += '    <p class="power-text" style="color: #155263;">' + data.lvr + '%</p>';
-        html += '    <p class="power-subtext">Based on 80% lending threshold</p>';
-        html += '  </div>';
-        html += '</div>';
+        // Power Grid - Now hidden as Borrowing Power and LVR moved to Loan Financing Details
+        // html += '<div class="power-grid">';
+        // ... (commented out to avoid duplication)
 
         // Serviceability Card
         html += '<div class="serviceability-card">';
@@ -2911,8 +2896,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var currentLending = parseFloat(data.currentLending) || 0;
         var bankCashback = currentLending * 0.01;
 
+        // Determine borrowing power color for sun icon
+        var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
+
         var html = '';
+
+        // Add sun icon and borrowing power section at the top
+        html += '<div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(96, 225, 224, 0.2);">';
+        html += '  <div style="flex-shrink: 0; width: 80px; height: 80px;">';
+        html += '    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+
+        // Draw sun rays
+        for (var i = 0; i < 12; i++) {
+            var angle = (i * 30) * Math.PI / 180;
+            var x1 = 50 + Math.cos(angle) * 38;
+            var y1 = 50 + Math.sin(angle) * 38;
+            var x2 = 50 + Math.cos(angle) * 48;
+            var y2 = 50 + Math.sin(angle) * 48;
+            html += '      <line class="sun-ray" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + dotColor + '" stroke-width="2" stroke-linecap="round" />';
+        }
+
+        // Draw donut circles
+        html += '      <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" opacity="0.3"/>';
+        var percentage = data.borrowingPower === 'high' ? 100 : (data.borrowingPower === 'medium' ? 66 : 33);
+        var circumference = 2 * Math.PI * 30;
+        var fillLength = (percentage / 100) * circumference;
+        var dashArray = fillLength + ' ' + circumference;
+        html += '      <circle cx="50" cy="50" r="30" fill="none" stroke="' + dotColor + '" stroke-width="8" stroke-dasharray="' + dashArray + '" stroke-linecap="round"/>';
+        html += '    </svg>';
+        html += '  </div>';
+        html += '  <div style="flex: 1;">';
+        html += '    <h4 style="margin: 0 0 0.5rem 0; color: #155263; font-size: 1.1rem;">Financial Overview</h4>';
+        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">Your borrowing capacity and current position</p>';
+        html += '  </div>';
+        html += '</div>';
+
         html += '<div class="roi-grid" style="margin-bottom: 0;">';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Borrowing Power</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: ' + dotColor + ';">' + data.borrowingPowerText + '</p>';
+        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.75rem;">' + data.borrowingPowerDesc + '</p>';
+        html += '  </div>';
+        html += '  <div>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Current LVR</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem;">' + data.lvr + '%</p>';
+        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.75rem;">Based on 80% lending threshold</p>';
+        html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
         html += '    <p class="roi-value" style="font-size: 1.25rem;">$' + formatNumber(monthlyPayment.toFixed(2)) + '</p>';
@@ -2927,7 +2956,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Bank Cashback (1% of Current Lending)</p>';
-        html += '    <p class="roi-value" style="font-size: 1.25rem; color: #ffc93c;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
+        html += '    <p class="roi-value gold-shimmer" style="font-size: 1.25rem;">$' + formatNumber(bankCashback.toFixed(0)) + '</p>';
         html += '  </div>';
         html += '</div>';
 
