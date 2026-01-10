@@ -2274,9 +2274,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#60e1e0',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            pointBackgroundColor: '#60e1e0'
                         },
                         {
                             label: chartLabel,
@@ -2288,9 +2286,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#ffc93c',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            pointBackgroundColor: '#ffc93c'
                         }
                     ]
                 },
@@ -2357,9 +2353,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#60e1e0',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            pointBackgroundColor: '#60e1e0'
                         },
                         {
                             label: 'Cumulative Financing Cost',
@@ -2371,9 +2365,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#ff9a76',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            pointBackgroundColor: '#ff9a76'
                         }
                     ];
 
@@ -3101,6 +3093,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ===== ENGAGEMENT TRIGGERS =====
 
+    // Helper function to add UTM parameters
+    function addUTMParams(url) {
+        var utmParams = '?utm_content=solar%20calculator&utm_term=' + encodeURIComponent(window.location.hostname);
+        return url + utmParams;
+    }
+
     // Track unique tooltips opened
     var tooltipsOpened = new Set();
     var tooltipModalShown = false;
@@ -3137,7 +3135,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 500;';
 
             var text = document.createElement('a');
-            text.href = 'https://www.equitysolar.co.nz/contact';
+            text.href = addUTMParams('https://www.equitysolar.co.nz/contact');
             text.target = '_blank';
             text.textContent = 'Have any solar questions? Get in touch with us here';
             text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600;';
@@ -3157,7 +3155,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // 2. Open new window after 1 hour
     setTimeout(function() {
-        window.open('https://www.equitysolar.co.nz/', '_blank');
+        window.open(addUTMParams('https://www.equitysolar.co.nz/'), '_blank');
     }, 3600000); // 1 hour = 3600000ms
 
     // 3. Show tooltip modal
@@ -3180,7 +3178,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         text.style.cssText = 'font-size: 1rem; line-height: 1.6; margin: 0 0 1.5rem 0; color: #d1d5db;';
 
         var button = document.createElement('a');
-        button.href = 'https://www.equitysolar.co.nz/contact';
+        button.href = addUTMParams('https://www.equitysolar.co.nz/contact');
         button.target = '_blank';
         button.textContent = 'Get in Touch';
         button.style.cssText = 'display: inline-block; background: #ffc93c; color: #155263; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1rem; transition: transform 0.2s;';
