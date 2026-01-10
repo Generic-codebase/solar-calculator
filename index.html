@@ -927,6 +927,182 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         font-size: 0.875rem;
         margin-bottom: 1.5rem;
     }
+
+    /* Export Buttons */
+    .export-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+
+    .export-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .export-btn-email {
+        background: #60e1e0;
+        color: #155263;
+    }
+
+    .export-btn-pdf {
+        background: #ffc93c;
+        color: #155263;
+    }
+
+    /* Sliding Drawer */
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .drawer-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    .drawer {
+        position: fixed;
+        right: -500px;
+        top: 0;
+        bottom: 0;
+        width: 500px;
+        max-width: 90vw;
+        background: white;
+        box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        transition: right 0.3s;
+        overflow-y: auto;
+    }
+
+    .drawer.show {
+        right: 0;
+    }
+
+    .drawer-header {
+        padding: 1.5rem;
+        background: #155263;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .drawer-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .drawer-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drawer-close:hover {
+        opacity: 0.8;
+    }
+
+    .drawer-content {
+        padding: 2rem;
+    }
+
+    .drawer-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .drawer-form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #155263;
+    }
+
+    .drawer-form-group input,
+    .drawer-form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .drawer-form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .drawer-submit {
+        width: 100%;
+        padding: 1rem;
+        background: #60e1e0;
+        color: #155263;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .drawer-submit:hover {
+        background: #50d1d0;
+    }
+
+    .drawer-submit:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .drawer-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 6px;
+        display: none;
+    }
+
+    .drawer-message.success {
+        background: #d1fae5;
+        color: #065f46;
+        display: block;
+    }
+
+    .drawer-message.error {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+    }
 </style>
 
 <div class="solar-calculator">
@@ -1031,6 +1207,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div id="results" class="results-section"></div>
+
+        <!-- Export Buttons -->
+        <div id="exportButtons" class="export-buttons" style="display: none;">
+            <button class="export-btn export-btn-email" onclick="openEmailDrawer()">
+                <span>📧</span> Email This Report
+            </button>
+            <button class="export-btn export-btn-pdf" onclick="openPDFDrawer()">
+                <span>📄</span> Print to PDF
+            </button>
+        </div>
+
+        <!-- Email Drawer -->
+        <div id="emailDrawerOverlay" class="drawer-overlay" onclick="closeEmailDrawer()"></div>
+        <div id="emailDrawer" class="drawer">
+            <div class="drawer-header">
+                <h3>Email Solar Report</h3>
+                <button class="drawer-close" onclick="closeEmailDrawer()">×</button>
+            </div>
+            <div class="drawer-content">
+                <div class="drawer-form-group">
+                    <label for="emailRecipient">Email Address *</label>
+                    <input type="email" id="emailRecipient" placeholder="your@email.com" required>
+                </div>
+                <div class="drawer-form-group">
+                    <label for="emailName">Your Name (Optional)</label>
+                    <input type="text" id="emailName" placeholder="John Smith">
+                </div>
+                <div class="drawer-form-group">
+                    <label for="emailMessage">Additional Message (Optional)</label>
+                    <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
+                </div>
+                <button class="drawer-submit" onclick="sendEmailReport()">Send Report</button>
+                <div id="emailMessage" class="drawer-message"></div>
+            </div>
+        </div>
+
+        <!-- PDF Drawer -->
+        <div id="pdfDrawerOverlay" class="drawer-overlay" onclick="closePDFDrawer()"></div>
+        <div id="pdfDrawer" class="drawer">
+            <div class="drawer-header">
+                <h3>Print to PDF</h3>
+                <button class="drawer-close" onclick="closePDFDrawer()">×</button>
+            </div>
+            <div class="drawer-content">
+                <p style="margin-bottom: 1.5rem; color: #6b7280;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
+                <div class="drawer-form-group">
+                    <label for="pdfTitle">Report Title (Optional)</label>
+                    <input type="text" id="pdfTitle" placeholder="My Solar Quote - [Date]">
+                </div>
+                <div class="drawer-form-group">
+                    <label>
+                        <input type="checkbox" id="pdfIncludeFinancing" checked style="width: auto; margin-right: 0.5rem;">
+                        Include financing details
+                    </label>
+                </div>
+                <div class="drawer-form-group">
+                    <label>
+                        <input type="checkbox" id="pdfIncludeCharts" checked style="width: auto; margin-right: 0.5rem;">
+                        Include charts and graphs
+                    </label>
+                </div>
+                <button class="drawer-submit" onclick="generatePDF()">Generate PDF</button>
+            </div>
+        </div>
 
         <div id="contactForm" class="contact-section">
             <h2 class="contact-title">Unlock Your Solar Financing Options</h2>
@@ -2215,6 +2455,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         resultsDiv.innerHTML = html;
 
+        // Show export buttons
+        showExportButtons();
+
         // Track calculation completion in DataLayer
         var eventData = {
             'event': 'calculator_results_generated',
@@ -3238,6 +3481,147 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         document.body.appendChild(overlay);
     }
+
+    // ===== EXPORT FUNCTIONALITY =====
+
+    // Show export buttons when results are displayed
+    window.showExportButtons = function() {
+        document.getElementById('exportButtons').style.display = 'flex';
+    };
+
+    // Email Drawer Functions
+    window.openEmailDrawer = function() {
+        document.getElementById('emailDrawerOverlay').classList.add('show');
+        document.getElementById('emailDrawer').classList.add('show');
+    };
+
+    window.closeEmailDrawer = function() {
+        document.getElementById('emailDrawerOverlay').classList.remove('show');
+        document.getElementById('emailDrawer').classList.remove('show');
+    };
+
+    window.sendEmailReport = function() {
+        var email = document.getElementById('emailRecipient').value.trim();
+        var name = document.getElementById('emailName').value.trim();
+        var message = document.getElementById('emailMessage').value.trim();
+        var messageDiv = document.getElementById('emailMessage');
+
+        if (!email) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter your email address';
+            return;
+        }
+
+        var submitBtn = document.querySelector('#emailDrawer .drawer-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        // Prepare report data
+        var reportData = {
+            email: email,
+            name: name,
+            message: message,
+            calculatorData: resultsData,
+            timestamp: new Date().toISOString(),
+            referrerDomain: window.location.hostname
+        };
+
+        // Send to Active Campaign via Zapier webhook
+        var activeCampaignWebhook = 'https://hooks.zapier.com/hooks/catch/YOUR_ZAPIER_WEBHOOK_ID/';
+
+        fetch(activeCampaignWebhook, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reportData)
+        }).then(function() {
+            messageDiv.className = 'drawer-message success';
+            messageDiv.textContent = 'Report sent successfully! Check your email.';
+            submitBtn.textContent = 'Sent!';
+
+            setTimeout(function() {
+                closeEmailDrawer();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Report';
+                messageDiv.className = 'drawer-message';
+                document.getElementById('emailRecipient').value = '';
+                document.getElementById('emailName').value = '';
+                document.getElementById('emailMessage').value = '';
+            }, 2000);
+        }).catch(function(error) {
+            console.error('Error:', error);
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Failed to send. Please try again or contact us directly.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Report';
+        });
+    };
+
+    // PDF Drawer Functions
+    window.openPDFDrawer = function() {
+        document.getElementById('pdfDrawerOverlay').classList.add('show');
+        document.getElementById('pdfDrawer').classList.add('show');
+
+        // Pre-fill title with current date
+        var pdfTitleInput = document.getElementById('pdfTitle');
+        if (!pdfTitleInput.value) {
+            var today = new Date().toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
+            pdfTitleInput.value = 'My Solar Quote - ' + today;
+        }
+    };
+
+    window.closePDFDrawer = function() {
+        document.getElementById('pdfDrawerOverlay').classList.remove('show');
+        document.getElementById('pdfDrawer').classList.remove('show');
+    };
+
+    window.generatePDF = function() {
+        var title = document.getElementById('pdfTitle').value || 'Solar Calculator Report';
+        var includeFinancing = document.getElementById('pdfIncludeFinancing').checked;
+        var includeCharts = document.getElementById('pdfIncludeCharts').checked;
+
+        // Clone the results section
+        var resultsDiv = document.getElementById('results');
+        if (!resultsDiv) return;
+
+        // Create print window
+        var printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head>');
+        printWindow.document.write('<title>' + title + '</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 2rem; max-width: 900px; margin: 0 auto; }');
+        printWindow.document.write('h1 { color: #155263; border-bottom: 3px solid #60e1e0; padding-bottom: 0.5rem; }');
+        printWindow.document.write('h2, h3 { color: #155263; }');
+        printWindow.document.write('.system-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }');
+        printWindow.document.write('.system-option-card { border: 2px solid #60e1e0; border-radius: 8px; padding: 1rem; }');
+        printWindow.document.write('.spec-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb; }');
+        printWindow.document.write('.chart-container { page-break-inside: avoid; margin: 1rem 0; }');
+        if (!includeFinancing) {
+            printWindow.document.write('#loanFinancingDetails { display: none !important; }');
+        }
+        if (!includeCharts) {
+            printWindow.document.write('.chart-container { display: none !important; }');
+        }
+        printWindow.document.write('@media print { body { padding: 0; } }');
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write('<h1>' + title + '</h1>');
+        printWindow.document.write('<p style="color: #6b7280; margin-bottom: 2rem;">Generated on ' + new Date().toLocaleString('en-NZ') + '</p>');
+        printWindow.document.write(resultsDiv.innerHTML);
+        printWindow.document.write('<div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">');
+        printWindow.document.write('<p style="font-size: 0.875rem; color: #6b7280; margin: 0;">This report is for informational purposes only. For detailed quotes and professional advice, contact Equity Solar at <strong>www.equitysolar.co.nz</strong></p>');
+        printWindow.document.write('</div>');
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        // Auto-print after a short delay to ensure content is loaded
+        setTimeout(function() {
+            printWindow.print();
+            closePDFDrawer();
+        }, 500);
+    };
 })();
 </script>
 

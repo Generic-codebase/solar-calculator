@@ -585,6 +585,69 @@
                         validateFinancedPaybackLonger: true
                     }
                 ]
+            },
+            {
+                name: '25-Year Net Savings',
+                tests: [
+                    {
+                        name: 'Cash purchase: (savings × 38.55) - system cost',
+                        inputs: {
+                            annualSavings: 2500,
+                            systemCost: 20000,
+                            isFinanced: false
+                        },
+                        expected25YearSavings: (2500 * 38.55) - 20000,
+                        tolerance: 10
+                    },
+                    {
+                        name: 'Financed: subtracts total loan payments, not system cost',
+                        inputs: {
+                            annualSavings: 2500,
+                            systemCost: 20000,
+                            isFinanced: true,
+                            loanTerm: 10,
+                            interestRate: 6.5
+                        },
+                        expected25YearSavings: (2500 * 38.55) - 24370.74, // Total payments for $20k @ 6.5% over 10 years
+                        tolerance: 50
+                    },
+                    {
+                        name: '0% interest: subtracts principal only (no interest)',
+                        inputs: {
+                            annualSavings: 3000,
+                            systemCost: 25000,
+                            isFinanced: true,
+                            loanTerm: 10,
+                            interestRate: 0
+                        },
+                        expected25YearSavings: (3000 * 38.55) - 25000, // 0% means no extra cost
+                        tolerance: 10
+                    },
+                    {
+                        name: 'High interest reduces net savings significantly',
+                        inputs: {
+                            annualSavings: 2500,
+                            systemCost: 20000,
+                            isFinanced: true,
+                            loanTerm: 10,
+                            interestRate: 15
+                        },
+                        expected25YearSavings: (2500 * 38.55) - 38652.82, // Total payments for $20k @ 15% over 10 years
+                        tolerance: 100
+                    },
+                    {
+                        name: 'Longer loan term = more interest paid',
+                        inputs: {
+                            annualSavings: 2500,
+                            systemCost: 20000,
+                            isFinanced: true,
+                            loanTerm: 20,
+                            interestRate: 6.5
+                        },
+                        expected25YearSavings: (2500 * 38.55) - 29818.92, // Total payments for $20k @ 6.5% over 20 years
+                        tolerance: 100
+                    }
+                ]
             }
         ];
 
@@ -786,6 +849,41 @@
                     return {
                         passed,
                         details: `Expected: $${test.expected25YearValue.toFixed(2)}, Got: $${actual.toFixed(2)} (multiplier: 38.55)`,
+                        error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
+                    };
+                }
+
+                // 25-year net savings calculations
+                if (test.expected25YearSavings !== undefined) {
+                    const annualSavings = test.inputs.annualSavings;
+                    const systemCost = test.inputs.systemCost;
+                    const multiplier = 38.55;
+
+                    let actual;
+                    if (test.inputs.isFinanced && test.inputs.loanTerm > 0) {
+                        // Calculate total loan payments
+                        const monthlyPayment = calculateMonthlyPayment(
+                            systemCost,
+                            test.inputs.interestRate,
+                            test.inputs.loanTerm
+                        );
+                        const totalLoanPayments = monthlyPayment * test.inputs.loanTerm * 12;
+                        actual = (annualSavings * multiplier) - totalLoanPayments;
+                    } else {
+                        // Cash purchase
+                        actual = (annualSavings * multiplier) - systemCost;
+                    }
+
+                    const diff = Math.abs(actual - test.expected25YearSavings);
+                    const passed = diff <= test.tolerance;
+
+                    const financingNote = test.inputs.isFinanced ?
+                        ` (financed @ ${test.inputs.interestRate}% / ${test.inputs.loanTerm}y)` :
+                        ' (cash)';
+
+                    return {
+                        passed,
+                        details: `Expected: $${test.expected25YearSavings.toFixed(2)}, Got: $${actual.toFixed(2)}${financingNote}`,
                         error: passed ? null : `Difference: $${diff.toFixed(2)} (tolerance: $${test.tolerance})`
                     };
                 }
