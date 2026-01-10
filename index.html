@@ -1968,6 +1968,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     html += '            <li><strong>Bill coverage:</strong> ~35% winter, up to 80% summer</li>';
                     html += '            <li>Best for homes with high daytime power usage</li>';
                     html += '          </ul>';
+                    html += '          <strong style="margin-top: 1rem; display: block;">Typically includes:</strong>';
+                    html += '          <ul>';
+                    html += '            <li>Solar panels (460W each)</li>';
+                    html += '            <li>Racking and mounting hardware</li>';
+                    html += '            <li>Inverter (converts DC to AC power)</li>';
+                    html += '            <li>Professional installation</li>';
+                    html += '          </ul>';
                     html += '        </div>';
                     html += '      </span>';
                     html += '    </h4>';
@@ -2031,6 +2038,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     html += '            <li>Battery provides power during evening/night when solar stops</li>';
                     html += '            <li><strong>Bill coverage:</strong> ~50% winter, up to 100% summer</li>';
                     html += '            <li>Better bill coverage despite needing more generation</li>';
+                    html += '          </ul>';
+                    html += '          <strong style="margin-top: 1rem; display: block;">Typically includes:</strong>';
+                    html += '          <ul>';
+                    html += '            <li>Solar panels (460W each)</li>';
+                    html += '            <li>Racking and mounting hardware</li>';
+                    html += '            <li>Inverter (converts DC to AC power)</li>';
+                    html += '            <li>Battery storage system supply</li>';
+                    html += '            <li>Battery installation and connection</li>';
+                    html += '            <li>Professional installation</li>';
                     html += '          </ul>';
                     html += '        </div>';
                     html += '      </span>';
@@ -2256,7 +2272,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
-                            pointRadius: 0
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#60e1e0'
                         },
                         {
                             label: chartLabel,
@@ -2266,7 +2284,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
-                            pointRadius: 0
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#ffc93c'
                         }
                     ]
                 },
@@ -2331,7 +2351,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
-                            pointRadius: 0
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#60e1e0'
                         },
                         {
                             label: 'Cumulative Financing Cost',
@@ -2341,7 +2363,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
-                            pointRadius: 0
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#ff9a76'
                         }
                     ];
 
@@ -3065,6 +3089,118 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var versionField = document.getElementById('calculatorVersion');
     if (versionField) {
         versionField.value = CALCULATOR_NAME;
+    }
+
+    // ===== ENGAGEMENT TRIGGERS =====
+
+    // Helper function to add UTM parameters
+    function addUTMParams(url) {
+        var utmParams = '?utm_content=solar%20calculator&utm_term=' + encodeURIComponent(window.location.hostname);
+        return url + utmParams;
+    }
+
+    // Track unique tooltips opened
+    var tooltipsOpened = new Set();
+    var tooltipModalShown = false;
+
+    // Listen for tooltip interactions
+    document.addEventListener('click', function(e) {
+        if (tooltipModalShown) return;
+
+        var tooltipIcon = e.target.closest('.tooltip-icon');
+        if (tooltipIcon) {
+            var tooltipContent = tooltipIcon.querySelector('.tooltip-content');
+            if (tooltipContent) {
+                var tooltipId = tooltipContent.textContent.substring(0, 50); // Use first 50 chars as unique ID
+
+                // Check if tooltip was just closed (content was visible)
+                if (tooltipContent.style.display === 'block' || window.getComputedStyle(tooltipContent).display === 'block') {
+                    tooltipsOpened.add(tooltipId);
+
+                    // Show modal after 4 unique tooltips
+                    if (tooltipsOpened.size >= 4) {
+                        setTimeout(showTooltipModal, 500);
+                        tooltipModalShown = true;
+                    }
+                }
+            }
+        }
+    });
+
+    // 1. Show top banner after 10 minutes
+    setTimeout(function() {
+        if (!document.getElementById('engagementBanner')) {
+            var banner = document.createElement('div');
+            banner.id = 'engagementBanner';
+            banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 500;';
+
+            var text = document.createElement('a');
+            text.href = addUTMParams('https://www.equitysolar.co.nz/contact');
+            text.target = '_blank';
+            text.textContent = 'Have any solar questions? Get in touch with us here';
+            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600;';
+            text.onmouseover = function() { this.style.textDecoration = 'underline'; };
+            text.onmouseout = function() { this.style.textDecoration = 'none'; };
+
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = 'background: none; border: none; color: #155263; font-size: 1.5rem; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-left: auto;';
+            closeBtn.onclick = function() { banner.remove(); };
+
+            banner.appendChild(text);
+            banner.appendChild(closeBtn);
+            document.body.insertBefore(banner, document.body.firstChild);
+        }
+    }, 600000); // 10 minutes = 600000ms
+
+    // 2. Open new window after 1 hour
+    setTimeout(function() {
+        window.open(addUTMParams('https://www.equitysolar.co.nz/'), '_blank');
+    }, 3600000); // 1 hour = 3600000ms
+
+    // 3. Show tooltip modal
+    function showTooltipModal() {
+        if (document.getElementById('tooltipModal')) return;
+
+        var overlay = document.createElement('div');
+        overlay.id = 'tooltipModal';
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 1rem;';
+
+        var modal = document.createElement('div');
+        modal.style.cssText = 'background: #1f2937; color: #f9fafb; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.5);';
+
+        var heading = document.createElement('h3');
+        heading.textContent = 'We get it, solar can be confusing';
+        heading.style.cssText = 'font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem 0; color: #f9fafb;';
+
+        var text = document.createElement('p');
+        text.textContent = 'Our solar brokers are here to help answer any questions you have and guide you through the process.';
+        text.style.cssText = 'font-size: 1rem; line-height: 1.6; margin: 0 0 1.5rem 0; color: #d1d5db;';
+
+        var button = document.createElement('a');
+        button.href = addUTMParams('https://www.equitysolar.co.nz/contact');
+        button.target = '_blank';
+        button.textContent = 'Get in Touch';
+        button.style.cssText = 'display: inline-block; background: #ffc93c; color: #155263; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1rem; transition: transform 0.2s;';
+        button.onmouseover = function() { this.style.transform = 'scale(1.05)'; };
+        button.onmouseout = function() { this.style.transform = 'scale(1)'; };
+
+        var closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Maybe later';
+        closeBtn.style.cssText = 'display: block; background: none; border: none; color: #9ca3af; margin-top: 1rem; cursor: pointer; text-decoration: underline; width: 100%; text-align: center;';
+        closeBtn.onclick = function() { overlay.remove(); };
+
+        modal.appendChild(heading);
+        modal.appendChild(text);
+        modal.appendChild(button);
+        modal.appendChild(closeBtn);
+        overlay.appendChild(modal);
+
+        overlay.onclick = function(e) {
+            if (e.target === overlay) overlay.remove();
+        };
+
+        document.body.appendChild(overlay);
     }
 })();
 </script>
