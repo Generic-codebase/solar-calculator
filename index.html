@@ -1195,6 +1195,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     #loanFinancingDetails .roi-value,
     #loanFinancingDetails h4,
     #loanFinancingDetails p {
+        color: #155263;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    #loanFinancingDetails:hover .roi-note,
+    #loanFinancingDetails:hover .roi-value,
+    #loanFinancingDetails:hover h4,
+    #loanFinancingDetails:hover p {
         background: linear-gradient(
             90deg,
             #d4af37 0%,
@@ -1207,15 +1216,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    #loanFinancingDetails:hover .roi-note,
-    #loanFinancingDetails:hover .roi-value,
-    #loanFinancingDetails:hover h4,
-    #loanFinancingDetails:hover p {
-        animation: goldShimmer 2s linear infinite;
+        animation: goldShimmer 2s ease-in-out infinite;
         text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
     }
@@ -3640,8 +3641,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Email Drawer Functions
     window.openEmailDrawer = function() {
+        var drawer = document.getElementById('emailDrawer');
+        var exportButtons = document.getElementById('exportButtons');
+
+        // Position drawer relative to export buttons
+        if (exportButtons) {
+            var rect = exportButtons.getBoundingClientRect();
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
+
+            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
+        }
+
         document.getElementById('emailDrawerOverlay').classList.add('show');
-        document.getElementById('emailDrawer').classList.add('show');
+        drawer.classList.add('show');
     };
 
     window.closeEmailDrawer = function() {
@@ -3738,8 +3751,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // PDF Drawer Functions
     window.openPDFDrawer = function() {
+        var drawer = document.getElementById('pdfDrawer');
+        var exportButtons = document.getElementById('exportButtons');
+
+        // Position drawer relative to export buttons
+        if (exportButtons) {
+            var rect = exportButtons.getBoundingClientRect();
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
+
+            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
+        }
+
         document.getElementById('pdfDrawerOverlay').classList.add('show');
-        document.getElementById('pdfDrawer').classList.add('show');
+        drawer.classList.add('show');
 
         // Hide decorative icons for printing
         var statusIcons = document.querySelectorAll('.status-icon');
