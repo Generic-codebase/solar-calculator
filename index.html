@@ -986,7 +986,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .drawer {
         position: fixed;
-        right: -500px;
+        right: -100%;
         top: 0;
         bottom: 0;
         width: 500px;
@@ -994,14 +994,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         background: white;
         box-shadow: -4px 0 12px rgba(0,0,0,0.15);
         z-index: 9999;
-        transition: right 0.3s ease-in-out;
+        transition: right 0.3s ease-in-out, visibility 0.3s;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        visibility: hidden;
     }
 
     .drawer.show {
         right: 0;
+        visibility: visible;
     }
 
     .drawer-header {
@@ -1215,10 +1217,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- Export Buttons -->
         <div id="exportButtons" class="export-buttons" style="display: none;">
-            <button class="export-btn export-btn-email" onclick="openEmailDrawer()">
+            <button type="button" class="export-btn export-btn-email" onclick="openEmailDrawer()">
                 <span>📧</span> Email This Report
             </button>
-            <button class="export-btn export-btn-pdf" onclick="openPDFDrawer()">
+            <button type="button" class="export-btn export-btn-pdf" onclick="openPDFDrawer()">
                 <span>📄</span> Print to PDF
             </button>
         </div>
@@ -1228,7 +1230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="emailDrawer" class="drawer">
             <div class="drawer-header">
                 <h3>Email Solar Report</h3>
-                <button class="drawer-close" onclick="closeEmailDrawer()">×</button>
+                <button type="button" class="drawer-close" onclick="closeEmailDrawer()">×</button>
             </div>
             <div class="drawer-content">
                 <div class="drawer-form-wrapper">
@@ -1245,7 +1247,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
                     </div>
                 </div>
-                <button class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
+                <button type="button" class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
                 <div id="emailMessageStatus" class="drawer-message"></div>
             </div>
         </div>
@@ -1255,7 +1257,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="pdfDrawer" class="drawer">
             <div class="drawer-header">
                 <h3>Print to PDF</h3>
-                <button class="drawer-close" onclick="closePDFDrawer()">×</button>
+                <button type="button" class="drawer-close" onclick="closePDFDrawer()">×</button>
             </div>
             <div class="drawer-content">
                 <div class="drawer-form-wrapper">
@@ -1277,7 +1279,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </label>
                     </div>
                 </div>
-                <button class="drawer-submit" onclick="generatePDF()" style="margin-top: auto;">Generate PDF</button>
+                <button type="button" class="drawer-submit" onclick="generatePDF()" style="margin-top: auto;">Generate PDF</button>
             </div>
         </div>
 
