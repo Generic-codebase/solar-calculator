@@ -3560,13 +3560,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!document.getElementById('engagementBanner')) {
             var banner = document.createElement('div');
             banner.id = 'engagementBanner';
-            banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 500;';
+            banner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ffc93c; color: #155263; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10000; display: flex; align-items: center; justify-content: center; gap: 1rem; font-size: 1rem; font-weight: 400; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;';
 
             var text = document.createElement('a');
             text.href = addUTMParams('https://www.equitysolar.co.nz/contact');
             text.target = '_blank';
             text.textContent = 'Have any solar questions? Get in touch with Equity Solar Brokers here';
-            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 600; text-align: center;';
+            text.style.cssText = 'color: #155263; text-decoration: none; font-weight: 400; text-align: center; flex: 1; font-family: inherit;';
             text.onmouseover = function() { this.style.textDecoration = 'underline'; };
             text.onmouseout = function() { this.style.textDecoration = 'none'; };
 
