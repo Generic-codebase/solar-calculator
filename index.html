@@ -986,24 +986,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .drawer {
         position: fixed;
-        right: -100%;
-        top: 0;
-        bottom: 0;
-        width: 500px;
-        max-width: 90vw;
+        left: 0;
+        right: 0;
+        bottom: -100%;
+        height: 80vh;
+        max-height: 600px;
         background: white;
-        box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
         z-index: 9999;
-        transition: right 0.3s ease-in-out, visibility 0.3s;
+        transition: bottom 0.3s ease-in-out, visibility 0.3s;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         visibility: hidden;
+        border-radius: 12px 12px 0 0;
     }
 
     .drawer.show {
-        right: 0;
+        bottom: 0;
         visibility: visible;
+    }
+
+    @media (min-width: 768px) {
+        .drawer {
+            left: auto;
+            right: -100%;
+            bottom: 0;
+            top: 0;
+            width: 500px;
+            max-width: 90vw;
+            height: auto;
+            max-height: none;
+            border-radius: 0;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+            transition: right 0.3s ease-in-out, visibility 0.3s;
+        }
+
+        .drawer.show {
+            right: 0;
+            bottom: 0;
+        }
     }
 
     .drawer-header {
@@ -3712,6 +3734,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printWindow.document.write('.spec-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb; }');
         printWindow.document.write('.chart-container { page-break-inside: avoid; margin: 1rem 0; }');
         printWindow.document.write('img { max-width: 100%; height: auto; }');
+        printWindow.document.write('#loanFinancingDetails { margin-top: 3rem; padding-top: 3rem; page-break-before: always; }');
         if (!includeFinancing) {
             printWindow.document.write('#loanFinancingDetails { display: none !important; }');
         }
