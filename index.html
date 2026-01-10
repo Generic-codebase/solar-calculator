@@ -142,11 +142,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .form-input.error {
-        border-color: #ef4444;
+        border-color: #ffc93c;
     }
 
     .error-message {
-        color: #ef4444;
+        color: #d9a11c;
         font-size: 0.75rem;
         margin-top: 0.25rem;
         display: none;
@@ -987,15 +987,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .drawer {
         position: fixed;
         right: -500px;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 0;
+        bottom: 0;
         width: 500px;
         max-width: 90vw;
-        max-height: 100vh;
         background: white;
         box-shadow: -4px 0 12px rgba(0,0,0,0.15);
         z-index: 9999;
-        transition: right 0.3s;
+        transition: right 0.3s ease-in-out;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
@@ -1042,7 +1041,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: center;
     }
 
     .drawer-form-group {
@@ -1106,8 +1104,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .drawer-message.error {
-        background: #fee2e2;
-        color: #991b1b;
+        background: #fff9e6;
+        color: #d9a11c;
         display: block;
     }
 </style>
