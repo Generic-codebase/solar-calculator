@@ -1195,10 +1195,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: goldShimmer 3s linear infinite;
+        animation-name: none;
+        animation-duration: 12s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
         font-weight: 700;
         text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
+    }
+
+    .gold-shimmer.animate {
+        animation-name: goldShimmer;
     }
 </style>
 
@@ -2236,6 +2243,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  </div>';
         html += '</div>';
 
+        // Financing Details (if loan is used) - moved here to be under serviceability
+        if (data.isFinanced) {
+            html += '<div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0; margin-top: 1.5rem;">';
+            html += '  <h3 class="result-title">Loan Financing Details</h3>';
+            html += '  <div id="financingDetailsContent"></div>';
+            html += '</div>';
+        }
+
         // ROI Card
         html += '<div class="roi-card">';
         html += '  <h3 class="result-title">Solar Investment Returns (25 Year Projection)</h3>';
@@ -2433,14 +2448,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 html += '</div>';
             }
-        }
-
-        // Financing Details (if loan is used)
-        if (data.isFinanced) {
-            html += '  <div class="system-cost-box" id="loanFinancingDetails" style="background-color: #f0f9ff; border-color: #60e1e0;">';
-            html += '    <h3 class="result-title">Loan Financing Details</h3>';
-            html += '    <div id="financingDetailsContent"></div>';
-            html += '  </div>';
         }
         html += '  </div>';
 
@@ -2899,11 +2906,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Determine borrowing power color for sun icon
         var dotColor = data.borrowingPower === 'high' ? '#60e1e0' : (data.borrowingPower === 'medium' ? '#ffc93c' : '#ff9a76');
 
+        // Format borrowing power text with available cash
+        var borrowingPowerDisplay = data.borrowingPowerText;
+        if (data.borrowingPower === 'high') {
+            borrowingPowerDisplay = 'High: $50K+ Available';
+        } else if (data.borrowingPower === 'medium') {
+            borrowingPowerDisplay = 'Medium: $20K-$50K Available';
+        } else if (data.borrowingPower === 'low') {
+            borrowingPowerDisplay = 'Low: Under $20K Available';
+        } else {
+            borrowingPowerDisplay = 'Not Provided';
+        }
+
         var html = '';
 
         // Add sun icon and borrowing power section at the top
-        html += '<div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(96, 225, 224, 0.2);">';
-        html += '  <div style="flex-shrink: 0; width: 80px; height: 80px;">';
+        html += '<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(96, 225, 224, 0.2);">';
+        html += '  <div style="flex-shrink: 0; width: 40px; height: 40px;">';
         html += '    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
 
         // Draw sun rays
@@ -2926,21 +2945,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '    </svg>';
         html += '  </div>';
         html += '  <div style="flex: 1;">';
-        html += '    <h4 style="margin: 0 0 0.5rem 0; color: #155263; font-size: 1.1rem;">Financial Overview</h4>';
-        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">Your borrowing capacity and current position</p>';
+        html += '    <h4 style="margin: 0; color: #155263; font-size: 1rem; line-height: 1.4;">Overview Of Your borrowing capacity and current position</h4>';
         html += '  </div>';
         html += '</div>';
 
         html += '<div class="roi-grid" style="margin-bottom: 0;">';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Borrowing Power</p>';
-        html += '    <p class="roi-value" style="font-size: 1.25rem; color: ' + dotColor + ';">' + data.borrowingPowerText + '</p>';
-        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.75rem;">' + data.borrowingPowerDesc + '</p>';
+        html += '    <p class="roi-value" style="font-size: 1.25rem; color: ' + dotColor + ';">' + borrowingPowerDisplay + '</p>';
         html += '  </div>';
         html += '  <div>';
-        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Current LVR</p>';
+        html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Current LVR (80% threshold)</p>';
         html += '    <p class="roi-value" style="font-size: 1.25rem;">' + data.lvr + '%</p>';
-        html += '    <p style="margin: 0; color: #6b7280; font-size: 0.75rem;">Based on 80% lending threshold</p>';
         html += '  </div>';
         html += '  <div>';
         html += '    <p class="roi-note" style="margin-bottom: 0.25rem;">Monthly Payment</p>';
@@ -2961,6 +2977,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '</div>';
 
         financingDetailsDiv.innerHTML = html;
+
+        // Set up scroll trigger for gold shimmer animation
+        setTimeout(function() {
+            var goldShimmerEl = document.querySelector('.gold-shimmer');
+            if (goldShimmerEl) {
+                var shimmerTriggered = false;
+                window.addEventListener('scroll', function() {
+                    if (!shimmerTriggered) {
+                        var rect = goldShimmerEl.getBoundingClientRect();
+                        var isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                        if (isVisible) {
+                            goldShimmerEl.classList.add('animate');
+                            shimmerTriggered = true;
+                        }
+                    }
+                });
+                // Check if already visible on load
+                var rect = goldShimmerEl.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    goldShimmerEl.classList.add('animate');
+                }
+            }
+        }, 100);
     }
 
     // Function to update system cost metrics based on selected system
