@@ -1157,7 +1157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         display: block;
     }
 
-    /* Gold shimmer effect for bank cashback */
+    /* Gold shimmer effect for financing section */
     @keyframes goldShimmer {
         0% {
             background-position: -200% center;
@@ -1180,17 +1180,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation-name: none;
-        animation-duration: 12s;
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
+        transition: all 0.3s ease;
         font-weight: 700;
+        cursor: pointer;
+    }
+
+    .gold-shimmer:hover {
+        animation: goldShimmer 2s linear infinite;
         text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
     }
 
-    .gold-shimmer.animate {
-        animation-name: goldShimmer;
+    #loanFinancingDetails .roi-note,
+    #loanFinancingDetails .roi-value,
+    #loanFinancingDetails h4,
+    #loanFinancingDetails p {
+        background: linear-gradient(
+            90deg,
+            #d4af37 0%,
+            #f4e7c3 25%,
+            #fff9e6 50%,
+            #f4e7c3 75%,
+            #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    #loanFinancingDetails:hover .roi-note,
+    #loanFinancingDetails:hover .roi-value,
+    #loanFinancingDetails:hover h4,
+    #loanFinancingDetails:hover p {
+        animation: goldShimmer 2s linear infinite;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
     }
 </style>
 
@@ -2962,29 +2989,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '</div>';
 
         financingDetailsDiv.innerHTML = html;
-
-        // Set up scroll trigger for gold shimmer animation
-        setTimeout(function() {
-            var goldShimmerEl = document.querySelector('.gold-shimmer');
-            if (goldShimmerEl) {
-                var shimmerTriggered = false;
-                window.addEventListener('scroll', function() {
-                    if (!shimmerTriggered) {
-                        var rect = goldShimmerEl.getBoundingClientRect();
-                        var isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-                        if (isVisible) {
-                            goldShimmerEl.classList.add('animate');
-                            shimmerTriggered = true;
-                        }
-                    }
-                });
-                // Check if already visible on load
-                var rect = goldShimmerEl.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    goldShimmerEl.classList.add('animate');
-                }
-            }
-        }, 100);
     }
 
     // Function to update system cost metrics based on selected system
