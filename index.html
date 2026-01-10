@@ -124,14 +124,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .form-input {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1rem;
         background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid #9ca3af;
         border-radius: 12px;
-        font-size: 1rem;
+        font-size: 16px; /* Prevents iOS zoom on focus */
         transition: all 0.3s ease;
+        min-height: 44px; /* Better touch target */
     }
 
     .form-input:focus {
@@ -207,16 +208,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .result-title {
-        font-size: 1.25rem;
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
         font-weight: bold;
         color: #155263;
         margin-bottom: 0.5rem;
-    }
-
-    @media (min-width: 768px) {
-        .result-title {
-            font-size: 1.5rem;
-        }
     }
 
     .result-text {
@@ -457,7 +452,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .roi-value {
-        font-size: 1.5rem;
+        font-size: clamp(1.25rem, 5vw, 2rem);
         font-weight: bold;
         color: #155263;
     }
@@ -682,7 +677,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .chart-container {
         position: relative;
-        height: 400px;
+        height: 300px;
         margin-bottom: 1.5rem;
         background: rgba(255, 254, 240, 0.6);
         backdrop-filter: blur(10px);
@@ -691,6 +686,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         border-radius: 12px;
         padding: 1rem;
         box-shadow: 0 4px 12px rgba(255, 201, 60, 0.1);
+    }
+
+    @media (min-width: 768px) {
+        .chart-container {
+            height: 400px;
+        }
     }
 
     .assumptions-box {
@@ -986,46 +987,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .drawer {
         position: fixed;
-        left: 0;
-        right: 0;
-        bottom: -100%;
-        height: 80vh;
-        max-height: 600px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
         background: white;
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         z-index: 9999;
-        transition: bottom 0.3s ease-in-out, visibility 0.3s;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         visibility: hidden;
-        border-radius: 12px 12px 0 0;
+        opacity: 0;
+        border-radius: 12px;
     }
 
     .drawer.show {
-        bottom: 0;
+        transform: translate(-50%, -50%) scale(1);
         visibility: visible;
-    }
-
-    @media (min-width: 768px) {
-        .drawer {
-            left: auto;
-            right: -100%;
-            bottom: 0;
-            top: 0;
-            width: 500px;
-            max-width: 90vw;
-            height: auto;
-            max-height: none;
-            border-radius: 0;
-            box-shadow: -4px 0 12px rgba(0,0,0,0.15);
-            transition: right 0.3s ease-in-out, visibility 0.3s;
-        }
-
-        .drawer.show {
-            right: 0;
-            bottom: 0;
-        }
+        opacity: 1;
     }
 
     .drawer-header {
@@ -1093,8 +1076,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .drawer-form-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        min-height: 22px;
         cursor: pointer;
         accent-color: #ffc93c;
         -webkit-appearance: none;
@@ -3488,6 +3473,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         window.dataLayer.push(submissionEventData);
 
+        // Domain whitelist validation
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var currentDomain = window.location.hostname;
+        var isAllowedDomain = allowedDomains.some(function(domain) {
+            return currentDomain === domain || currentDomain.endsWith('.' + domain);
+        });
+
+        if (!isAllowedDomain) {
+            console.warn('Webhook submission blocked: domain not whitelisted');
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+            return;
+        }
+
+        // Email validation - ensure email exists and is valid
+        if (!email || !emailRegex.test(email)) {
+            console.error('Invalid email - webhook not sent');
+            return;
+        }
+
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
             method: 'POST',
             body: formData
@@ -3646,9 +3651,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var message = document.getElementById('emailMessage').value.trim();
         var messageDiv = document.getElementById('emailMessageStatus');
 
+        // Email validation
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
             messageDiv.className = 'drawer-message error';
             messageDiv.textContent = 'Please enter your email address';
+            return;
+        }
+        if (!emailRegex.test(email)) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter a valid email address';
+            return;
+        }
+
+        // Domain whitelist validation
+        var allowedDomains = ['equitysolar.co.nz', 'github.io', 'localhost'];
+        var currentDomain = window.location.hostname;
+        var isAllowedDomain = allowedDomains.some(function(domain) {
+            return currentDomain === domain || currentDomain.endsWith('.' + domain);
+        });
+
+        if (!isAllowedDomain) {
+            console.warn('Webhook submission blocked: domain not whitelisted');
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Service unavailable. Please contact us directly.';
             return;
         }
 
