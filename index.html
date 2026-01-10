@@ -1339,17 +1339,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="drawer-content">
                 <div class="drawer-form-wrapper">
                     <div class="drawer-form-group">
+                        <label for="emailFirstName">First Name *</label>
+                        <input type="text" id="emailFirstName" placeholder="John" required>
+                    </div>
+                    <div class="drawer-form-group">
+                        <label for="emailLastName">Last Name *</label>
+                        <input type="text" id="emailLastName" placeholder="Smith" required>
+                    </div>
+                    <div class="drawer-form-group">
                         <label for="emailRecipient">Email Address *</label>
                         <input type="email" id="emailRecipient" placeholder="your@email.com" required>
                     </div>
                     <div class="drawer-form-group">
-                        <label for="emailName">Your Name (Optional)</label>
-                        <input type="text" id="emailName" placeholder="John Smith">
+                        <label for="emailPhone">Phone Number *</label>
+                        <input type="tel" id="emailPhone" placeholder="021 234 5678" required>
                     </div>
                     <div class="drawer-form-group">
                         <label for="emailMessage">Additional Message (Optional)</label>
                         <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
                     </div>
+                    <p style="font-size: 0.75rem; color: #6b7280; margin: 0.75rem 0; line-height: 1.4;">By requesting a copy of your report, you agree to be contacted by us for education and marketing purposes.</p>
                 </div>
                 <button type="button" class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
                 <div id="emailMessageStatus" class="drawer-message"></div>
@@ -3657,12 +3666,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     window.sendEmailReport = function() {
+        var firstName = document.getElementById('emailFirstName').value.trim();
+        var lastName = document.getElementById('emailLastName').value.trim();
         var email = document.getElementById('emailRecipient').value.trim();
-        var name = document.getElementById('emailName').value.trim();
+        var phone = document.getElementById('emailPhone').value.trim();
         var message = document.getElementById('emailMessage').value.trim();
         var messageDiv = document.getElementById('emailMessageStatus');
 
-        // Email validation
+        // Validation
+        if (!firstName) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter your first name';
+            return;
+        }
+        if (!lastName) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter your last name';
+            return;
+        }
+
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
             messageDiv.className = 'drawer-message error';
@@ -3672,6 +3694,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!emailRegex.test(email)) {
             messageDiv.className = 'drawer-message error';
             messageDiv.textContent = 'Please enter a valid email address';
+            return;
+        }
+
+        if (!phone) {
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Please enter your phone number';
             return;
         }
 
@@ -3693,14 +3721,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
-        // Build webhook data - match contact form format
+        // Build webhook data - match contact form format exactly
         var webhookData = {
+            firstName: firstName,
+            lastName: lastName,
             email: email,
-            name: name,
+            phone: phone,
             message: message,
             type: 'email_report',
             submittedAt: new Date().toISOString(),
-            referrerDomain: window.location.hostname,
             calculator_version: CALCULATOR_VERSION,
             calculator_name: CALCULATOR_NAME
         };
@@ -3865,8 +3894,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 submitBtn.textContent = 'Send Report';
                 messageDiv.className = 'drawer-message';
                 messageDiv.textContent = '';
+                document.getElementById('emailFirstName').value = '';
+                document.getElementById('emailLastName').value = '';
                 document.getElementById('emailRecipient').value = '';
-                document.getElementById('emailName').value = '';
+                document.getElementById('emailPhone').value = '';
                 document.getElementById('emailMessage').value = '';
             }, 2000);
         }).catch(function(error) {
