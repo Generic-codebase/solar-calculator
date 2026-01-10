@@ -3693,11 +3693,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
+        // Collect all calculator form field data
+        var formInputs = {
+            summerPowerBill: document.getElementById('summerPowerBill').value,
+            summerKwh: document.getElementById('summerKwh').value,
+            winterPowerBill: document.getElementById('winterPowerBill').value,
+            winterKwh: document.getElementById('winterKwh').value,
+            dailyCharge: document.getElementById('dailyCharge').value,
+            householdIncome: document.getElementById('householdIncome').value,
+            propertyValue: document.getElementById('propertyValue').value,
+            currentLending: document.getElementById('currentLending').value,
+            expenseAmount: document.getElementById('expenseAmount').value,
+            expenseFrequency: document.getElementById('expenseFrequency').value,
+            loanTerm: document.getElementById('loanTerm').value,
+            interestRate: document.getElementById('interestRate').value
+        };
+
         // Prepare report data
         var reportData = {
             email: email,
             name: name,
             message: message,
+            formInputs: formInputs,
             calculatorData: resultsData,
             timestamp: new Date().toISOString(),
             referrerDomain: window.location.hostname
@@ -3712,6 +3729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         formData.append('name', name);
         formData.append('message', message);
         formData.append('type', 'email_report');
+        formData.append('formInputs', JSON.stringify(reportData.formInputs));
         formData.append('calculatorData', JSON.stringify(reportData.calculatorData));
         formData.append('timestamp', reportData.timestamp);
         formData.append('referrerDomain', reportData.referrerDomain);
