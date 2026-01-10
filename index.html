@@ -1368,7 +1368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <p style="margin-bottom: 1.5rem; color: #6b7280;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
                     <div class="drawer-form-group">
                         <label for="pdfTitle">Report Title (Optional)</label>
-                        <input type="text" id="pdfTitle" placeholder="My Solar Quote - [Date]">
+                        <input type="text" id="pdfTitle" placeholder="My Solar Report - [Date]">
                     </div>
                     <div class="drawer-form-group">
                         <label>
@@ -3774,7 +3774,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var pdfTitleInput = document.getElementById('pdfTitle');
         if (!pdfTitleInput.value) {
             var today = new Date().toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
-            pdfTitleInput.value = 'My Solar Quote - ' + today;
+            pdfTitleInput.value = 'My Solar Report - ' + today;
         }
     };
 
