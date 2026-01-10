@@ -987,15 +987,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .drawer {
         position: fixed;
         right: -500px;
-        top: 0;
-        bottom: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 500px;
         max-width: 90vw;
+        max-height: 100vh;
         background: white;
         box-shadow: -4px 0 12px rgba(0,0,0,0.15);
         z-index: 9999;
         transition: right 0.3s;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
     }
 
     .drawer.show {
@@ -1036,6 +1039,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .drawer-content {
         padding: 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .drawer-form-group {
@@ -1226,20 +1233,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <button class="drawer-close" onclick="closeEmailDrawer()">×</button>
             </div>
             <div class="drawer-content">
-                <div class="drawer-form-group">
-                    <label for="emailRecipient">Email Address *</label>
-                    <input type="email" id="emailRecipient" placeholder="your@email.com" required>
+                <div class="drawer-form-wrapper">
+                    <div class="drawer-form-group">
+                        <label for="emailRecipient">Email Address *</label>
+                        <input type="email" id="emailRecipient" placeholder="your@email.com" required>
+                    </div>
+                    <div class="drawer-form-group">
+                        <label for="emailName">Your Name (Optional)</label>
+                        <input type="text" id="emailName" placeholder="John Smith">
+                    </div>
+                    <div class="drawer-form-group">
+                        <label for="emailMessage">Additional Message (Optional)</label>
+                        <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
+                    </div>
                 </div>
-                <div class="drawer-form-group">
-                    <label for="emailName">Your Name (Optional)</label>
-                    <input type="text" id="emailName" placeholder="John Smith">
-                </div>
-                <div class="drawer-form-group">
-                    <label for="emailMessage">Additional Message (Optional)</label>
-                    <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
-                </div>
-                <button class="drawer-submit" onclick="sendEmailReport()">Send Report</button>
-                <div id="emailMessage" class="drawer-message"></div>
+                <button class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
+                <div id="emailMessageStatus" class="drawer-message"></div>
             </div>
         </div>
 
@@ -1251,24 +1260,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <button class="drawer-close" onclick="closePDFDrawer()">×</button>
             </div>
             <div class="drawer-content">
-                <p style="margin-bottom: 1.5rem; color: #6b7280;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
-                <div class="drawer-form-group">
-                    <label for="pdfTitle">Report Title (Optional)</label>
-                    <input type="text" id="pdfTitle" placeholder="My Solar Quote - [Date]">
+                <div class="drawer-form-wrapper">
+                    <p style="margin-bottom: 1.5rem; color: #6b7280;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
+                    <div class="drawer-form-group">
+                        <label for="pdfTitle">Report Title (Optional)</label>
+                        <input type="text" id="pdfTitle" placeholder="My Solar Quote - [Date]">
+                    </div>
+                    <div class="drawer-form-group">
+                        <label>
+                            <input type="checkbox" id="pdfIncludeFinancing" checked style="width: auto; margin-right: 0.5rem;">
+                            Include financing details
+                        </label>
+                    </div>
+                    <div class="drawer-form-group">
+                        <label>
+                            <input type="checkbox" id="pdfIncludeCharts" checked style="width: auto; margin-right: 0.5rem;">
+                            Include charts and graphs
+                        </label>
+                    </div>
                 </div>
-                <div class="drawer-form-group">
-                    <label>
-                        <input type="checkbox" id="pdfIncludeFinancing" checked style="width: auto; margin-right: 0.5rem;">
-                        Include financing details
-                    </label>
-                </div>
-                <div class="drawer-form-group">
-                    <label>
-                        <input type="checkbox" id="pdfIncludeCharts" checked style="width: auto; margin-right: 0.5rem;">
-                        Include charts and graphs
-                    </label>
-                </div>
-                <button class="drawer-submit" onclick="generatePDF()">Generate PDF</button>
+                <button class="drawer-submit" onclick="generatePDF()" style="margin-top: auto;">Generate PDF</button>
             </div>
         </div>
 
@@ -3504,7 +3515,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var email = document.getElementById('emailRecipient').value.trim();
         var name = document.getElementById('emailName').value.trim();
         var message = document.getElementById('emailMessage').value.trim();
-        var messageDiv = document.getElementById('emailMessage');
+        var messageDiv = document.getElementById('emailMessageStatus');
 
         if (!email) {
             messageDiv.className = 'drawer-message error';
@@ -3552,6 +3563,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send Report';
                 messageDiv.className = 'drawer-message';
+                messageDiv.textContent = '';
                 document.getElementById('emailRecipient').value = '';
                 document.getElementById('emailName').value = '';
                 document.getElementById('emailMessage').value = '';
@@ -3674,7 +3686,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         printWindow.document.write('<p style="color: #6b7280; margin-bottom: 2rem;">Generated on ' + new Date().toLocaleString('en-NZ') + '</p>');
         printWindow.document.write(resultsClone.innerHTML);
         printWindow.document.write('<div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">');
-        printWindow.document.write('<p style="font-size: 0.875rem; color: #6b7280; margin: 0;">This report is for informational purposes only. For detailed quotes and professional advice, contact Equity Solar at <strong>www.equitysolar.co.nz</strong></p>');
+        printWindow.document.write('<p style="font-size: 0.875rem; color: #6b7280; margin: 0;">This report is for informational purposes only. For detailed quotes and professional advice, contact Equity Solar Brokers</p>');
         printWindow.document.write('</div>');
         printWindow.document.write('</body></html>');
         printWindow.document.close();
