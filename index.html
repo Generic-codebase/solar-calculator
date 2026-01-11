@@ -3497,10 +3497,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return;
         }
 
-        // Email validation - ensure email exists and is valid
+        // Final validation - ensure all required fields are present before webhook
         if (!email || !emailRegex.test(email)) {
             console.error('Invalid email - webhook not sent');
             return;
+        }
+        if (!firstName || !lastName) {
+            console.error('Missing name fields - webhook not sent');
+            return;
+        }
+        if (!phone) {
+            console.error('Missing phone - webhook not sent');
+            return;
+        }
+
+        // Ensure webhookData has all required fields
+        if (!webhookData.firstName || !webhookData.lastName || !webhookData.email || !webhookData.phone) {
+            console.error('Incomplete webhook data - webhook not sent', webhookData);
+            document.getElementById('contactForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+            return;
+        }
+
+        // Log webhook submission for debugging (only in development)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('Contact form webhook data:', {
+                firstName: webhookData.firstName,
+                lastName: webhookData.lastName,
+                email: webhookData.email,
+                phone: webhookData.phone,
+                type: 'contact_form'
+            });
         }
 
         fetch('https://hooks.zapier.com/hooks/catch/25081790/urfarah/', {
@@ -3871,6 +3898,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             // Add final system selection (panel-only or panel-battery)
             webhookData.finalSystemSelection = finalSystemSelection;
+        }
+
+        // Final validation - ensure all required fields are present before webhook
+        if (!webhookData.firstName || !webhookData.lastName || !webhookData.email || !webhookData.phone) {
+            console.error('Incomplete webhook data - webhook not sent', webhookData);
+            messageDiv.className = 'drawer-message error';
+            messageDiv.textContent = 'Missing required information. Please try again.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Report';
+            return;
+        }
+
+        // Log webhook submission for debugging (only in development)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('Email report webhook data:', {
+                firstName: webhookData.firstName,
+                lastName: webhookData.lastName,
+                email: webhookData.email,
+                phone: webhookData.phone,
+                type: 'email_report'
+            });
         }
 
         // Send to Active Campaign via Zapier webhook (same as contact form)
