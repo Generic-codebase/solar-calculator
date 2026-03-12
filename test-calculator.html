@@ -801,9 +801,9 @@
                     let actual;
 
                     if (test.systemType === 'panel-only') {
-                        actual = (gen * 0.45 * cost) + (gen * 0.55 * exp);
+                        actual = (gen * 0.40 * cost) + (gen * 0.60 * exp);
                     } else if (test.systemType === 'panel-battery') {
-                        actual = (gen * 0.75 * cost) + (gen * 0.25 * exp);
+                        actual = (gen * 0.65 * cost) + (gen * 0.35 * exp);
                     }
 
                     const diff = Math.abs(actual - test.expectedSavings);
