@@ -252,24 +252,24 @@
                 name: 'Self-Consumption & Export Rates',
                 tests: [
                     {
-                        name: 'Panel-only: 45% self-consumption, 55% export',
+                        name: 'Panel-only: 40% self-consumption, 60% export',
                         inputs: {
                             monthlyGeneration: 1000,
                             costPerKwh: 0.40,
                             exportRate: 0.17
                         },
-                        expectedSavings: (1000 * 0.45 * 0.40) + (1000 * 0.55 * 0.17),
+                        expectedSavings: (1000 * 0.40 * 0.40) + (1000 * 0.60 * 0.17),
                         systemType: 'panel-only',
                         tolerance: 1
                     },
                     {
-                        name: 'Battery: 75% self-consumption, 25% export',
+                        name: 'Battery: 65% self-consumption, 35% export',
                         inputs: {
                             monthlyGeneration: 1000,
                             costPerKwh: 0.40,
                             exportRate: 0.17
                         },
-                        expectedSavings: (1000 * 0.75 * 0.40) + (1000 * 0.25 * 0.17),
+                        expectedSavings: (1000 * 0.65 * 0.40) + (1000 * 0.35 * 0.17),
                         systemType: 'panel-battery',
                         tolerance: 1
                     },
@@ -280,7 +280,7 @@
                             costPerKwh: 0.50,
                             exportRate: 0.17
                         },
-                        expectedSavings: (1500 * 0.45 * 0.50) + (1500 * 0.55 * 0.17),
+                        expectedSavings: (1500 * 0.40 * 0.50) + (1500 * 0.60 * 0.17),
                         systemType: 'panel-only',
                         tolerance: 1
                     }

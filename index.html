@@ -1907,9 +1907,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // Calconic cost formula: panels * 675 + 3500 (increased by 5%)
             var panelOnlySystemCost = (panelOnlyPanelCount * 708.75) + 3675;
 
-            // Calconic savings: 45% self-consumption at retail, 55% export at 17c
-            var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.45 * costPerKwh;
-            var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.55 * exportRate;
+            // Calconic savings: 40% self-consumption at retail, 60% export at 17c
+            var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.40 * costPerKwh;
+            var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.60 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
 
@@ -1961,8 +1961,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 annualSavings: panelOnlyAnnualSavings,
                 paybackYears: panelOnlyPaybackYears,
                 savings25Year: panelOnly25YearSavings,
-                selfConsumptionPercent: 45,
-                exportPercent: 55
+                selfConsumptionPercent: 40,
+                exportPercent: 60
             };
 
             // Panel + Battery system (120% of annual usage)
@@ -1987,9 +1987,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 5%)
             var panelBatterySystemCost = (panelBatteryPanelCount * 703.5) + (batteryKwh * 892.5) + 6562.5;
 
-            // Calconic savings: 75% self-consumption at retail, 25% export at 17c
-            var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.75 * costPerKwh;
-            var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.25 * exportRate;
+            // Calconic savings: 65% self-consumption at retail, 35% export at 17c
+            var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.65 * costPerKwh;
+            var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.35 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
 
@@ -2041,8 +2041,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 annualSavings: panelBatteryAnnualSavings,
                 paybackYears: panelBatteryPaybackYears,
                 savings25Year: panelBattery25YearSavings,
-                selfConsumptionPercent: 75,
-                exportPercent: 25
+                selfConsumptionPercent: 65,
+                exportPercent: 35
             };
         }
 
