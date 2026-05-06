@@ -1892,28 +1892,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var exportRate = 0.17; // 17c per kWh export rate
             var savings25YearMultiplier = 38.55; // Geometric series multiplier for 3% annual price increase over 25 years
 
-            // Panel-only system (120% of annual usage)
-            var panelOnlyTargetMonthlyGeneration = avgMonthlyKwh * 1.20;
+            // Calculate Panel + Battery system FIRST (120% of annual usage)
+            // This determines the panel count that both systems will use
+            var targetMonthlyGeneration = avgMonthlyKwh * 1.20;
+            var requiredKw = targetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
+            var sharedPanelCount = Math.ceil(requiredKw / (panelWattage / 1000));
+            var sharedSystemKw = (sharedPanelCount * panelWattage) / 1000;
+            var sharedMonthlyGeneration = sharedSystemKw * dailyGenerationPerKw * daysPerMonth;
+            var sharedAnnualGeneration = sharedMonthlyGeneration * 12;
 
-            // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
-            var panelOnlyRequiredKw = panelOnlyTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
-
-            // Calculate panel count needed (round up)
-            var panelOnlyPanelCount = Math.ceil(panelOnlyRequiredKw / (panelWattage / 1000));
-
-            // Recalculate actual system kW based on rounded panel count
-            var panelOnlySystemKw = (panelOnlyPanelCount * panelWattage) / 1000;
-
-            // Recalculate actual generation based on final system size
-            var panelOnlyMonthlyGeneration = panelOnlySystemKw * dailyGenerationPerKw * daysPerMonth;
-            var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
-
-            // Calconic cost formula: panels * 675 + 3500 (increased by 10% total)
-            var panelOnlySystemCost = (panelOnlyPanelCount * 744.19) + 3858.75;
+            // Panel-only system (uses same panel count as battery system)
+            var panelOnlySystemCost = (sharedPanelCount * 744.19) + 3858.75;
 
             // Calconic savings: 40% self-consumption at retail, 60% export at 17c
-            var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.40 * costPerKwh;
-            var panelOnlyExportRevenue = panelOnlyMonthlyGeneration * 0.60 * exportRate;
+            var panelOnlySelfConsumption = sharedMonthlyGeneration * 0.40 * costPerKwh;
+            var panelOnlyExportRevenue = sharedMonthlyGeneration * 0.60 * exportRate;
             var panelOnlyMonthlySavings = panelOnlySelfConsumption + panelOnlyExportRevenue;
             var panelOnlyAnnualSavings = panelOnlyMonthlySavings * 12;
 
@@ -1956,10 +1949,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             panelOnlySystem = {
-                monthlyGeneration: panelOnlyMonthlyGeneration,
-                annualGeneration: panelOnlyAnnualGeneration,
-                panelCount: panelOnlyPanelCount,
-                systemKw: panelOnlySystemKw,
+                monthlyGeneration: sharedMonthlyGeneration,
+                annualGeneration: sharedAnnualGeneration,
+                panelCount: sharedPanelCount,
+                systemKw: sharedSystemKw,
                 systemCost: panelOnlySystemCost,
                 monthlySavings: panelOnlyMonthlySavings,
                 annualSavings: panelOnlyAnnualSavings,
@@ -1969,31 +1962,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 exportPercent: 60
             };
 
-            // Panel + Battery system (120% of annual usage)
-            var panelBatteryTargetMonthlyGeneration = avgMonthlyKwh * 1.20;
-
-            // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
-            var panelBatteryRequiredKw = panelBatteryTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
-
-            // Calculate panel count needed (round up)
-            var panelBatteryPanelCount = Math.ceil(panelBatteryRequiredKw / (panelWattage / 1000));
-
-            // Recalculate actual system kW based on rounded panel count
-            var panelBatterySystemKw = (panelBatteryPanelCount * panelWattage) / 1000;
-
-            // Recalculate actual generation based on final system size
-            var panelBatteryMonthlyGeneration = panelBatterySystemKw * dailyGenerationPerKw * daysPerMonth;
-            var panelBatteryAnnualGeneration = panelBatteryMonthlyGeneration * 12;
-
-            // Calconic battery sizing: 0.55 * panel count
-            var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
-
-            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 10% total)
-            var panelBatterySystemCost = (panelBatteryPanelCount * 738.68) + (batteryKwh * 937.13) + 6890.63;
+            // Panel + Battery system (uses same panel count)
+            var batteryKwh = Math.ceil(sharedPanelCount * 0.55);
+            var panelBatterySystemCost = (sharedPanelCount * 738.68) + (batteryKwh * 937.13) + 6890.63;
 
             // Calconic savings: 65% self-consumption at retail, 35% export at 17c
-            var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.65 * costPerKwh;
-            var panelBatteryExportRevenue = panelBatteryMonthlyGeneration * 0.35 * exportRate;
+            var panelBatterySelfConsumption = sharedMonthlyGeneration * 0.65 * costPerKwh;
+            var panelBatteryExportRevenue = sharedMonthlyGeneration * 0.35 * exportRate;
             var panelBatteryMonthlySavings = panelBatterySelfConsumption + panelBatteryExportRevenue;
             var panelBatteryAnnualSavings = panelBatteryMonthlySavings * 12;
 
@@ -2035,10 +2010,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             panelBatterySystem = {
-                monthlyGeneration: panelBatteryMonthlyGeneration,
-                annualGeneration: panelBatteryAnnualGeneration,
-                panelCount: panelBatteryPanelCount,
-                systemKw: panelBatterySystemKw,
+                monthlyGeneration: sharedMonthlyGeneration,
+                annualGeneration: sharedAnnualGeneration,
+                panelCount: sharedPanelCount,
+                systemKw: sharedSystemKw,
                 batteryKwh: batteryKwh,
                 systemCost: panelBatterySystemCost,
                 monthlySavings: panelBatteryMonthlySavings,
