@@ -186,9 +186,9 @@
                         tolerance: 0.1
                     },
                     {
-                        name: 'Panel-only system sized at 110% of usage',
+                        name: 'Panel-only system sized at 120% of usage',
                         inputs: { avgMonthlyKwh: 1000 },
-                        expectedMonthlyGen: 1100,
+                        expectedMonthlyGen: 1200,
                         systemType: 'panel-only',
                         tolerance: 50
                     },
@@ -211,16 +211,16 @@
                 name: 'Cost Formula Accuracy',
                 tests: [
                     {
-                        name: 'Panel-only cost: panels × 708.75 + 3675',
+                        name: 'Panel-only cost: panels × 744.19 + 3858.75',
                         inputs: { panelCount: 20 },
-                        expectedCost: 20 * 708.75 + 3675,
+                        expectedCost: 20 * 744.19 + 3858.75,
                         systemType: 'panel-only',
                         tolerance: 1
                     },
                     {
                         name: 'Panel-only cost: 30 panels',
                         inputs: { panelCount: 30 },
-                        expectedCost: 30 * 708.75 + 3675,
+                        expectedCost: 30 * 744.19 + 3858.75,
                         systemType: 'panel-only',
                         tolerance: 1
                     },
@@ -230,7 +230,7 @@
                             panelCount: 25,
                             batteryKwh: 14
                         },
-                        expectedCost: (25 * 703.5) + (14 * 892.5) + 6562.5,
+                        expectedCost: (25 * 738.68) + (14 * 937.13) + 6890.63,
                         systemType: 'panel-battery',
                         tolerance: 1
                     },
@@ -768,9 +768,9 @@
                 if (test.expectedCost && test.inputs.panelCount) {
                     let actual;
                     if (test.systemType === 'panel-only') {
-                        actual = (test.inputs.panelCount * 708.75) + 3675;
+                        actual = (test.inputs.panelCount * 744.19) + 3858.75;
                     } else if (test.systemType === 'panel-battery') {
-                        actual = (test.inputs.panelCount * 703.5) + (test.inputs.batteryKwh * 892.5) + 6562.5;
+                        actual = (test.inputs.panelCount * 738.68) + (test.inputs.batteryKwh * 937.13) + 6890.63;
                     }
                     const diff = Math.abs(actual - test.expectedCost);
                     const passed = diff <= test.tolerance;

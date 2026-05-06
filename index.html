@@ -1888,8 +1888,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var exportRate = 0.17; // 17c per kWh export rate
             var savings25YearMultiplier = 38.55; // Geometric series multiplier for 3% annual price increase over 25 years
 
-            // Panel-only system (110% of annual usage)
-            var panelOnlyTargetMonthlyGeneration = avgMonthlyKwh * 1.10;
+            // Panel-only system (120% of annual usage)
+            var panelOnlyTargetMonthlyGeneration = avgMonthlyKwh * 1.20;
 
             // Calculate required system size: monthly generation / (3.7 kWh/kW/day * 30.416 days/month)
             var panelOnlyRequiredKw = panelOnlyTargetMonthlyGeneration / (dailyGenerationPerKw * daysPerMonth);
@@ -1904,8 +1904,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var panelOnlyMonthlyGeneration = panelOnlySystemKw * dailyGenerationPerKw * daysPerMonth;
             var panelOnlyAnnualGeneration = panelOnlyMonthlyGeneration * 12;
 
-            // Calconic cost formula: panels * 675 + 3500 (increased by 5%)
-            var panelOnlySystemCost = (panelOnlyPanelCount * 708.75) + 3675;
+            // Calconic cost formula: panels * 675 + 3500 (increased by 10% total)
+            var panelOnlySystemCost = (panelOnlyPanelCount * 744.19) + 3858.75;
 
             // Calconic savings: 40% self-consumption at retail, 60% export at 17c
             var panelOnlySelfConsumption = panelOnlyMonthlyGeneration * 0.40 * costPerKwh;
@@ -1984,8 +1984,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // Calconic battery sizing: 0.55 * panel count
             var batteryKwh = Math.ceil(panelBatteryPanelCount * 0.55);
 
-            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 5%)
-            var panelBatterySystemCost = (panelBatteryPanelCount * 703.5) + (batteryKwh * 892.5) + 6562.5;
+            // Calconic cost formula: (panels * 670) + (battery kWh * 850) + 6250 (increased by 10% total)
+            var panelBatterySystemCost = (panelBatteryPanelCount * 738.68) + (batteryKwh * 937.13) + 6890.63;
 
             // Calconic savings: 65% self-consumption at retail, 35% export at 17c
             var panelBatterySelfConsumption = panelBatteryMonthlyGeneration * 0.65 * costPerKwh;
