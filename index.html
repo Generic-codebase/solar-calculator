@@ -2605,26 +2605,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         {
                             label: 'Without Solar',
                             data: data.chartData.map(function(d) { return d.withoutSolar; }),
-                            borderColor: '#ffc93c',
-                            backgroundColor: '#ffc93c',
+                            borderColor: '#e63946',
+                            backgroundColor: '#e63946',
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#ffc93c'
+                            pointBackgroundColor: '#e63946'
                         },
                         {
                             label: chartLabel,
                             data: data.chartData.map(function(d) { return d.withSolar; }),
-                            borderColor: '#ffc93c',
-                            backgroundColor: '#ffc93c',
+                            borderColor: '#2d9f4f',
+                            backgroundColor: '#2d9f4f',
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#ffc93c'
+                            pointBackgroundColor: '#2d9f4f'
                         }
                     ]
                 },
@@ -2684,26 +2684,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         {
                             label: 'Cumulative Solar Savings',
                             data: financingData.map(function(d) { return d.solarSavings; }),
-                            borderColor: '#ffc93c',
-                            backgroundColor: '#ffc93c',
+                            borderColor: '#2d9f4f',
+                            backgroundColor: '#2d9f4f',
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#ffc93c'
+                            pointBackgroundColor: '#2d9f4f'
                         },
                         {
                             label: 'Cumulative Financing Cost',
                             data: financingData.map(function(d) { return d.financingCost; }),
-                            borderColor: '#E63946',
-                            backgroundColor: '#E63946',
+                            borderColor: '#ff8c42',
+                            backgroundColor: '#ff8c42',
                             fill: false,
                             tension: 0.4,
                             borderWidth: 3,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            pointBackgroundColor: '#E63946'
+                            pointBackgroundColor: '#ff8c42'
                         }
                     ];
 
@@ -3133,18 +3133,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         labels.push('Installation & Project Costs');
         values.push(installCost);
-        colors.push('#ffc93c');
+        colors.push('#0a7d8c');
 
         if (batteryCost > 0) {
             labels.push('Battery Storage');
             values.push(batteryCost);
-            colors.push('#E63946');
+            colors.push('#052b2f');
         }
 
         if (interestCost > 0) {
             labels.push('Finance Interest');
             values.push(interestCost);
-            colors.push('#C8D0DA');
+            colors.push('#ff8c42');
         }
 
         // Create donut chart
