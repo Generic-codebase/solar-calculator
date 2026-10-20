@@ -3653,16 +3653,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Email Drawer Functions
     window.openEmailDrawer = function() {
         var drawer = document.getElementById('emailDrawer');
-        var exportButtons = document.getElementById('exportButtons');
-
-        // Position drawer relative to export buttons
-        if (exportButtons) {
-            var rect = exportButtons.getBoundingClientRect();
-            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
-
-            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
-        }
 
         document.getElementById('emailDrawerOverlay').classList.add('show');
         drawer.classList.add('show');
@@ -3943,16 +3933,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // PDF Drawer Functions
     window.openPDFDrawer = function() {
         var drawer = document.getElementById('pdfDrawer');
-        var exportButtons = document.getElementById('exportButtons');
-
-        // Position drawer relative to export buttons
-        if (exportButtons) {
-            var rect = exportButtons.getBoundingClientRect();
-            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            var topPosition = rect.bottom + scrollTop - 100; // 100px above export buttons in viewport
-
-            drawer.style.top = Math.max(topPosition, scrollTop + 50) + 'px';
-        }
 
         document.getElementById('pdfDrawerOverlay').classList.add('show');
         drawer.classList.add('show');
