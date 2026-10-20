@@ -970,53 +970,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         color: #052b2f;
     }
 
-    /* Sliding Drawer */
-    .drawer-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 9998;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s;
+    /* Accordion Panels */
+    .accordion-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+        margin-top: 0;
     }
 
-    .drawer-overlay.show {
-        display: block;
-        opacity: 1;
+    .accordion-panel.open {
+        max-height: 700px;
+        margin-top: 1rem;
     }
 
-    .drawer {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        width: 90%;
-        max-width: 500px;
-        max-height: 80vh;
+    .accordion-inner {
         background: white;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        z-index: 9999;
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        visibility: hidden;
-        opacity: 0;
         border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(5, 43, 47, 0.12);
+        border: 1px solid rgba(255, 201, 60, 0.3);
+        overflow: hidden;
     }
 
-    .drawer.show {
-        transform: translate(-50%, -50%) scale(1);
-        visibility: visible;
-        opacity: 1;
-    }
-
-    .drawer-header {
-        padding: 1.5rem;
+    .accordion-header {
+        padding: 1.25rem 1.5rem;
         background: #052b2f;
         color: white;
         display: flex;
@@ -1024,13 +1000,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         align-items: center;
     }
 
-    .drawer-header h3 {
+    .accordion-header h3 {
         margin: 0;
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         color: white;
     }
 
-    .drawer-close {
+    .accordion-close {
         background: none;
         border: none;
         color: white;
@@ -1044,15 +1020,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         justify-content: center;
     }
 
-    .drawer-close:hover {
+    .accordion-close:hover {
         opacity: 0.8;
     }
 
-    .drawer-content {
-        padding: 2rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+    .accordion-body {
+        padding: 1.5rem;
     }
 
     .drawer-form-group {
@@ -1326,23 +1299,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- Export Buttons -->
         <div id="exportButtons" class="export-buttons" style="display: none;">
-            <button type="button" class="export-btn export-btn-email" onclick="openEmailDrawer()">
+            <button type="button" class="export-btn export-btn-email" onclick="toggleAccordion('emailAccordion', 'pdfAccordion')">
                 <span>📧</span> Email This Report
             </button>
-            <button type="button" class="export-btn export-btn-pdf" onclick="openPDFDrawer()">
+            <button type="button" class="export-btn export-btn-pdf" onclick="toggleAccordion('pdfAccordion', 'emailAccordion')">
                 <span>📄</span> Print to PDF
             </button>
         </div>
 
-        <!-- Email Drawer -->
-        <div id="emailDrawerOverlay" class="drawer-overlay" onclick="closeEmailDrawer()"></div>
-        <div id="emailDrawer" class="drawer">
-            <div class="drawer-header">
-                <h3>Email Solar Report</h3>
-                <button type="button" class="drawer-close" onclick="closeEmailDrawer()">×</button>
-            </div>
-            <div class="drawer-content">
-                <div class="drawer-form-wrapper">
+        <!-- Email Accordion -->
+        <div id="emailAccordion" class="accordion-panel">
+            <div class="accordion-inner">
+                <div class="accordion-header">
+                    <h3>Email Solar Report</h3>
+                    <button type="button" class="accordion-close" onclick="toggleAccordion('emailAccordion')">×</button>
+                </div>
+                <div class="accordion-body">
                     <div class="drawer-form-group">
                         <label for="emailFirstName">First Name *</label>
                         <input type="text" id="emailFirstName" placeholder="John" required>
@@ -1364,21 +1336,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <textarea id="emailMessage" placeholder="Any questions or notes for our solar team..."></textarea>
                     </div>
                     <p style="font-size: 0.75rem; color: #5A6A7A; margin: 0.75rem 0; line-height: 1.4;">By requesting a copy of your report, you agree to be contacted by us for education and marketing purposes.</p>
+                    <button type="button" class="drawer-submit" onclick="sendEmailReport()">Send Report</button>
+                    <div id="emailMessageStatus" class="drawer-message"></div>
                 </div>
-                <button type="button" class="drawer-submit" onclick="sendEmailReport()" style="margin-top: auto;">Send Report</button>
-                <div id="emailMessageStatus" class="drawer-message"></div>
             </div>
         </div>
 
-        <!-- PDF Drawer -->
-        <div id="pdfDrawerOverlay" class="drawer-overlay" onclick="closePDFDrawer()"></div>
-        <div id="pdfDrawer" class="drawer">
-            <div class="drawer-header">
-                <h3>Print to PDF</h3>
-                <button type="button" class="drawer-close" onclick="closePDFDrawer()">×</button>
-            </div>
-            <div class="drawer-content">
-                <div class="drawer-form-wrapper">
+        <!-- PDF Accordion -->
+        <div id="pdfAccordion" class="accordion-panel">
+            <div class="accordion-inner">
+                <div class="accordion-header">
+                    <h3>Print to PDF</h3>
+                    <button type="button" class="accordion-close" onclick="toggleAccordion('pdfAccordion')">×</button>
+                </div>
+                <div class="accordion-body">
                     <p style="margin-bottom: 1.5rem; color: #5A6A7A;">Your solar report will open in a print-friendly format. Use your browser's print function (Ctrl/Cmd + P) to save as PDF.</p>
                     <div class="drawer-form-group">
                         <label for="pdfTitle">Report Title (Optional)</label>
@@ -1396,8 +1367,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             Include charts and graphs
                         </label>
                     </div>
+                    <button type="button" class="drawer-submit" onclick="generatePDF()">Generate PDF</button>
                 </div>
-                <button type="button" class="drawer-submit" onclick="generatePDF()" style="margin-top: auto;">Generate PDF</button>
             </div>
         </div>
 
@@ -3651,17 +3622,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('exportButtons').style.display = 'flex';
     };
 
-    // Email Drawer Functions
-    window.openEmailDrawer = function() {
-        var drawer = document.getElementById('emailDrawer');
+    // Accordion Toggle Function
+    window.toggleAccordion = function(panelId, otherPanelId) {
+        var panel = document.getElementById(panelId);
+        var isOpen = panel.classList.contains('open');
 
-        document.getElementById('emailDrawerOverlay').classList.add('show');
-        drawer.classList.add('show');
-    };
+        // Close the other panel if open
+        if (otherPanelId) {
+            document.getElementById(otherPanelId).classList.remove('open');
+        }
 
-    window.closeEmailDrawer = function() {
-        document.getElementById('emailDrawerOverlay').classList.remove('show');
-        document.getElementById('emailDrawer').classList.remove('show');
+        // Toggle this panel
+        if (isOpen) {
+            panel.classList.remove('open');
+        } else {
+            panel.classList.add('open');
+            // Scroll to make the accordion visible
+            setTimeout(function() {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
     };
 
     window.sendEmailReport = function() {
@@ -3718,7 +3698,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return;
         }
 
-        var submitBtn = document.querySelector('#emailDrawer .drawer-submit');
+        var submitBtn = document.querySelector('#emailAccordion .drawer-submit');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
@@ -3911,7 +3891,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             submitBtn.textContent = 'Sent!';
 
             setTimeout(function() {
-                closeEmailDrawer();
+                toggleAccordion('emailAccordion');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send Report';
                 messageDiv.className = 'drawer-message';
@@ -3931,45 +3911,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
     };
 
-    // PDF Drawer Functions
-    window.openPDFDrawer = function() {
-        var drawer = document.getElementById('pdfDrawer');
-
-        document.getElementById('pdfDrawerOverlay').classList.add('show');
-        drawer.classList.add('show');
-
-        // Hide decorative icons for printing
-        var statusIcons = document.querySelectorAll('.status-icon');
-        var powerDots = document.querySelectorAll('.power-dot');
-        statusIcons.forEach(function(icon) {
-            icon.style.display = 'none';
-        });
-        powerDots.forEach(function(dot) {
-            dot.style.display = 'none';
-        });
-
-        // Pre-fill title with current date
-        var pdfTitleInput = document.getElementById('pdfTitle');
-        if (!pdfTitleInput.value) {
-            var today = new Date().toLocaleDateString('en-NZ', { year: 'numeric', month: 'long', day: 'numeric' });
-            pdfTitleInput.value = 'My Solar Report - ' + today;
-        }
-    };
-
-    window.closePDFDrawer = function() {
-        document.getElementById('pdfDrawerOverlay').classList.remove('show');
-        document.getElementById('pdfDrawer').classList.remove('show');
-
-        // Restore decorative icons
-        var statusIcons = document.querySelectorAll('.status-icon');
-        var powerDots = document.querySelectorAll('.power-dot');
-        statusIcons.forEach(function(icon) {
-            icon.style.display = '';
-        });
-        powerDots.forEach(function(dot) {
-            dot.style.display = '';
-        });
-    };
+    // PDF Functions
 
     window.generatePDF = function() {
         var title = document.getElementById('pdfTitle').value || 'Solar Calculator Report';
@@ -4052,7 +3994,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Auto-print after a short delay to ensure content is loaded
         setTimeout(function() {
             printWindow.print();
-            closePDFDrawer();
+            toggleAccordion('pdfAccordion');
         }, 500);
     };
 })();
