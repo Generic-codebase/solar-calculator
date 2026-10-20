@@ -991,9 +991,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     .drawer {
         position: fixed;
-        top: 10vh;
+        top: 50%;
         left: 50%;
-        transform: translate(-50%, 0) scale(0.9);
+        transform: translate(-50%, -50%) scale(0.9);
         width: 90%;
         max-width: 500px;
         max-height: 80vh;
@@ -1010,7 +1010,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     .drawer.show {
-        transform: translate(-50%, 0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
         visibility: visible;
         opacity: 1;
     }
@@ -1027,6 +1027,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .drawer-header h3 {
         margin: 0;
         font-size: 1.25rem;
+        color: white;
     }
 
     .drawer-close {
